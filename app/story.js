@@ -16,7 +16,7 @@
   const PRELOAD_WAIT = 600;    // 場面の はじめに 画像を 待つ いちばん 長い 時間
   const DEFAULT_BG = '#23506e';
   const DEFAULT_TITLE = '街と、その白い壁';
-  const DEFAULT_SUBTITLE = '〜throw on tako〜';
+  const DEFAULT_SUBTITLE = '〜The City and Its White Squid〜';
 
   // 札の いろ（立ち絵が 読めない とき）
   const CAST_COLORS = {
