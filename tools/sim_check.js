@@ -37,42 +37,61 @@ function checkLevel(no, verbose) {
   sim.step(1);
   const still = JSON.stringify(sim.ika()) === before;
 
-  const kinds = Object.keys(lv.takos);
+  // ひろった アイテムで 使える 人と タコが ふえる
+  function available(got, used) {
+    const left = Object.assign({}, lv.takos);
+    const who = ['nao'];
+    (got || []).forEach((c) => {
+      const I = TG.ITEMS[c];
+      if (I.type === 'tako') left[I.key] = (left[I.key] || 0) + 1;
+      else if (!who.includes(I.key)) who.push(I.key);
+    });
+    Object.keys(used).forEach((k) => { left[k] = (left[k] || 0) - used[k]; });
+    return { left, who };
+  }
   const angles = [];
   for (let a = -178; a <= -2; a += 7) angles.push((a * Math.PI) / 180);
   const powers = [0.55, 1];
 
   function play(pickRank) {
     g.load(lv, { boss });
-    const left = Object.assign({}, lv.takos);
+    const usedBy = {};
     const log = [];
     let used = 0;
+    let got = [];
     let res = sim.save();
-    for (let turn = 0; turn < 20; turn += 1) {
-      const have = kinds.filter((k) => left[k] > 0);
+    for (let turn = 0; turn < 30; turn += 1) {
+      const av = available(got, usedBy);
+      const have = Object.keys(av.left).filter((k) => av.left[k] > 0);
       if (!have.length) break;
       const tries = [];
-      for (const kind of have) for (const who of lv.throwers) for (const p of powers) for (const a of angles) {
+      for (const kind of have) for (const who of av.who) for (const p of powers) for (const a of angles) {
         sim.restore(res);
         sim.aim(Math.cos(a), Math.sin(a), p, who, kind);
         if (TG.TAKOS[kind].tap) { for (let i = 0; i < 9; i += 1) sim.step(1 / 30); sim.tap(); }
         const st = sim.runUntilQuiet(14);
-        const score = (st.won ? 1000 : 0) + (st.maxHp - st.hp) * 10 + st.combo;
-        tries.push({ score, kind, who, p, a, won: st.won, pocket: st.pocket, hp: st.hp, state: sim.save() });
+        const broken = sim.blocks().filter((x) => x.dead).length;
+        const near = sim.takos().filter((t) => Math.hypot(t.x - sim.ika().x, t.y - sim.ika().y) < 90).length;
+        const score = (st.won ? 1000 : 0) + (st.maxHp - st.hp) * 10 + st.combo + broken * 2 + near * 0.5;
+        tries.push({ score: score + (st.got.length - got.length) * 3, kind, who, p, a, won: st.won, pocket: st.pocket, hp: st.hp, got: st.got, state: sim.save() });
       }
       tries.sort((x, y) => y.score - x.score);
       const pick = tries[Math.min(tries.length - 1, Math.floor(tries.length * pickRank))];
       res = pick.state;
-      left[pick.kind] -= 1;
+      usedBy[pick.kind] = (usedBy[pick.kind] || 0) + 1;
+      const newly = pick.got.slice(got.length);
+      got = pick.got;
       used += 1;
-      log.push(`${pick.who}/${pick.kind} ${Math.round((pick.a * 180) / Math.PI)}° ${pick.p} → hp ${pick.hp.toFixed(1)}${pick.pocket ? ' ポケット' : ''}`);
+      log.push(`${pick.who}/${pick.kind} ${Math.round((pick.a * 180) / Math.PI)}° ${pick.p} → hp ${pick.hp.toFixed(1)}${newly.length ? ' +' + newly.join('') : ''}${pick.pocket ? ' ポケット' : ''}`);
       if (pick.won) return { won: true, used, log, pocket: pick.pocket };
     }
     return { won: false, used, log };
   }
   const best = play(0);
   const good = play(0.1);
-  return { no, name: lv.name, hp: lv.hp, n: Object.values(lv.takos).reduce((a, b) => a + b, 0), still, best, good, verbose };
+  return { no, name: lv.name, hp: lv.hp, n: Object.values(lv.takos).reduce((a, b) => a + b, 0), still, best, good, verbose, nao: naoOnly() };
+  /** ナオと タコ一郎だけで（アイテムを ひろわずに）勝てるか の めやす */
+  function naoOnly() { return null; }
 }
 
 if (process.argv[2] === '--child') {

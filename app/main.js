@@ -164,6 +164,7 @@
   let left = {};            // のこりの タコ { tako1: 3, … }
   let takoKey = '';
   let throwerKey = 'nao';
+  let unlocked = { nao: true };   // この レベルで 使える 投げる 人（はじめは ナオだけ。アイテムで ふえる）
   let ratio = 0;
   let playing = false;      // 投げられる 状態（モーダルや 場面の あいだは false）
   let ended = false;        // この レベルの 結果が でた
@@ -176,7 +177,7 @@
       return;
     }
     try {
-      game = TG.create(canvas, { onStats, onThrow, onTurnEnd });
+      game = TG.create(canvas, { onStats, onThrow, onTurnEnd, onItem });
     } catch (e) {
       console.error(e);
       game = null;
@@ -200,6 +201,9 @@
     ended = false;
     ratio = 0;
     left = {};
+    unlocked = { nao: true };
+    throwerKey = 'nao';
+    takoKey = 'tako1';
     const tk = lv.takos && typeof lv.takos === 'object' ? lv.takos : { tako1: 4 };
     Object.keys(tk).forEach((k) => { left[k] = Math.max(0, Number(tk[k]) || 0); });
 
@@ -321,9 +325,7 @@
 
   // ---------- 投げる 人 ----------
   function throwersOf() {
-    if (lv && Array.isArray(lv.throwers) && lv.throwers.length) return lv.throwers;
-    const s = stageOf(level);
-    return THROWER_KEYS.filter((k) => (THROWER_FROM[k] || 1) <= s);
+    return THROWER_KEYS.filter((k) => unlocked[k]);
   }
 
   function buildThrowers() {
@@ -340,10 +342,12 @@
       b.appendChild(makeFace(k, 'thrower__face', p.color, p.name.slice(0, 1)));
       const body = el('span', 'thrower__body');
       body.appendChild(el('span', 'thrower__name', p.name));
-      body.appendChild(el('span', 'thrower__note', ok ? String(p.note || '').replace(/\s*／\s*/g, '\n') : (THROWER_FROM[k] || 2) + '面から'));
+      const lockNote = 'アイテムで なかまに';
+      body.appendChild(el('span', 'thrower__note', ok ? String(p.note || '').replace(/\s*／\s*/g, '\n') : lockNote));
       b.appendChild(body);
       b.disabled = !ok;
-      b.setAttribute('aria-label', p.name + '（' + (ok ? p.note : (THROWER_FROM[k] || 2) + '面から') + '）');
+      b.classList.toggle('is-locked', !ok);
+      b.setAttribute('aria-label', p.name + '（' + (ok ? p.note : lockNote) + '）');
       b.addEventListener('click', () => pickThrower(k));
       throwerList.appendChild(b);
     });
@@ -385,6 +389,22 @@
   function onStats(st) {
     if (!st) return;
     showHp(st.hp, st.maxHp);
+  }
+
+  /** 台の アイテムを ひろった */
+  function onItem(code, type, key) {
+    if (ended || !lv) return;
+    if (type === 'thrower') {
+      unlocked[key] = true;
+      buildThrowers();
+      const p = THROWERS[key] || THROWER_FALLBACK[key];
+      say(p.name + 'が なかまに なった！ 下の ボタンで えらべるよ');
+    } else if (type === 'tako') {
+      left[key] = (left[key] || 0) + 1;
+      buildTray();
+      const t = TAKOS[key];
+      say((t ? t.name : key) + 'を ゲット！ ' + (t && t.note ? '（' + t.note + '）' : ''));
+    }
   }
 
   function onThrow(kind) {
