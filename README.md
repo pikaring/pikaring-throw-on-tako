@@ -36,7 +36,7 @@
 | `app/images/story/` | ストーリーの背景と立ち絵。台の 上の タコ・イカの 顔にも 使う（無くても 単色と名前の札で遊べる）。背景は 会話の 場面だけで、ゲームの 画面は 空色の 台 |
 | `tools/sim_check.js` | node で、24レベル すべてが 置いた ままで 動かないか・1回 以内の はねかえりで あたる 道が あるか・1マスの せまい 通路が ないか・毎回 いちばん よい 投げで 入れた タコ 以内に 勝てるかを 確かめる |
 | `tools/make_sprite.py` | 生成AIが出した立ち絵（上半身）を、グリッドから切り分けて背景を抜き、512pxにそろえる |
-| `tools/make_icons.py` | タイトルロゴと ナオ・タコ一郎の 顔から アプリのアイコン一式をつくる（前作と おなじ 図がら） |
+| `tools/make_icons.py` | タイトルロゴと チカ・マキの 顔から アプリのアイコン一式をつくる（前作と おなじ 図がら） |
 | `tools/fetch_goods.py` | 紹介ページの本・グッズの画像と価格を Amazon Creators API で取り直す（ほかのサイトと同じもの） |
 | `.github/workflows/goods.yml` | 上を毎日3時（JST）に実行して `assets/goods.json` を更新する |
 | `docs/dev-plan.md` | 開発の しくみ（ゲームの 中身・分担・データの 形） |
@@ -127,14 +127,14 @@
 
 ## アイコン
 
-`tools/make_icons.py` が タイトルロゴ（`app/images/story/logo.png`）と、ナオ・タコ一郎の 立ち絵から、
+`tools/make_icons.py` が タイトルロゴ（`app/images/story/logo.png`）と、チカ・マキの 立ち絵から、
 空と 海の 色の 角丸に ロゴ（上）と ふたりの 顔（下）を のせた アイコンを つくります
 （前作 cat-on-escape と おなじ 図がら）。64px 以下は ロゴが つぶれるので 顔だけです。
 
 ```
 pip install pillow numpy
 python3 tools/make_icons.py
-python3 tools/make_icons.py app/images/story/nao-happy.png app/images/story/tako1-normal.png app/images/story/logo.png
+python3 tools/make_icons.py app/images/story/chika-happy.png app/images/story/maki-happy.png app/images/story/logo.png
 ```
 
 `app/images/icon-32/180/192/512.png` と `assets/icon.png`（512px）・`assets/favicon.png`（64px）を 書き出します。
