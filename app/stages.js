@@ -138,7 +138,7 @@
 
     // ===== 4面 公園（タコ四郎） =====
     {
-      no: 10, stage: 4, name: '4-1', goal: 0.7,
+      no: 10, stage: 4, name: '4-1', goal: 0.75,
       rows: [
         '  R    R    R ',
         ' W--  W--  W--',
@@ -150,7 +150,7 @@
       hint: '四郎は 空中で タップすると 3びきに わかれる',
     },
     {
-      no: 11, stage: 4, name: '4-2', goal: 0.7,
+      no: 11, stage: 4, name: '4-2', goal: 0.75,
       rows: [
         '       W-      ',
         '      W-W-     ',
@@ -163,7 +163,7 @@
       hint: 'ピラミッドの 赤を まとめて ねらう',
     },
     {
-      no: 12, stage: 4, name: '4-3', goal: 0.7,
+      no: 12, stage: 4, name: '4-3', goal: 0.75,
       rows: [
         '   R    R     ',
         '  W--  W--    ',
@@ -178,7 +178,7 @@
 
     // ===== 5面 河川敷（タコ五郎） =====
     {
-      no: 13, stage: 5, name: '5-1', goal: 0.7,
+      no: 13, stage: 5, name: '5-1', goal: 0.75,
       rows: [
         ' W------- ',
         ' H      H ',
@@ -193,7 +193,7 @@
       hint: '五郎は 空中で タップすると まっすぐ 下へ',
     },
     {
-      no: 14, stage: 5, name: '5-2', goal: 0.7,
+      no: 14, stage: 5, name: '5-2', goal: 0.75,
       rows: [
         ' W---- W---- ',
         ' H   H H   H ',
@@ -206,7 +206,7 @@
       hint: 'いどの 中は 上から しか ねらえない',
     },
     {
-      no: 15, stage: 5, name: '5-3', goal: 0.7,
+      no: 15, stage: 5, name: '5-3', goal: 0.75,
       rows: [
         '   W----    ',
         '   H   H    ',
@@ -223,7 +223,7 @@
 
     // ===== 6面 工場跡（タコ六郎） =====
     {
-      no: 16, stage: 6, name: '6-1', goal: 0.7,
+      no: 16, stage: 6, name: '6-1', goal: 0.75,
       rows: [
         '     R      ',
         '   H-----   ',
@@ -236,7 +236,7 @@
       hint: '六郎は あたって すこし したら 大ばくはつ',
     },
     {
-      no: 17, stage: 6, name: '6-2', goal: 0.7,
+      no: 17, stage: 6, name: '6-2', goal: 0.75,
       rows: [
         '  H--  H--  ',
         '  W W  W W  ',
@@ -249,7 +249,7 @@
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 2 }, throwers: T4,
     },
     {
-      no: 18, stage: 6, name: '6-3', goal: 0.7,
+      no: 18, stage: 6, name: '6-3', goal: 0.75,
       rows: [
         '    W-  W-    ',
         '   H--  H--   ',
@@ -266,7 +266,7 @@
 
     // ===== 7面 トンネル（タコ七郎） =====
     {
-      no: 19, stage: 7, name: '7-1', goal: 0.7,
+      no: 19, stage: 7, name: '7-1', goal: 0.8,
       rows: [
         '   H--    ',
         '  H---H-- ',
@@ -279,7 +279,7 @@
       hint: '七郎の スミが かかると かたい ブロックも もろく なる',
     },
     {
-      no: 20, stage: 7, name: '7-2', goal: 0.7,
+      no: 20, stage: 7, name: '7-2', goal: 0.8,
       rows: [
         '    H-  H-    ',
         '   H--- H--   ',
@@ -294,7 +294,7 @@
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 1, tako7: 1 }, throwers: T4,
     },
     {
-      no: 21, stage: 7, name: '7-3', goal: 0.7,
+      no: 21, stage: 7, name: '7-3', goal: 0.8,
       rows: [
         '     R-      ',
         '    H---     ',
@@ -312,7 +312,7 @@
 
     // ===== 8面 イカ女王の 城（タコ大王） =====
     {
-      no: 22, stage: 8, name: '8-1', goal: 0.7,
+      no: 22, stage: 8, name: '8-1', goal: 0.8,
       rows: [
         '   R       R   ',
         '  W--     W--  ',
@@ -329,7 +329,7 @@
       hint: 'タコ大王の ゆれで 城ごと ゆらせ！',
     },
     {
-      no: 23, stage: 8, name: '8-2', goal: 0.7,
+      no: 23, stage: 8, name: '8-2', goal: 0.8,
       rows: [
         '      W-      ',
         '     H--      ',
@@ -346,7 +346,7 @@
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 1, tako7: 1, daiou: 1 }, throwers: T4,
     },
     {
-      no: 24, stage: 8, name: '8-3', goal: 0.7,
+      no: 24, stage: 8, name: '8-3', goal: 0.8,
       rows: [
         '       R       ',
         '      H--      ',

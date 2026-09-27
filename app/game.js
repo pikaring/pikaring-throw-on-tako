@@ -33,6 +33,7 @@
   const BOMB_R = 135;          // 六郎の 大ばくはつ
   const BOMB_POW = 5.5;
   const QUAKE_R = 260;         // 大王の ゆれ
+  const INK_R = 120;          // 七郎の スミの 半径
   const RED_R = 105;           // 赤い ブロックの 爆発の 半径（となりの となりまで とどく）
   const RED_POW = 4.2;         // その 強さ（白は まん中 近くなら こわれる。かたいのは のこる）
 
@@ -46,7 +47,7 @@
     tako5: { name: 'タコ五郎', short: '五郎', r: 17, mass: 1.2, bounce: 0.2,  note: 'タップで まっすぐ 下へ',    color: '#2f6fb0', tap: 'dive' },
     tako6: { name: 'タコ六郎', short: '六郎', r: 18, mass: 1,   bounce: 0.2,  note: 'あたって すこし したら ばくはつ', color: '#b8860b', hit: 'bomb' },
     tako7: { name: 'タコ七郎', short: '七郎', r: 17, mass: 1,   bounce: 0.3,  note: 'スミで まわりを もろく する', color: '#4b3f63', hit: 'ink' },
-    daiou: { name: 'タコ大王', short: '大王', r: 30, mass: 4,   bounce: 0.1,  note: '大きな ゆれで 城ごと ゆらす', color: '#8e1b1b', hit: 'quake' },
+    daiou: { name: 'タコ大王', short: '大王', r: 30, mass: 3.2,   bounce: 0.1,  note: '大きな ゆれで 城ごと ゆらす', color: '#8e1b1b', hit: 'quake' },
   };
   const TAKO_ORDER = ['tako1', 'tako2', 'tako3', 'tako4', 'tako5', 'tako6', 'tako7', 'daiou'];
 
@@ -471,8 +472,8 @@
             if (dmg >= b.hp) {                         // つきぬける
               const keep = Math.sqrt(Math.max(0, 1 - b.hp / dmg));
               hurt(b, dmg);
-              t.vx *= clamp(keep, 0.25, 0.95);
-              t.vy *= clamp(keep, 0.25, 0.95);
+              t.vx *= clamp(keep, 0.2, 0.85);             // つきぬける たびに おそく なる
+              t.vy *= clamp(keep, 0.2, 0.85);
               continue;
             }
             hurt(b, dmg);
@@ -525,11 +526,11 @@
       if (t.blast) explode(t.x, t.y, t.blast, 2.4, 'maki');
       if (T.hit === 'bomb') t.fuse = 1.0;
       if (T.hit === 'ink') {
-        effects.push({ type: 'ink', x: t.x, y: t.y, t: 0, life: 1.2, r: 140 });
+        effects.push({ type: 'ink', x: t.x, y: t.y, t: 0, life: 1.2, r: INK_R });
         blocks.forEach((b) => {
           if (b.dead) return;
           const d = Math.hypot(clamp(t.x, b.x, b.x + b.w) - t.x, clamp(t.y, b.y, b.y + b.h) - t.y);
-          if (d < 140) { b.inked = true; b.hp = Math.min(b.hp, Math.max(0.6, Math.ceil(b.maxHp / 3))); if (b.kind === 'R') b.hp = 0.3; }
+          if (d < INK_R && b.kind !== 'R') { b.inked = true; b.hp = Math.min(b.hp, b.maxHp * 0.4); }   // かたいのも 白より もろく
         });
       }
       if (T.hit === 'quake') {
