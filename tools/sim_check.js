@@ -23,7 +23,7 @@ function loadGame() {
   global.requestAnimationFrame = () => {};
   const root = path.join(__dirname, '..', 'app');
   for (const f of ['stages.js', 'game.js']) new Function(fs.readFileSync(path.join(root, f), 'utf8'))();
-  const canvas = { getContext: () => ctxStub, getBoundingClientRect: () => ({ width: 360, height: 640 }), addEventListener() {}, isConnected: true };
+  const canvas = { getContext: () => ctxStub, getBoundingClientRect: () => ({ width: 520, height: 400 }), addEventListener() {}, isConnected: true };
   return { TG: global.window.TakoGame, STAGES: global.window.STAGES, canvas };
 }
 
@@ -41,11 +41,12 @@ function checkLevel(no, verbose) {
   // (c) 何回 はねかえれば あたるか（発射口の 位置と 角度を ぜんぶ ためす。ブロックも はねかえりに 数える）
   const bounces = sim.minBounces();
   // (d) 1マスの せまい 通路（W・H か 台の ふちに はさまれた 1マスの すきま）。赤 R は あてれば 消える まと なので 数えない
-  const grid = lv.rows.map((r) => r.padEnd(9, '.'));
-  const isWall = (r, c) => c < 0 || c > 8 || (r >= 0 && r < grid.length && /[WH]/.test(grid[r][c]));
-  const isWallV = (r, c) => r < 0 || (r < grid.length && c >= 0 && c <= 8 && /[WH]/.test(grid[r][c]));
+  const COLS = TG.COLS || 9;
+  const grid = lv.rows.map((r) => r.padEnd(COLS, '.'));
+  const isWall = (r, c) => c < 0 || c > COLS - 1 || (r >= 0 && r < grid.length && /[WH]/.test(grid[r][c]));
+  const isWallV = (r, c) => r < 0 || (r < grid.length && c >= 0 && c <= COLS - 1 && /[WH]/.test(grid[r][c]));
   const narrow = [];
-  grid.forEach((row, r) => { for (let c = 0; c < 9; c += 1) {
+  grid.forEach((row, r) => { for (let c = 0; c < COLS; c += 1) {
     if (/[WH]/.test(row[c])) continue;
     const h = isWall(r, c - 1) && isWall(r, c + 1) && (/[WH]/.test(row[c - 1] || '') || /[WH]/.test(row[c + 1] || ''));
     const v = r + 1 < grid.length && isWallV(r - 1, c) && isWallV(r + 1, c) && (r > 0 && /[WH]/.test(grid[r - 1][c]) || /[WH]/.test(grid[r + 1][c]));
@@ -80,7 +81,7 @@ function checkLevel(no, verbose) {
       const have = Object.keys(av.left).filter((k) => av.left[k] > 0);
       if (!have.length) break;
       const tries = [];
-      for (const kind of have) for (const who of av.who) for (const lx of [180, 90, 270]) for (const p of powers) for (const a of angles) {
+      for (const kind of have) for (const who of av.who) for (const lx of [TG.W / 2, TG.W / 4, (TG.W * 3) / 4]) for (const p of powers) for (const a of angles) {
         sim.restore(res);
         sim.setLaunch(lx);
         sim.aim(Math.cos(a), Math.sin(a), p, who, kind);

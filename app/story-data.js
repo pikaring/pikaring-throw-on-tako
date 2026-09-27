@@ -159,7 +159,7 @@
         { who: 'fumi', face: 'surprised', text: 'ここで 壁、\nつくってたんだ！\nそりゃ ふえる わけだ。' },
         { right: 'maki', who: 'maki', face: 'serious', text: '機械を 止めよう。\nこれ 以上 ふえたら、\n街が うまっちゃう。' },
         { right: 'ika6', who: 'ika6', face: 'normal', text: 'だれイカ！\nイカ里の 工場に\n入って きたのは！' },
-        { right: 'tako4', who: 'tako4', face: 'normal', text: 'タコ四郎タコ。\nすべってる ときに タップで\n3びきに わかれるタコ！' },
+        { right: 'tako4', who: 'tako4', face: 'normal', text: 'タコ四郎タコ。\nすべってる ときに タップで\nスミ レーザーを 出すタコ！' },
         { left: 'nao', who: 'nao', face: 'serious', text: '見つかっちゃった。\nでも、ここで\n止めるしか ないわ。' },
       ],
 

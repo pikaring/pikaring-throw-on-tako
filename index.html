@@ -282,7 +282,7 @@
       <div class="card">
         <span class="num">04</span>
         <h3>8しゅるいの タコと 4人の 投げる 人</h3>
-        <p>面が すすむと、投げられる タコが ふえます。白い ブロックを つきぬける タコ、タップで わかれる タコ、イカへ まっしぐらの タコ……。
+        <p>面が すすむと、投げられる タコが ふえます。白い ブロックを つきぬける タコ、タップで スミ レーザーを 出す タコ、イカへ まっしぐらの タコ……。
           ねらいの ナオ、力の フミ、爆発の マキ、3びき いっぺんの チカ。同じ タコでも、投げる 人で まるで ちがう 動きに なります。</p>
         <ul>
           <li>下の トレイで タコを えらぶ（のこりの かず つき）</li>
@@ -328,7 +328,7 @@
       <div class="char"><div class="char-face" style="--c:#c0398a"><span>三</span><img src="app/images/story/tako3-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
         <p class="tag">3面 トンネルから</p><h3>タコ三郎</h3><p>よく はねて、長く すべる。ふちで ぽよーんと はねかえって、壁の うらまで とどく。</p></div>
       <div class="char"><div class="char-face" style="--c:#3f8f57"><span>四</span><img src="app/images/story/tako4-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">4面 壁工場から</p><h3>タコ四郎</h3><p>うごいて いる あいだに タップすると、3びきに わかれる。</p></div>
+        <p class="tag">4面 壁工場から</p><h3>タコ四郎</h3><p>うごいて いる あいだに タップすると、スミ レーザー。まっすぐ 先の 壁を こわし、タコも イカも ふきとばす。</p></div>
       <div class="char"><div class="char-face" style="--c:#2f6fb0"><span>五</span><img src="app/images/story/tako5-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
         <p class="tag">5面 砂浜から</p><h3>タコ五郎</h3><p>うごいて いる あいだに タップすると、イカへ まっしぐら。</p></div>
       <div class="char"><div class="char-face" style="--c:#b8860b"><span>六</span><img src="app/images/story/tako6-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
@@ -426,7 +426,7 @@
         タコの はねかえり・すべり・回転、タコどうしの ぶつかりと コンボ、爆発や 穴への 落下は <code>app/game.js</code> に 自前で 書いて あります。</p>
     </div>
     <div class="night-list">
-      <div class="night-item"><b>台の 図面は 文字の 絵</b><span><code>app/stages.js</code> に よこ 9マス × たて 13マスまで、<code>Q</code>（イカ）・<code>W</code>（白）・<code>H</code>（かたい）・<code>R</code>（赤）で 書くだけ。置いた ままで 動かないか、1回 はねかえせば イカに とどくか、1マスの せまい 通路が ないか、いちばん よい 投げを つづければ 入れた タコ 以内に 勝てるかは、24レベル すべて スクリプトで 確かめて います。</span></div>
+      <div class="night-item"><b>台の 図面は 文字の 絵</b><span><code>app/stages.js</code> に よこ 9マス（台の 左か 右に よせて 13マスに）× たて 8マスまで、<code>Q</code>（イカ）・<code>W</code>（白）・<code>H</code>（かたい）・<code>R</code>（赤）で 書くだけ。置いた ままで 動かないか、1回 はねかえせば イカに とどくか、1マスの せまい 通路が ないか、いちばん よい 投げを つづければ 入れた タコ 以内に 勝てるかは、24レベル すべて スクリプトで 確かめて います。</span></div>
       <div class="night-item"><b>絵が なくても 遊べる</b><span>タコや イカの 絵は 読みこめた ときだけ 使います。無ければ 図形と 名前の 札で 代わりに 出ます。</span></div>
       <div class="night-item"><b>保存</b><span>進んだ レベルと ★は LocalStorage に。サーバーには 何も 送りません。</span></div>
       <div class="night-item"><b>動きが 苦手な 方へ</b><span><code>prefers-reduced-motion</code> に 対応。画面の ゆれや 破片を へらします。</span></div>
@@ -446,7 +446,7 @@
     <details><summary>どうやって 投げますか？</summary><p>画面の どこでも 指（または マウス）で ひっぱって、はなします。タコは 下の 発射口から、ひいた 向きの <b>反対</b>へ とびだします。ひく 長さで 強さが 決まり、ひっぱって いる あいだは はねかえる 道すじまで 予測線が 出ます。</p></details>
     <details><summary>なかなか 勝てません</summary><p>まっすぐ ぶつけるより、<b>コンボ</b>と <b>穴</b>を ねらうのが こつです。止まって 場に のこった タコに あててから イカに とどくと、コンボ 1つごとに ダメージが ＋50%。
       イカが 穴の そばに いたら、はじいて 四すみの 穴に おとせば 一発 勝利です。赤い ブロックの 爆発も ちかくの イカに ききます。予測線が 長い ナオで、ふちの はねかえりを つかうと ねらいやすく なります。</p></details>
-    <details><summary>タップする タコが うまく 使えません</summary><p>タコ四郎（3びきに わかれる）と タコ五郎（イカへ まっしぐら）は、うごいて いる あいだに 画面の どこかを タップすると わざが 出ます。タコ五郎は、イカとの あいだに ブロックが ない ところで タップすると、まっすぐ とどきます。</p></details>
+    <details><summary>タップする タコが うまく 使えません</summary><p>タコ四郎（スミ レーザー）と タコ五郎（イカへ まっしぐら）は、うごいて いる あいだに 画面の どこかを タップすると わざが 出ます。タコ五郎は、イカとの あいだに ブロックが ない ところで タップすると、まっすぐ とどきます。</p></details>
     <details><summary>前作を 遊んで いなくても 大丈夫？</summary><p>大丈夫です。お話は つながって いますが、はじめの 場面で 街の ようすが わかります。前作 <a href="https://pikaring.github.io/cat-on-escape/">猫が消えた街</a> は、ねこを そろえて 逃がす パズルです。</p></details>
     <details><summary>ついつい やめられません</summary><p>1つの 台は 数投で 終わります。クリアしたら ひと区切り。進んだ レベルは 保存されるので、つぎは「つづきから」遊べます。</p></details>
   </div>

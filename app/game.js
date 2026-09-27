@@ -16,13 +16,17 @@
   'use strict';
 
   // ---------- 台の 大きさ（ワールドの 点。画面には 縮めて 出す） ----------
-  const W = 360;
-  const H = 640;
-  const CELL = 40;            // 図面の 1マス（たて 13マス × よこ 9マス が 上の 520 に のる）
-  const LINE_Y = 530;         // 発射ラインより 下は 発射口の ばしょ
-  const LAUNCH = { x: 180, y: 590 };
+  // よこ長の 台（スマホでも 画面の よこを ひろく 使い、コマを 大きく 見せる）
+  const W = 520;
+  const H = 400;
+  const CELL = 40;            // 図面の 1マス（よこ 13マス × たて 8マス が 上の 320 に のる）
+  const COLS = W / CELL;
+  const LINE_Y = 320;         // 発射ラインより 下は 発射口の ばしょ
+  const LAUNCH = { x: 260, y: 362 };
+  const LAUNCH_MIN = 64;      // 発射口は 下の 穴に 近づけない
   const POCKET_R = 36;        // 四すみの 穴
   const POCKET_IN = 52;       // イカの 中心が この 距離に 入ったら 落ちる（穴の ふちに イカが かかれば 落ちる）
+  const POCKET_TAKO = 34;     // タコ・玉の 中心が この 距離に 入ったら 落ちる
   const MAX_PULL = 120;       // これ以上 引いても 強さは おなじ（画面の px）
   const MAX_SPEED = 980;
   const STEP = 1 / 120;
@@ -36,7 +40,7 @@
     tako1: { name: 'タコ一郎', short: '一郎', r: 15, mass: 1,   fr: 150, dmg: 1,   note: 'ふつうの タコ',                     color: '#e0533d' },
     tako2: { name: 'タコ二郎', short: '二郎', r: 16, mass: 2,   fr: 170, dmg: 1.3, note: 'おもくて つきぬける。かたい ブロックも こわせる', color: '#d9731f', pierce: true },
     tako3: { name: 'タコ三郎', short: '三郎', r: 15, mass: 1,   fr: 90, dmg: 1,   note: 'よく はねて 長く すべる',           color: '#c0398a', bounce: 1 },
-    tako4: { name: 'タコ四郎', short: '四郎', r: 15, mass: 0.9, fr: 150, dmg: 0.9, note: 'タップで 3びきに わかれる',         color: '#3f8f57', tap: 'split' },
+    tako4: { name: 'タコ四郎', short: '四郎', r: 15, mass: 0.9, fr: 150, dmg: 0.9, note: 'タップで スミ レーザー（まっすぐ こわして ふきとばす）', color: '#3f8f57', tap: 'laser' },
     tako5: { name: 'タコ五郎', short: '五郎', r: 15, mass: 1.1, fr: 150, dmg: 1.1, note: 'タップで イカへ まっしぐら',         color: '#2f6fb0', tap: 'dash' },
     tako6: { name: 'タコ六郎', short: '六郎', r: 16, mass: 1,   fr: 150, dmg: 1,   note: 'ぶつかって 1びょう後に 大ばくはつ',   color: '#b8860b', hit: 'bomb' },
     tako7: { name: 'タコ七郎', short: '七郎', r: 15, mass: 1,   fr: 150, dmg: 1,   note: 'スミで ブロックを もろく、イカを よわく', color: '#4b3f63', hit: 'ink' },
@@ -103,7 +107,7 @@
 
   // =========================================================
   //  図面（文字の 絵）→ ブロックと イカの 位置
-  //    9文字 × 13行。W 白・H かたい・R 赤・Q イカ・. と 空白は なにもない
+  //    13文字 × 8行。W 白・H かたい・R 赤・Q イカ・. と 空白は なにもない
   // =========================================================
   function parseBoard(rows, hide) {
     const blocks = [];
@@ -111,7 +115,7 @@
     const balls = [];
     let ika = { x: W / 2, y: 120 };
     (rows || []).forEach((row, r) => {
-      for (let c = 0; c < row.length && c < 9; c += 1) {
+      for (let c = 0; c < row.length && c < COLS; c += 1) {
         const ch = row[c];
         const x = c * CELL;
         const y = r * CELL;
@@ -313,7 +317,8 @@
       const o = opt || {};
       const size = o.size || 1;
       const t = {
-        id: nextId++, kind, x, y, vx, vy, r: T.r * size, m: T.mass * size * size, fr: T.fr, bounce: T.bounce ? 0.97 : 0.85,
+        // 小さい タコ（チカ）は まさつが 小さい：あとから ぶつけられると 長く すべって コンボに つながる
+        id: nextId++, kind, x, y, vx, vy, r: T.r * size, m: T.mass * size * size, fr: size < 1 ? T.fr * 0.4 : T.fr, bounce: T.bounce ? 0.97 : 0.85,
         power: o.power || 1, blast: o.blast || 0, combo: 0, hits: 0, rot: 0, spin: SPIN * (vx >= 0 ? 1 : -1),
         moving: true, tapped: !T.tap, fuse: -1, dead: false, trail: [], cool: {},
       };
@@ -445,6 +450,16 @@
           if (T.pierce && b.dead && before <= pw) { t.vx *= 0.8; t.vy *= 0.8; return 'pass'; }
           return null;
         });
+        // 四すみの 穴：タコ（玉も）も おちる
+        for (let i = 0; i < POCKETS.length; i += 1) {
+          const pk = POCKETS[i];
+          if (Math.hypot(t.x - pk.x, t.y - pk.y) < POCKET_TAKO) {
+            t.dead = true;
+            effects.push({ type: 'pop', x: pk.x + (pk.x ? -22 : 22), y: pk.y + (pk.y ? -22 : 22), t: 0, life: 0.4 });
+            popText(clamp(pk.x, 60, W - 60), pk.y ? pk.y - 40 : 46, (TAKOS[t.kind].short || '') + ' ポトン…', '#ffffff', 16);
+            return;
+          }
+        }
         applyFriction(t, t.fr, dt);
         t.spin = (speedOf(t) / 400) * SPIN * Math.sign(t.spin || 1) + 0.3 * Math.sign(t.spin || 1);
         if (speedOf(t) < STOP) { t.vx = 0; t.vy = 0; t.moving = false; t.combo = 0; }
@@ -640,6 +655,45 @@
       return true;
     }
 
+    /** タコ四郎の スミ レーザー：すすむ 向きに まっすぐ。線の 上の ブロックは（かたい ものも）こわし、
+     *  タコ・玉・イカは ふきとばす（イカには ダメージも）。あとは のこらず、四郎も 消える */
+    function inkLaser(t) {
+      const sp = speedOf(t) || 1;
+      const ux = t.vx / sp;
+      const uy = t.vy / sp;
+      // 台の ふちまでの 長さ
+      const tx = ux > 0 ? (W - t.x) / ux : ux < 0 ? -t.x / ux : Infinity;
+      const ty = uy > 0 ? (H - t.y) / uy : uy < 0 ? -t.y / uy : Infinity;
+      const len = Math.min(tx, ty);
+      const x2 = t.x + ux * len;
+      const y2 = t.y + uy * len;
+      const BW = 16;                                    // レーザーの 太さの 半分
+      const along = (px, py) => clamp((px - t.x) * ux + (py - t.y) * uy, 0, len);
+      const distTo = (px, py) => { const q = along(px, py); return Math.hypot(px - (t.x + ux * q), py - (t.y + uy * q)); };
+      blocks.forEach((b) => {
+        if (b.dead) return;
+        // ブロックの まんなかと 4すみの どこかが 線に かかれば こわす
+        const pts = [[b.x + b.w / 2, b.y + b.h / 2], [b.x, b.y], [b.x + b.w, b.y], [b.x, b.y + b.h], [b.x + b.w, b.y + b.h]];
+        if (pts.some((q) => distTo(q[0], q[1]) < BW + 2)) { b.flash = 0.12; breakBlock(b); }
+      });
+      const knock = (o) => {
+        if (distTo(o.x, o.y) > BW + o.r) return false;
+        const q = along(o.x, o.y);
+        const nx = o.x - (t.x + ux * q);
+        const ny = o.y - (t.y + uy * q);
+        const nd = Math.hypot(nx, ny) || 1;
+        o.vx = ux * 620 / Math.sqrt(o.m) + (nx / nd) * 160;
+        o.vy = uy * 620 / Math.sqrt(o.m) + (ny / nd) * 160;
+        return true;
+      };
+      takos.forEach((o) => { if (o !== t && !o.dead && knock(o)) { o.moving = true; o.combo = Math.max(o.combo, t.combo); } });
+      if (ika && !ika.dead && knock(ika)) hurtIka(Math.max(1, 1.2 * t.power) * (1 + 0.5 * t.combo), ika.x, ika.y, t.combo);
+      effects.push({ type: 'laser', x: t.x, y: t.y, x2, y2, w: BW * 2, t: 0, life: 0.45 });
+      effects.push({ type: 'pop', x: t.x, y: t.y, t: 0, life: 0.35 });
+      shake(8);
+      t.dead = true;
+    }
+
     function useTap() {
       let used = false;
       takos.slice().forEach((t) => {
@@ -647,16 +701,7 @@
         const T = TAKOS[t.kind];
         t.tapped = true;
         used = true;
-        if (T.tap === 'split') {
-          const sp = speedOf(t);
-          const ang = Math.atan2(t.vy, t.vx);
-          [-0.35, 0.35].forEach((da) => {
-            const c = spawnTako(t.kind, t.x, t.y, Math.cos(ang + da) * sp, Math.sin(ang + da) * sp, { power: t.power, blast: 0, size: t.r / T.r });
-            c.tapped = true;
-            c.combo = t.combo;
-          });
-          effects.push({ type: 'pop', x: t.x, y: t.y, t: 0, life: 0.35 });
-        }
+        if (T.tap === 'laser') inkLaser(t);
         if (T.tap === 'dash' && ika && !ika.dead) {
           const dx = ika.x - t.x;
           const dy = ika.y - t.y;
@@ -1086,6 +1131,16 @@
             ctx.lineTo(e.x + Math.cos(a) * R, e.y + Math.sin(a) * R);
           }
           ctx.stroke();
+        } else if (e.type === 'laser') {
+          ctx.save();
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = `rgba(40,30,60,${0.85 * (1 - k)})`;
+          ctx.lineWidth = e.w * (1 - 0.5 * k);
+          ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x2, e.y2); ctx.stroke();
+          ctx.strokeStyle = `rgba(185,169,217,${1 - k})`;
+          ctx.lineWidth = e.w * 0.3 * (1 - k);
+          ctx.stroke();
+          ctx.restore();
         } else if (e.type === 'pop') {
           ctx.strokeStyle = `rgba(255,255,255,${1 - k})`;
           ctx.lineWidth = 4;
@@ -1132,7 +1187,7 @@
       const moved = pull ? Math.hypot(pull.x, pull.y) : 0;
       if (moved < 14 && p.wy > LINE_Y && p.wx > 0 && p.wx < W) {   // 発射ゾーンを タップ：発射口を うごかす
         const r = TAKOS[takoKind].r * (THROWERS[thrower].size || 1);
-        launchX = clamp(p.wx, r + 4, W - r - 4);
+        launchX = clamp(p.wx, LAUNCH_MIN, W - LAUNCH_MIN);
         pull = null;
         effects.push({ type: 'pop', x: launchX, y: LAUNCH.y, t: 0, life: 0.3 });
         return;
@@ -1149,7 +1204,7 @@
       if (phase !== 'aim') return;
       const k = e.key;
       if (e.shiftKey && (k === 'ArrowLeft' || k === 'ArrowRight')) {   // Shift ＋ ← → で 発射口を うごかす
-        launchX = clamp(launchX + (k === 'ArrowLeft' ? -20 : 20), 20, W - 20);
+        launchX = clamp(launchX + (k === 'ArrowLeft' ? -20 : 20), LAUNCH_MIN, W - LAUNCH_MIN);
         e.preventDefault();
         return;
       }
@@ -1209,7 +1264,7 @@
         minBounces() {
           let best = 99;
           const r = TAKOS.tako1.r;
-          for (let lx = r + 4; lx <= W - r - 4; lx += 10) {
+          for (let lx = LAUNCH_MIN; lx <= W - LAUNCH_MIN; lx += 10) {
             for (let d = -179; d <= -1; d += 0.5) {
               const a = (d * Math.PI) / 180;
               const p = tracePath({ x: lx, y: LAUNCH.y }, Math.cos(a), Math.sin(a), 3000, r, MAX_SPEED);
@@ -1234,5 +1289,5 @@
     };
   }
 
-  window.TakoGame = { create, TAKOS, TAKO_ORDER, THROWERS, KINDS, ITEMS, parseBoard, W, H, CELL, LAUNCH, LINE_Y };
+  window.TakoGame = { create, TAKOS, TAKO_ORDER, THROWERS, KINDS, ITEMS, parseBoard, W, H, CELL, COLS, LAUNCH, LINE_Y };
 })();
