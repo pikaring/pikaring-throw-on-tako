@@ -715,13 +715,15 @@
       ctx.scale(scale, scale);
       ctx.translate(-camX, -worldTop());
 
-      // 遠くの 白い 壁（街を かこむ）
-      ctx.fillStyle = 'rgba(255,255,255,.55)';
+      // 遠くの 白い 壁（街を かこむ）。背景の 絵が ある ときは 絵に まかせて 描かない
       const x0 = Math.floor((camX - 80) / 68) * 68;
       const x1 = camX + viewW + 80;
-      ctx.fillRect(x0, GROUND - 250, x1 - x0, 250);
-      ctx.fillStyle = 'rgba(200,210,220,.5)';
-      for (let x = x0; x < x1; x += 68) ctx.fillRect(x, GROUND - 250, 2, 250);
+      if (!bg) {
+        ctx.fillStyle = 'rgba(255,255,255,.55)';
+        ctx.fillRect(x0, GROUND - 250, x1 - x0, 250);
+        ctx.fillStyle = 'rgba(200,210,220,.5)';
+        for (let x = x0; x < x1; x += 68) ctx.fillRect(x, GROUND - 250, 2, 250);
+      }
 
       // 地面
       ctx.fillStyle = '#8a6a44';
