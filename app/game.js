@@ -1129,7 +1129,8 @@
       // テスト用（node で 物理だけ まわす）
       _sim: {
         step: update,
-        physics(dt) { stepBlocks(dt); },                       // ブロックだけ まわす（置いた ままで 崩れないかの 確認）
+        physics(dt) { stepBlocks(dt); },
+        draw,                       // ブロックだけ まわす（置いた ままで 崩れないかの 確認）
         blocks: () => blocks,
         takos: () => takos,
         setPull: (p) => { pull = p; phase = 'aim'; },

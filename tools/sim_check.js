@@ -31,13 +31,13 @@ for (const f of ['app/stages.js', 'app/game.js']) {
 }
 const { TakoGame, STAGES } = sandbox;
 
-function makeCanvas() {
+function makeCanvas(w, h) {
   const ctx = new Proxy({}, { get: () => noop, set: () => true });
   return {
     getContext: () => ctx,
     addEventListener: noop,
     setPointerCapture: noop,
-    getBoundingClientRect: () => ({ left: 0, top: 0, width: 1200, height: 700 }),
+    getBoundingClientRect: () => ({ left: 0, top: 0, width: w || 1200, height: h || 700 }),
   };
 }
 
@@ -46,6 +46,24 @@ function newGame(lv) {
   g.load(lv, { boss: 'ika1' });
   g._sim.setPhase('aim');
   return g;
+}
+
+// ---------- 描画が 例外なく とおるか（たて長・よこ長・ふつう） ----------
+function drawCheck(lv) {
+  for (const [w, h] of [[390, 560], [1920, 760], [1000, 620]]) {
+    const g = TakoGame.create(makeCanvas(w, h), {});
+    g.load(lv, { boss: 'ika1' });
+    g.resize();
+    g._sim.draw();
+    g._sim.setPhase('aim');
+    g._sim.setPull({ x: -80, y: 60 });
+    g._sim.draw();
+    g.setTako('tako4');
+    g.setThrower('chika');
+    g._sim.setPull({ x: -100, y: 60 });
+    g._sim.throwNow();
+    for (let i = 0; i < 90; i += 1) { g._sim.step(1 / 60); if (i === 40) g._sim.tap(); g._sim.draw(); }
+  }
 }
 
 // ---------- (a) 静止 ----------
@@ -122,6 +140,7 @@ function solve(lv) {
   let turn = 0;
   const log = [];
   let maxT = 0;
+  const typical = { sum: 0, n: 0 };   // 1投め：なにか こわれた 投げの 平均（ふつうの 人の 1投の めやす）
   while (g.stats().ratio < lv.goal && Object.values(left).some((n) => n > 0)) {
     const thrower = lv.throwers[turn % lv.throwers.length];
     turn += 1;
@@ -132,6 +151,7 @@ function solve(lv) {
       const r = runThrow(g, c);
       maxT = Math.max(maxT, r.t);
       const s = g.stats();
+      if (turn === 1 && s.broken > 0) { typical.sum += s.broken / total; typical.n += 1; }
       // 同じ こわれ方なら ふるい タコ（かんたんな 方）を 優先。わずかに 強さの 弱い 方も 優先
       const score = s.broken - TakoGame.TAKO_ORDER.indexOf(c.tako) * 0.01;
       if (!best || score > best.score) best = { score, c, broken: s.broken };
@@ -143,7 +163,7 @@ function solve(lv) {
     log.push(`${best.c.thrower}:${TakoGame.TAKOS[best.c.tako].short}@${best.c.angle}/${best.c.power}${best.c.tapX != null ? '/tap' + Math.round(best.c.tapX) : ''}→${g.stats().broken}`);
   }
   const s = g.stats();
-  return { ok: s.ratio >= lv.goal, used, ratio: s.ratio, total, log, maxT };
+  return { ok: s.ratio >= lv.goal, used, ratio: s.ratio, total, log, maxT, typical: typical.n ? typical.sum / typical.n : 0 };
 }
 
 // ---------- 実行 ----------
@@ -151,17 +171,18 @@ const pick = process.argv.slice(2).map(Number).filter(Boolean);
 const list = pick.length ? STAGES.filter((lv) => pick.includes(lv.no)) : STAGES;
 const verbose = process.argv.includes('-v') || pick.length > 0;
 
-console.log('| No | 名前 | ブロック | goal | 静止 | クリア | 使った タコ | こわした わりあい | 時間 |');
-console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+console.log('| No | 名前 | ブロック | goal | 静止 | クリア | 使った タコ | こわした わりあい | ふつうの 1投 | 計算 |');
+console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
 let allOk = true;
 for (const lv of list) {
   const t0 = Date.now();
+  drawCheck(lv);
   const bad = staticCheck(lv);
   const r = solve(lv);
   const n = Object.values(lv.takos).reduce((a, b) => a + b, 0);
   const ok = !bad.length && r.ok;
   if (!ok) allOk = false;
-  console.log(`| ${lv.no} | ${lv.name} | ${r.total} | ${lv.goal} | ${bad.length ? 'NG ' + bad.slice(0, 4).join(' ') : 'OK'} | ${r.ok ? 'OK' : 'NG'} | ${r.used} / ${n} | ${Math.round(r.ratio * 100)}% | ${((Date.now() - t0) / 1000).toFixed(1)}s |`);
+  console.log(`| ${lv.no} | ${lv.name} | ${r.total} | ${lv.goal} | ${bad.length ? 'NG ' + bad.slice(0, 4).join(' ') : 'OK'} | ${r.ok ? 'OK' : 'NG'} | ${r.used} / ${n} | ${Math.round(r.ratio * 100)}% | ${Math.round(r.typical * 100)}% | ${((Date.now() - t0) / 1000).toFixed(1)}s |`);
   if (verbose) console.log('   ' + r.log.join('  ') + `  (1投の 最長 ${r.maxT.toFixed(1)}秒)`);
 }
 process.exit(allOk ? 0 : 1);
