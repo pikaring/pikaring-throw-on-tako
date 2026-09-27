@@ -10,7 +10,7 @@
  *   - タコは 台の ふちや ブロックで はねかえり、止まると 場に のこる
  *   - 場の タコに ぶつけると コンボ。コンボの ついた タコが イカに あたると ダメージ アップ
  *   - イカの 体力を 0 に するか、四すみの 穴に おとせば 勝ち
- *   - ブロック：W 白（2回で こわれる）、H かたい（こわれない）、R 赤（あたると 爆発）
+ *   - ブロック：W 白（2回で こわれる）、H かたい（ふつうの タコでは こわれない。二郎・マキの 爆発・ばくはつで こわれる）、R 赤（あたると 爆発）
  */
 (() => {
   'use strict';
@@ -34,7 +34,7 @@
   // tap：うごいて いる あいだに タップした ときの わざ、hit：はじめて ぶつかった ときの わざ
   const TAKOS = {
     tako1: { name: 'タコ一郎', short: '一郎', r: 15, mass: 1,   fr: 300, dmg: 1,   note: 'ふつうの タコ',                     color: '#e0533d' },
-    tako2: { name: 'タコ二郎', short: '二郎', r: 16, mass: 2,   fr: 320, dmg: 1.3, note: 'おもくて 白い ブロックを つきぬける', color: '#d9731f', pierce: true },
+    tako2: { name: 'タコ二郎', short: '二郎', r: 16, mass: 2,   fr: 320, dmg: 1.3, note: 'おもくて つきぬける。かたい ブロックも こわせる', color: '#d9731f', pierce: true },
     tako3: { name: 'タコ三郎', short: '三郎', r: 15, mass: 1,   fr: 150, dmg: 1,   note: 'よく はねて 長く すべる',           color: '#c0398a', bounce: 1 },
     tako4: { name: 'タコ四郎', short: '四郎', r: 15, mass: 0.9, fr: 300, dmg: 0.9, note: 'タップで 3びきに わかれる',         color: '#3f8f57', tap: 'split' },
     tako5: { name: 'タコ五郎', short: '五郎', r: 15, mass: 1.1, fr: 300, dmg: 1.1, note: 'タップで イカへ まっしぐら',         color: '#2f6fb0', tap: 'dash' },
@@ -48,7 +48,7 @@
   // power：ダメージの 倍率、wobble：ねらいの ぶれ（ラジアン）、guide：予測線の 長さ、
   // blast：はじめて ぶつかった ときの 爆発の 半径、count／size：いっぺんに 投げる かずと 大きさ
   const THROWERS = {
-    nao:   { name: 'ナオ', power: 0.8, wobble: 0.004, guide: 900, note: 'ねらい ◎ ／ 力 △',  color: '#27407a' },
+    nao:   { name: 'ナオ', power: 0.8, wobble: 0.004, guide: 1800, note: 'ねらい ◎ ／ 力 △',  color: '#27407a' },
     fumi:  { name: 'フミ', power: 1.6, wobble: 0.09,  guide: 110, note: 'ねらい △ ／ 力 ◎',  color: '#d9731f' },
     maki:  { name: 'マキ', power: 1.1, wobble: 0.025, guide: 380, note: 'あたると ばくはつ', color: '#1f7a3d', blast: 60 },
     chika: { name: 'チカ', power: 0.6, wobble: 0.03,  guide: 380, note: 'ちいさく 3びき',    color: '#b0457a', count: 3, size: 0.72 },
@@ -57,7 +57,7 @@
   // ---------- ブロック ----------
   const KINDS = {
     W: { hp: 2,  fill: '#fbfbf8', side: '#c9d3dc', edge: '#8fa0b3' },   // 白
-    H: { hp: 99, fill: '#dfe7ee', side: '#9fb0c0', edge: '#6d8093' },   // かたい
+    H: { hp: 4,  fill: '#dfe7ee', side: '#9fb0c0', edge: '#6d8093' },   // かたい（ふつうに あてても こわれない。二郎・マキの 爆発・ばくはつで こわれる）
     R: { hp: 1,  fill: '#e0533d', side: '#a33b2c', edge: '#7a2519' },   // 赤（爆発）
   };
 
@@ -253,10 +253,11 @@
       if (b.kind === 'R') pending.push({ t: 0.1, fn: () => explode(cx, cy, 85, 2, 'red') });
     }
 
-    function hitBlock(b, power) {
+    /** strong：かたい ブロックも けずれる あたり（二郎・爆発） */
+    function hitBlock(b, power, strong) {
       if (b.dead) return;
       b.flash = 0.12;
-      if (b.kind === 'H') return;
+      if (b.kind === 'H' && !strong) return;
       b.hp -= power;
       if (b.hp <= 0.001) breakBlock(b);
     }
@@ -270,8 +271,7 @@
         const px = clamp(x, b.x, b.x + b.w);
         const py = clamp(y, b.y, b.y + b.h);
         if (Math.hypot(px - x, py - y) > R) return;
-        if (b.kind === 'H') return;   // かたい ブロックは 爆発でも こわれない（七郎の スミで もろく できる）
-        hitBlock(b, look === 'maki' ? 1 : 2);
+        hitBlock(b, look === 'maki' ? 1 : 2, true);   // 爆発は かたい ブロックも けずる
       });
       const push = (o) => {
         const dx = o.x - x;
@@ -447,8 +447,8 @@
           if (vn < 40) return null;
           const pw = T.pierce ? 2 : 1;
           const before = b.hp;
-          hitBlock(b, pw);
-          if (T.pierce && b.dead && b.kind !== 'H' && before <= pw) { t.vx *= 0.8; t.vy *= 0.8; return 'pass'; }
+          hitBlock(b, pw, !!T.pierce);                   // 二郎は かたい ブロックも けずる
+          if (T.pierce && b.dead && before <= pw) { t.vx *= 0.8; t.vy *= 0.8; return 'pass'; }
           return null;
         });
         applyFriction(t, t.fr, dt);
@@ -713,7 +713,7 @@
           for (let k = 6; k < b.w + b.h; k += 10) { ctx.moveTo(b.x + Math.max(0, k - b.h), b.y + Math.min(k, b.h - 2)); ctx.lineTo(b.x + Math.min(k, b.w), b.y + Math.max(0, k - b.w)); }
           ctx.stroke();
         }
-        if (b.kind === 'W' && b.hp <= 1) {
+        if ((b.kind === 'W' && b.hp <= 1) || (b.kind === 'H' && b.hp < KINDS.H.hp)) {
           ctx.strokeStyle = 'rgba(80,90,100,.6)';
           ctx.lineWidth = 2;
           ctx.beginPath();
