@@ -1,6 +1,6 @@
 /* 街と、その白い壁 ―― 物理と 描画（ライブラリなし）。window.TakoGame を つくる。
  *
- *   const g = TakoGame.create(canvas, { onStats, onTurnEnd, onMessage });
+ *   const g = TakoGame.create(canvas, { onStats, onThrow, onTurnEnd });
  *   g.load(level, { bg, boss, bossName })   城を 組む（level は stages.js の 1つ）
  *   g.setTako('tako1') / g.setThrower('nao')  つぎに 投げる タコと 投げる 人
  *   g.start()                                 描画ループ（load の あと 1回）
@@ -19,7 +19,8 @@
   const GROUND = 600;          // 地面の 高さ（y は 下むきが ＋）
   const WORLD_W = 1500;
   const VIEW_H = 660;          // これだけの 高さが かならず 画面に 入る
-  const VIEW_MIN_W = 820;      // たて長の 画面でも これだけの 幅は 見せる
+  const VIEW_MIN_W = 640;      // たて長の 画面でも これだけの 幅は 見せる（城は ねらう あいだ 右上の 小窓に 出す）
+  const VIEW_MIN_H = 560;      // よこ長で 拡大しても これだけの 高さは 見せる（城の てっぺんと イカが 入る）
   const CASTLE_X = 930;        // 城の 左はし（城の 幅に あわせて ずらす）
   const ANCHOR = { x: 205, y: 468 };   // タコを かまえる 位置
   const GRAV = 900;
@@ -158,11 +159,15 @@
       canvas.height = Math.round(cssH * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       scale = Math.min(cssH / VIEW_H, cssW / VIEW_MIN_W);
+      // よこ長で 世界より 広く 見えて しまう ときは 拡大して 世界の 幅に 収める（高さは VIEW_MIN_H まで）
+      if (cssW / scale > WORLD_W) scale = Math.min(cssW / WORLD_W, cssH / VIEW_MIN_H);
       viewW = cssW / scale;
       viewH = cssH / scale;
-      camX = clamp(camX, 0, maxCam());
+      camX = clamp(camX, minCam(), maxCam());
     }
-    const maxCam = () => Math.max(0, WORLD_W - viewW);
+    // 見える 幅が 世界より 広い ときは まん中に 置く（外がわも 地面・壁を 描く）
+    const minCam = () => Math.min(0, (WORLD_W - viewW) / 2);
+    const maxCam = () => Math.max(minCam(), WORLD_W - viewW);
     const worldTop = () => GROUND + 50 - viewH;      // 画面の いちばん上の ワールド y
     const toWorld = (sx, sy) => ({ x: sx / scale + camX, y: sy / scale + worldTop() });
 
@@ -187,7 +192,7 @@
       pull = null;
       phase = 'intro';
       introT = reduceMotion() ? 0.01 : 2.2;
-      camX = 0;
+      camX = minCam();
       camTarget = maxCam();
       follow = true;
       emitStats();
@@ -600,8 +605,8 @@
     function update(dt) {
       if (phase === 'intro') {
         introT -= dt;
-        camTarget = introT > 0.9 ? maxCam() : 0;
-        if (introT <= 0) { phase = 'aim'; camTarget = 0; emitStats(); }
+        camTarget = introT > 0.9 ? maxCam() : minCam();
+        if (introT <= 0) { phase = 'aim'; camTarget = minCam(); emitStats(); }
       }
       if (phase === 'fly' || phase === 'settle') {
         let acc = dt;
@@ -623,7 +628,7 @@
             blocks.forEach((b) => { b.awake = false; b.vx = 0; b.vy = 0; b.tip = 0; });
             topoDirty = true;
             phase = 'aim';
-            camTarget = 0;
+            camTarget = minCam();
             follow = true;
             emitStats();
             if (H.onTurnEnd) H.onTurnEnd({ broken, total, ratio: total ? broken / total : 0 });
@@ -631,7 +636,7 @@
         }
         if (follow && takos.length) {
           const lead = takos.reduce((m, t) => (t.x > m.x ? t : m), takos[0]);
-          camTarget = clamp(lead.x - viewW * 0.45, 0, maxCam());
+          camTarget = clamp(lead.x - viewW * 0.45, minCam(), maxCam());
         }
       } else {
         // 止まって いても ブロックは ひと息 だけ うごかさない（ねむって いる）
@@ -639,7 +644,7 @@
       stepBoss(dt);
       stepEffects(dt);
       if (!pointer || pointer.mode !== 'pan') camX += (camTarget - camX) * Math.min(1, dt * (phase === 'intro' ? 2.4 : 4));
-      camX = clamp(camX, 0, maxCam());
+      camX = clamp(camX, minCam(), maxCam());
       shakeAmt *= Math.pow(0.02, dt);
       if (shakeAmt < 0.3) shakeAmt = 0;
     }
@@ -683,7 +688,7 @@
         const s = Math.max(W / bg.width, Hh / bg.height);
         const iw = bg.width * s;
         const ih = bg.height * s;
-        const par = maxCam() ? camX / maxCam() : 0;           // すこしだけ 横に ずらす（奥行き）
+        const par = maxCam() > minCam() ? (camX - minCam()) / (maxCam() - minCam()) : 0;           // すこしだけ 横に ずらす（奥行き）
         ctx.globalAlpha = 0.55;
         ctx.drawImage(bg, (W - iw) / 2 - (par - 0.5) * Math.min(40, (iw - W) / 2 + 0), (Hh - ih) / 2, iw, ih);
         ctx.globalAlpha = 1;
@@ -695,15 +700,17 @@
 
       // 遠くの 白い 壁（街を かこむ）
       ctx.fillStyle = 'rgba(255,255,255,.55)';
-      ctx.fillRect(-100, GROUND - 250, WORLD_W + 200, 250);
+      const x0 = Math.floor((camX - 80) / 68) * 68;
+      const x1 = camX + viewW + 80;
+      ctx.fillRect(x0, GROUND - 250, x1 - x0, 250);
       ctx.fillStyle = 'rgba(200,210,220,.5)';
-      for (let x = -100; x < WORLD_W + 100; x += 68) ctx.fillRect(x, GROUND - 250, 2, 250);
+      for (let x = x0; x < x1; x += 68) ctx.fillRect(x, GROUND - 250, 2, 250);
 
       // 地面
       ctx.fillStyle = '#8a6a44';
-      ctx.fillRect(-200, GROUND, WORLD_W + 400, 400);
+      ctx.fillRect(x0, GROUND, x1 - x0, 400);
       ctx.fillStyle = '#6f9e57';
-      ctx.fillRect(-200, GROUND, WORLD_W + 400, 10);
+      ctx.fillRect(x0, GROUND, x1 - x0, 10);
 
       drawThrower();
       drawBlocks();
@@ -713,6 +720,8 @@
       drawEffects('over');
       if (phase === 'aim') drawAim();
       ctx.restore();
+
+      if (phase === 'aim') drawInset();
 
       // 画面の 上へ 出た タコの しるし
       takos.forEach((t) => {
@@ -727,6 +736,52 @@
         ctx.closePath();
         ctx.fill();
       });
+    }
+
+    /** ねらって いる あいだ 城が 画面の 外なら、右上に 小窓で 城を 見せる（たて長の スマホ むけ） */
+    function drawInset() {
+      let lo = Infinity;
+      let hi = -Infinity;
+      let top = GROUND;
+      blocks.forEach((b) => {
+        if (b.dead) return;
+        lo = Math.min(lo, b.x); hi = Math.max(hi, b.x + b.w); top = Math.min(top, b.y);
+      });
+      if (lo === Infinity || lo < camX + viewW - 40) return;      // 城が もう 見えて いる
+      const wx = lo - 50;
+      const wy = top - (boss ? 90 : 30);
+      const ww = hi - lo + 100;
+      const wh = GROUND + 16 - wy;
+      const boxW = Math.min(cssW * 0.42, 240);
+      const k = Math.min(boxW / ww, (cssH * 0.4) / wh);
+      const bw = ww * k;
+      const bh = wh * k;
+      const bx = cssW - bw - 8;
+      const by = 8;
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,.35)';
+      ctx.fillRect(bx - 3, by - 3, bw + 6, bh + 6);
+      ctx.beginPath(); ctx.rect(bx, by, bw, bh); ctx.clip();
+      ctx.fillStyle = stage.bgColor || '#a8d4e6';
+      ctx.fillRect(bx, by, bw, bh);
+      ctx.translate(bx, by);
+      ctx.scale(k, k);
+      ctx.translate(-wx, -wy);
+      ctx.fillStyle = '#8a6a44';
+      ctx.fillRect(wx, GROUND, ww, 40);
+      blocks.forEach((b) => {
+        if (b.dead) return;
+        ctx.fillStyle = KINDS[b.kind].fill;
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+        ctx.strokeStyle = KINDS[b.kind].edge;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(b.x + 1.5, b.y + 1.5, b.w - 3, b.h - 3);
+      });
+      drawBoss();
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(40,40,40,.5)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(bx - 1, by - 1, bw + 2, bh + 2);
     }
 
     function drawBlocks() {
@@ -982,7 +1037,7 @@
       } else if (phase === 'aim' && Math.hypot(w.x - ANCHOR.x, w.y - ANCHOR.y) < 95) {
         pointer = { id: e.pointerId, mode: 'aim', sx: w.x, sy: w.y };
         pull = { x: 0, y: 0 };
-        camTarget = 0;
+        camTarget = minCam();
       } else {
         pointer = { id: e.pointerId, mode: 'pan', lastX: sx };
       }
@@ -1002,7 +1057,7 @@
         if (len > MAX_PULL) { px *= MAX_PULL / len; py *= MAX_PULL / len; }
         pull = { x: px, y: py };
       } else if (pointer.mode === 'pan') {
-        camX = clamp(camX - (sx - pointer.lastX) / scale, 0, maxCam());
+        camX = clamp(camX - (sx - pointer.lastX) / scale, minCam(), maxCam());
         camTarget = camX;
         pointer.lastX = sx;
       }
