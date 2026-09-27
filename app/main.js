@@ -266,8 +266,36 @@
       b.addEventListener('click', () => pickTako(k));
       trayList.appendChild(b);
     });
+    // 6しゅるい 以上は 1れつの よこスライドに する（おりかえさない）
+    trayList.classList.toggle('tray__list--scroll', keys.length >= 6);
+    trayList.scrollLeft = 0;
     refreshTray();
   }
+
+  /** スライドの とき：えらんだ タコを 見える 所へ、右に つづきが ある ときは はしを ぼかす */
+  function syncTrayScroll() {
+    if (!trayList.classList.contains('tray__list--scroll')) return;
+    const on = trayList.querySelector('.tako.is-on');
+    if (on) {
+      const l = on.offsetLeft - trayList.offsetLeft;
+      if (l < trayList.scrollLeft) trayList.scrollLeft = l - 8;
+      else if (l + on.offsetWidth > trayList.scrollLeft + trayList.clientWidth) trayList.scrollLeft = l + on.offsetWidth - trayList.clientWidth + 8;
+    }
+    markTrayEnds();
+  }
+  function markTrayEnds() {
+    const max = trayList.scrollWidth - trayList.clientWidth;
+    trayList.classList.toggle('is-more-right', trayList.scrollLeft < max - 4);
+    trayList.classList.toggle('is-more-left', trayList.scrollLeft > 4);
+  }
+  trayList.addEventListener('scroll', markTrayEnds, { passive: true });
+  // PC の マウス：たての ホイールで よこへ スライド
+  trayList.addEventListener('wheel', (e) => {
+    if (!trayList.classList.contains('tray__list--scroll') || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    trayList.scrollLeft += e.deltaY;
+    e.preventDefault();
+  }, { passive: false });
+  window.addEventListener('resize', syncTrayScroll);
 
   function refreshTray() {
     Array.from(trayList.children).forEach((b) => {
@@ -283,6 +311,7 @@
     });
     const t = TAKOS[takoKey];
     trayNote.textContent = t ? t.name + '：' + (t.note || '') : '';
+    syncTrayScroll();
   }
 
   function pickTako(k) {

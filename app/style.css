@@ -685,6 +685,29 @@ button { font-family: inherit; }
   .tako__name { font-size: 10px; }
 }
 
+/* タコが 6しゅるい 以上：1れつの よこスライド（どの 画面でも。上の 画面ごとの 指定より つよく する） */
+.tray__list.tray__list--scroll {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 8px 6px 2px;        /* 右上の かずの まるが 切れない ように */
+  margin: -4px 0 0;
+  scroll-snap-type: x proximity;
+  scroll-padding: 0 8px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.tray__list--scroll .tako {
+  flex: 0 0 clamp(62px, 17vw, 80px);
+  scroll-snap-align: start;
+}
+/* つづきが ある 側を うすく ぼかす（スライドできる しるし） */
+.tray__list--scroll.is-more-right { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); }
+.tray__list--scroll.is-more-left { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 36px), transparent); }
+.tray__list--scroll.is-more-left.is-more-right { -webkit-mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
+
 /* アニメーションが にがてな ひとの ために */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
