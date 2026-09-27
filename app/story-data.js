@@ -84,15 +84,20 @@
 
       // ───── 1面 通学路：タコで 壁が くずれる ─────
       stage1: [
-        { bg: 'road', left: 'nao', right: 'fumi', text: 'つぎの あさ。\n通学路の 先に、白い 壁が\nそびえて いる。' },
+        { bg: 'wall', left: 'nao', right: 'fumi', text: 'ふたりは そのまま、\n白い 壁の 下まで\nかけよった。' },
         { who: 'fumi', face: 'normal', text: 'かったー！\nけっても おしても\nびくとも しない。' },
         { who: 'nao', face: 'serious', text: '石でも コンクリートでも\nない ですね。\nすこし… ぷにぷに します。' },
-        { right: 'maki', who: 'maki', face: 'normal', text: 'ふたりとも、見て。\nさっき ためしに\nこれを 投げて みたの。' },
-        { right: 'tako1', who: 'tako1', face: 'normal', text: 'ぼくタコ！\n壁に ぶつかったら、\nぽろっと くずれたタコ！' },
-        { right: 'maki', who: 'maki', face: 'happy', text: 'この 壁、タコに よわい みたい。\nソフト部 エースの 肩で、\nどんどん 投げるよ！' },
+        { text: 'ボン！ ボン！ ボン！\nとなりで、だれかが 壁に\nボールを ぶつけて いる。' },
+        { right: 'maki', who: 'maki', face: 'serious', text: 'もう！ 朝練に\n間に合わない じゃん！\nどいてよ、この 壁！' },
+        { who: 'fumi', face: 'surprised', text: 'マキ！？\nとなりの クラスの\nソフト部 エースの？' },
+        { who: 'maki', text: 'ボール、あと 1こ…\nよし、これで！\nえいっ！' },
+        { right: 'tako1', who: 'tako1', face: 'down', text: 'タ、タコ〜〜〜！？\nそれ ボールじゃ\nないタコ〜！' },
+        { text: 'べちゃっ。\n…ガラガラガラ！\n白い 壁が くずれ落ちた。' },
+        { left: 'nao', right: 'maki', who: 'maki', face: 'surprised', text: 'え… ボールじゃ\nびくとも しなかったのに、\nタコで くずれた！？' },
+        { who: 'nao', face: 'serious', text: 'この 壁、\nタコに よわいの かも\nしれません。' },
+        { right: 'tako1', who: 'tako1', face: 'normal', text: 'い、いたくは ないタコ。\nやわらかいから へいきタコ。\nもっと 投げて いいタコ！' },
         { right: 'ika1', who: 'ika1', face: 'normal', text: 'ちょっと まったイカ！\nこの 壁は イカ子が\nまもって いるイカ！' },
-        { right: 'maki', who: 'maki', face: 'serious', text: 'ひっぱって、はなす。\n角度と 強さを 決めて、\n白い ブロックを ねらって！' },
-        { who: 'nao', face: 'serious', text: '赤い ブロックは\nあやしいですね。\nあてて みましょう。' },
+        { right: 'maki', who: 'maki', face: 'happy', text: 'じゃあ、あの イカに\nタコを ぶつければ いいんだね。\nソフト部 エースに まかせて！' },
       ],
 
       clear1: [
