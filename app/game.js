@@ -907,7 +907,7 @@
     function drawIka() {
       if (!ika) return;
       const k = ika.pocket ? 1 - ika.fall : 1;
-      if (k <= 0.02) return;
+      if (k <= 0.08) return;                        // 穴に すいこまれて 小さく なったら 描かない
       const r = ika.r * k;
       ctx.save();
       ctx.translate(ika.x, ika.y);
@@ -923,7 +923,7 @@
       if (im) {
         const s = r * 2.5;
         ctx.save();
-        ctx.beginPath(); ctx.arc(0, 0, r - 1.5, 0, Math.PI * 2); ctx.clip();
+        ctx.beginPath(); ctx.arc(0, 0, Math.max(0.5, r - 1.5), 0, Math.PI * 2); ctx.clip();   // 半径が マイナスだと ブラウザが エラーで 止まる
         ctx.drawImage(im, -s / 2, -s * 0.36, s, s);
         ctx.restore();
         if (hk > 0) {                                     // 白く 光る
@@ -1182,8 +1182,9 @@
       if (!running) return;
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
       last = now;
-      if (!paused) update(dt);
-      draw();
+      // どちらかで エラーが 出ても、つぎの コマは かならず 予約する（ゲームが 止まらない ように）
+      try { if (!paused) update(dt); } catch (e) { console.error(e); }
+      try { draw(); } catch (e) { console.error(e); ctx.setTransform(1, 0, 0, 1, 0, 0); }
       requestAnimationFrame(frame);
     }
     function start() {
