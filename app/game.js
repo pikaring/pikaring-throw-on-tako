@@ -107,7 +107,7 @@
         blocks.push({
           kind: ch, x: x0 + c * CELL, y: top + r * CELL, w: cw * CELL, h: chh * CELL,
           hp: k.hp, maxHp: k.hp, vx: 0, vy: 0, awake: false, still: 0, tip: 0, rot: 0,
-          base: r + chh === h, dead: false, inked: false, flash: 0,
+          base: r + chh === h, dead: false, inked: false, flash: 0, jam: 0, jammed: false, sup: true,
         });
       }
     }
@@ -125,7 +125,8 @@
     let pending = [];     // { t, fn } 時間差の できごと（赤い ブロックの 連鎖 など）
     let total = 0;
     let broken = 0;
-    let topoDirty = true;  // ブロックが 消えた／うごいた → 支えを しらべなおす
+    let topoDirty = true;
+    let supTick = 0;  // ブロックが 消えた／うごいた → 支えを しらべなおす
     let level = null;
     let stage = { bg: '', bgColor: '#a8d4e6', boss: '', bossName: '' };
     let boss = null;      // { perch, x, y, vy, down }
@@ -308,12 +309,16 @@
       let anyAwake = false;
       for (let i = 0; i < blocks.length && !anyAwake; i += 1) if (!blocks[i].dead && blocks[i].awake) anyAwake = true;
       if (anyAwake || topoDirty) {
+        // ねむって いる ブロックは 4ステップに 1回（1/30秒）だけ しらべる。起きて いる ものは 毎回
+        supTick = (supTick + 1) % 4;
+        const all = topoDirty || supTick === 0;
         topoDirty = false;
         for (let i = 0; i < blocks.length; i += 1) {
           const b = blocks[i];
-          if (b.dead) continue;
+          if (b.dead || (!b.awake && !all)) continue;
           const sp = support(b);
           const cx = b.x + b.w / 2;
+          b.sup = !!sp;
           if (!sp) { if (!b.awake) wake(b); b.tip = 0; continue; }
           let tip = 0;
           if (cx < sp.lo - 1) tip = -1; else if (cx > sp.hi + 1) tip = 1;
@@ -343,6 +348,7 @@
             const b = blocks[j];
             if (b.dead) continue;
             if (b.awake && j < i) continue;   // 起きて いる 同士は 1回だけ
+            if (b.x >= a.x + a.w || a.x >= b.x + b.w || b.y >= a.y + a.h || a.y >= b.y + b.h) continue;   // はなれて いる
             collideBlocks(a, b);
             if (a.dead) break;
           }
@@ -361,8 +367,8 @@
         if (b.x > WORLD_W + 60 || b.x + b.w < -60) { destroy(b, 'out'); continue; }
         const speed = Math.abs(b.vx) + Math.abs(b.vy);
         // すべり落ちる はずが なにかに つっかえて 動けない → 「つっかえ」として ねむる（まわりが こわれたら また しらべる）
-        if (b.tip && speed < 14) { b.jam = (b.jam || 0) + dt; if (b.jam > 0.8) { b.jammed = true; b.tip = 0; } } else b.jam = 0;
-        if (speed < 14 && !b.tip && support(b)) {
+        if (b.tip && speed < 14) { b.jam += dt; if (b.jam > 0.8) { b.jammed = true; b.tip = 0; } } else b.jam = 0;
+        if (speed < 14 && !b.tip && b.sup) {
           b.still += dt;
           if (b.still > 0.2) { b.awake = false; b.vx = 0; b.vy = 0; b.still = 0; }
         } else b.still = 0;

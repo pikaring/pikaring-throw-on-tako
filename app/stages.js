@@ -174,6 +174,7 @@
         ' WWW WWW  WWW ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 3 }, throwers: T4,
+      hint: 'はしらの 赤を ねらうと 屋根が おちる',
     },
 
     // ===== 5面 河川敷（タコ五郎） =====
@@ -219,6 +220,7 @@
         '  WWWWWWWW  ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 2 }, throwers: T4,
+      hint: 'えんとつの 中へ 五郎を まっすぐ',
     },
 
     // ===== 6面 工場跡（タコ六郎） =====
@@ -247,6 +249,7 @@
         ' | W W W W| ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 2 }, throwers: T4,
+      hint: 'かたい 屋根は 六郎の ばくはつで',
     },
     {
       no: 18, stage: 6, name: '6-3', goal: 0.75,
@@ -262,6 +265,7 @@
         ' |  |  |  | | ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 2 }, throwers: T4,
+      hint: 'まん中の 赤い ふたつが カギ',
     },
 
     // ===== 7面 トンネル（タコ七郎） =====
@@ -292,6 +296,7 @@
         ' |  |   |   | ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 1, tako7: 1 }, throwers: T4,
+      hint: 'スミを かけてから 二郎で つきぬけ',
     },
     {
       no: 21, stage: 7, name: '7-3', goal: 0.8,
@@ -308,6 +313,7 @@
         ' |  |  |  |  ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 1, tako7: 1 }, throwers: T4,
+      hint: 'かたい ピラミッド。スミで もろく',
     },
 
     // ===== 8面 イカ女王の 城（タコ大王） =====
@@ -344,9 +350,10 @@
         'WWWWWWWWWWWWW ',
       ],
       takos: { tako1: 1, tako2: 1, tako3: 1, tako4: 1, tako5: 1, tako6: 1, tako7: 1, daiou: 1 }, throwers: T4,
+      hint: 'じょうぶな 土台。上から くずそう',
     },
     {
-      no: 24, stage: 8, name: '8-3', goal: 0.8,
+      no: 24, stage: 8, name: '8-3', goal: 0.85,
       rows: [
         '       R       ',
         '      H--      ',
