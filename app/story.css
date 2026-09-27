@@ -1,0 +1,471 @@
+/* タイトル画面と ストーリー画面の 見た目（担当②）
+   ・この ファイルは style.css より 先に 読まれる。:root の 変数（--c-header など）は style.css の ものを つかう
+   ・クラスは ぜんぶ story- で はじめる（ゲームの クラスと ぶつけない）
+   ・DOM は story.js が つくる */
+
+/* =========================================================
+   タイトル画面
+   ========================================================= */
+.story-title {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #173a52;           /* 横長の 画面で 絵の 左右に 見える 色 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: max(8dvh, 24px) 16px max(6dvh, 20px);
+  overflow: hidden;
+  color: #ffffff;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-weight: 700;
+  animation: story-fade .35s ease both;
+}
+
+.story-title__bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: min(100%, 66.7dvh);   /* 絵は たて長（2:3）。横長の 画面では まんなかに たて長の まま 出す */
+  transform: translateX(-50%);
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 画像が ない ときの もよう（しずかな ひかり） */
+.story-title:not(.has-image) .story-title__bg {
+  background-image:
+    radial-gradient(circle at 50% 28%, rgba(255, 227, 110, .28) 0%, rgba(255, 227, 110, 0) 55%),
+    radial-gradient(circle at 50% 110%, rgba(0, 0, 0, .35) 0%, rgba(0, 0, 0, 0) 60%);
+}
+
+.story-title__head {
+  text-align: center;
+  max-width: 100%;
+}
+
+/* タイトルの 絵が ある ときは、ロゴを 絵の「ロゴの 帯」（上から 25〜38%）の まんなかへ 下げる。
+   絵は 画面の 高さいっぱいに 出るので、高さの わりあい（dvh）で あわせられる。ロゴの 高さは はばの 約 0.52 */
+.story-title.has-image .story-title__head.has-logo {
+  margin-top: max(0px, calc(25dvh - min(92vw, 560px, 62dvh) * .262));
+}
+
+/* ロゴの 画像（読めた ときだけ）。文字の タイトルは 読みあげ用に のこして 見えなく する */
+.story-title__logo {
+  display: block;
+  width: min(92vw, 560px, 62dvh);
+  height: auto;
+  margin: 0 auto;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, .18));
+  -webkit-user-drag: none;
+  animation: story-fade .35s ease both;
+}
+
+.story-title__head.has-logo .story-title__name,
+.story-title__head.has-logo .story-title__sub {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* 大きな タイトル：白い 文字＋こい 青の ふち */
+.story-title__name {
+  margin: 0;
+  font-size: clamp(32px, 10vw, 96px);
+  line-height: 1.15;
+  letter-spacing: .04em;
+  color: #ffffff;
+  -webkit-text-stroke: .16em #173a52;
+  paint-order: stroke fill;
+  text-shadow: 0 .09em 0 #173a52, 0 .16em .2em rgba(0, 0, 0, .35);
+  white-space: nowrap;
+}
+
+.story-title__sub {
+  display: inline-block;
+  margin: 12px 0 0;
+  padding: 4px 18px;
+  font-size: clamp(18px, 4.8vw, 32px);
+  letter-spacing: .06em;
+  color: var(--c-header, #23506e);
+  background: var(--c-accent, #ffe36e);
+  border: 4px solid #173a52;
+  border-radius: 999px;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, .25);
+}
+
+.story-title__btns {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: row;          /* よこに ならべて 下に よせる（絵の ふたりを かくさない） */
+  gap: 12px;
+}
+
+.story-title__btns .story-btn { flex: 1 1 0; min-height: 88px; }
+
+/* ゲームの .btn と おなじ 形・押し心地 */
+.story-btn {
+  width: 100%;
+  min-height: 96px;
+  padding: 8px 10px;
+  border: 5px solid rgba(0, 0, 0, .28);
+  border-radius: 24px;
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: var(--fs-button, clamp(22px, 5.4vw, 34px));
+  line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, .25);
+  transition: transform .08s ease, box-shadow .08s ease;
+  touch-action: manipulation;
+}
+
+.story-btn:active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0, 0, 0, .25); }
+.story-btn:focus-visible { outline: 6px solid var(--c-accent, #ffe36e); outline-offset: 3px; }
+
+.story-btn__icon { font-size: 1em; line-height: 1; }
+.story-btn__sub  { font-size: .52em; opacity: .95; }
+
+.story-btn--continue  { background: #2f6fb0; }
+.story-btn--story     { background: var(--c-again, #c65a00); }
+
+/* ボタンが 3つ の ときは すこし 小さな 文字で 1れつに */
+.story-title__btns.is-three { gap: 8px; max-width: 640px; }
+.story-title__btns.is-three .story-btn { font-size: calc(var(--fs-button, 24px) * .8); padding: 8px 4px; }
+.story-title__btns.is-three .story-btn__text { white-space: nowrap; }
+.story-btn--challenge { background: var(--c-kind, #1f7a3d); }
+
+/* =========================================================
+   ストーリー画面
+   ========================================================= */
+.story-play {
+  /* セリフ窓の 高さ：3行ぶん（文字 × 行の 高さ 1.7 × 3行 ＋ 上下の よはく・わく） */
+  --win-h: calc(var(--fs-message, 24px) * 1.7 * 3 + 82px);
+  --win-bottom: 12px;
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: #14261a;            /* PC の よこながでは まんなかの 枠の そと */
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* まんなかの 縦長の 枠（スマホでは 画面いっぱい） */
+.story-stage {
+  position: relative;
+  width: min(100%, max(560px, 70dvh));
+  height: 100%;
+  overflow: hidden;
+  container-type: size;
+  outline: none;
+  box-shadow: 0 0 0 6px var(--c-header, #23506e);
+}
+
+/* ---------- 背景 ---------- */
+.story-bgbox,
+.story-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.story-bg {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.story-bg.is-fading { animation: story-fade .35s ease both; }
+
+/* ---------- 立ち絵 ---------- */
+.story-figs {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 上半身の 正方形。セリフ窓の 上ふちに 下を そろえる（すこし 窓の うしろに もぐらせる）。
+   左右の 絵は まんなかで すこし 重なる（話している 人が 手前）。 */
+.story-fig {
+  --fig: min(62cqw, 52cqh);
+  --drop: 0;   /* 背の 低い 人ほど 大きい：絵を この わりあい だけ 窓の うしろへ しずめる（cast の height） */
+  --size: 1;   /* 絵の 大きさ（cast の size） */
+  position: absolute;
+  bottom: calc(var(--win-bottom) + var(--win-h) - 10px);
+  width: var(--fig);
+  height: var(--fig);
+}
+
+.story-fig--left  { left: -5cqw; }
+.story-fig--right { right: -5cqw; }
+.story-fig.is-speaking { z-index: 1; }
+
+.story-fig__inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: 50% 100%;
+  transform: scale(.94);
+  filter: brightness(.6) saturate(.85);
+  transition: transform .22s ease, filter .22s ease;
+}
+
+.story-fig.is-speaking .story-fig__inner {
+  transform: scale(1.04);
+  filter: none;
+}
+
+.story-fig__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  transform-origin: 50% 100%;
+  transform: translateY(calc(var(--drop) * 100%)) scale(var(--size));
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .35));
+  -webkit-user-drag: none;
+}
+
+/* 立ち絵が ない ときの 丸い 札 */
+.story-fig__badge {
+  width: 82%;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  border: max(4px, 1.3cqw) solid #ffffff;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, .3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.story-fig__badge-name {
+  font-size: calc(var(--fig) * .15);
+  padding: 0 8%;
+  word-break: keep-all;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+}
+
+.story-fig__badge-face {
+  font-size: calc(var(--fig) * .2);
+  line-height: 1;
+}
+
+/* 出入り：左は 左から、右は 右から */
+.story-fig--left.is-entering  { animation: story-in-left  .32s ease-out both; }
+.story-fig--right.is-entering { animation: story-in-right .32s ease-out both; }
+.story-fig--left.is-leaving   { animation: story-out-left  .32s ease-in both; }
+.story-fig--right.is-leaving  { animation: story-out-right .32s ease-in both; }
+
+/* 絵だけを 見せる コマ（step の picture: true） */
+.story-play.is-picture .story-window,
+.story-play.is-picture .story-figs { opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+
+/* ---------- セリフ窓（下に 3行ぶん） ---------- */
+.story-window {
+  position: absolute;
+  z-index: 2;
+  left: 10px;
+  right: 10px;
+  bottom: var(--win-bottom);
+  height: var(--win-h);
+  padding: 30px 20px 40px;
+  background: var(--c-bg, #fff8ec);
+  color: var(--c-text, #1b1b1b);
+  border: 6px solid var(--c-header, #23506e);
+  border-radius: 24px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, .3);
+}
+
+/* 名前の 札（窓の 上ふちに のせる） */
+.story-window__name {
+  position: absolute;
+  top: -24px;
+  left: 16px;
+  margin: 0;
+  padding: 4px 20px;
+  max-width: calc(100% - 32px);
+  font-size: calc(var(--fs-message, 24px) * .95);
+  line-height: 1.4;
+  color: #ffffff;
+  background: var(--c-header, #23506e);
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .25);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-window__name[hidden] { display: none; }
+.story-window__name.is-right { left: auto; right: 16px; }
+
+.story-window__text {
+  margin: 0;
+  font-size: var(--fs-message, clamp(18px, 4.4vw, 28px));
+  line-height: 1.7;
+  white-space: pre-line;
+  line-break: strict;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* 地の文は すこし 色を かえる */
+.story-window.is-narration .story-window__text { color: #3c4a3f; }
+
+/* 右下の ▼（全文が 出たら 点滅） */
+.story-window__next {
+  position: absolute;
+  right: 18px;
+  bottom: 10px;
+  font-size: calc(var(--fs-message, 24px) * .9);
+  line-height: 1;
+  color: var(--c-again, #c65a00);
+  opacity: 0;
+}
+
+.story-window.is-complete .story-window__next {
+  opacity: 1;
+  animation: story-blink 1s steps(1, end) infinite;
+}
+
+/* 読みあげ用（見えない） */
+.story-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- スキップ ---------- */
+.story-skip {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  right: 12px;
+  min-height: 48px;
+  min-width: 48px;
+  padding: 6px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: clamp(16px, 4vw, 20px);
+  color: #ffffff;
+  background: rgba(27, 27, 27, .72);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .3);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.story-skip:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .3); }
+.story-skip:focus-visible { outline: 5px solid var(--c-accent, #ffe36e); outline-offset: 3px; }
+
+/* =========================================================
+   アニメーション
+   ========================================================= */
+@keyframes story-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes story-in-left {
+  from { transform: translateX(-110%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes story-in-right {
+  from { transform: translateX(110%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes story-out-left {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(-110%); opacity: 0; }
+}
+@keyframes story-out-right {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(110%); opacity: 0; }
+}
+
+@keyframes story-blink {
+  0%   { opacity: 1; }
+  50%  { opacity: .15; }
+}
+
+/* =========================================================
+   せの ひくい 画面
+   ========================================================= */
+@media (max-height: 700px) {
+  .story-title { gap: 12px; padding-top: 5dvh; padding-bottom: 4dvh; }
+  .story-title__btns { gap: 14px; }
+  .story-btn { min-height: 80px; }
+  .story-window { padding: 26px 16px 34px; }
+}
+
+@media (max-height: 480px) {
+  .story-title { padding: 12px 16px; justify-content: center; gap: 14px; }
+  .story-title__name { font-size: clamp(34px, 12dvh, 56px); }
+  .story-title__sub { margin-top: 6px; font-size: 16px; padding: 2px 12px; border-width: 3px; }
+  .story-title__btns { flex-direction: row; max-width: 640px; gap: 12px; }
+  .story-btn { min-height: 72px; border-width: 4px; border-radius: 18px; }
+  .story-btn__icon { display: none; }
+
+  .story-play { --win-h: calc(var(--fs-message, 16px) * 1.5 * 3 + 52px); --win-bottom: 8px; }
+  .story-window {
+    left: 8px;
+    right: 8px;
+    padding: 20px 14px 24px;
+    border-width: 4px;
+    border-radius: 18px;
+  }
+  .story-window__name { top: -18px; padding: 1px 14px; border-width: 3px; }
+  .story-window__text { line-height: 1.5; }
+  .story-window__next { bottom: 6px; right: 12px; }
+  .story-skip { top: 8px; right: 8px; min-height: 44px; padding: 4px 14px; font-size: 15px; }
+}
+
+/* アニメーションが にがてな ひとの ために */
+@media (prefers-reduced-motion: reduce) {
+  .story-title,
+  .story-bg.is-fading,
+  .story-fig.is-entering,
+  .story-fig.is-leaving,
+  .story-window.is-complete .story-window__next { animation: none !important; }
+  .story-fig__inner,
+  .story-btn { transition: none; }
+}

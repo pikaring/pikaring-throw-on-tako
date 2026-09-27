@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>街と、その白い壁 〜throw on tako〜｜タコを 投げて 城を こわす、物理演算 パズル</title>
+<meta name="description" content="インストール不要・無料・通信なしで、ブラウザだけで遊べるタコ投げ 物理演算パズル『街と、その白い壁』。ひっぱって角度と強さを決め、くるくる回るタコを投げて、イカの白い壁をこわします。赤いブロックで爆発、支えをぬけば一発で崩れる。『猫が消えた街』の続編で、全8面・24レベルのストーリーつき。スマホでもPCでも。">
+<meta name="theme-color" content="#23506e">
+
+<link rel="canonical" href="https://pikaring.github.io/throw-on-tako/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="街と、その白い壁 〜throw on tako〜｜タコを 投げて 城を こわす、物理演算 パズル">
+<meta property="og:description" content="ある朝、街が まっしろな 壁で かこまれた。ひっぱって はなして、くるくる 回る タコを 投げ、イカの 白い 壁を こわす 物理演算パズル。『猫が消えた街』の 続編、全8面・24レベル。インストール不要・通信なし。">
+<meta property="og:url" content="https://pikaring.github.io/throw-on-tako/">
+<meta property="og:image" content="https://pikaring.github.io/throw-on-tako/assets/icon.png">
+
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<script>
+  /* ホーム画面に くわえた アイコンから 開いた ときは、紹介ページを とばして
+     そのまま ゲームへ（すでに 入れて ある 方の 使い勝手を かえない ため）。
+
+     ただし standalone は「いま 開いて いる ウィンドウの 表示モード」なので、
+     ポータルなど 別の ページを ホーム画面から 開いて いると、そこから たどって
+     きた この ページでも 条件が 成立して しまう。アイコンからの 起動には
+     参照元が 無いので、それを 見て 区別する。 */
+  var fromIcon = !document.referrer;
+  var standalone = window.matchMedia('(display-mode: standalone)').matches
+                || window.navigator.standalone === true;
+  if (fromIcon && standalone) {
+    location.replace('app/');
+  }
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3FCFQY4W85"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3FCFQY4W85');
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "街と、その白い壁 〜throw on tako〜",
+  "alternateName": "Throw on Tako",
+  "url": "https://pikaring.github.io/throw-on-tako/",
+  "description": "インストール不要・無料・通信なしで、ブラウザだけで遊べるタコ投げ 物理演算パズル『街と、その白い壁』。ひっぱって角度と強さを決め、くるくる回るタコを投げて、イカの白い壁をこわします。赤いブロックで爆発、支えをぬけば一発で崩れる。『猫が消えた街』の続編で、全8面・24レベルのストーリーつき。スマホでもPCでも。",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "すべて（ウェブブラウザ）",
+  "inLanguage": "ja",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "license": "https://opensource.org/licenses/MIT",
+  "author": {
+    "@type": "Person",
+    "name": "pikaring",
+    "url": "https://pikaring.github.io/"
+  },
+  "browserRequirements": "JavaScript が 動く ブラウザ"
+}
+</script>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header-inner">
+    <a class="brand" href="./"><img src="assets/favicon.png" alt="" width="28" height="28">街と、その白い壁</a>
+    <nav class="nav">
+      <a href="#goods">本とグッズ</a>
+      <a href="#about">どんなゲーム</a>
+      <a href="#takos">タコ</a>
+      <a href="#throwers">投げる人</a>
+      <a href="#story">ストーリー</a>
+      <a href="#faq">よくある質問</a>
+      <a href="#family">ほかのツール</a>
+      <a class="btn btn-main" href="app/">あそぶ</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><b>無料</b> · インストール不要 · 通信なし · MIT License</span>
+      <img class="hero-logo" src="app/images/story/logo.png" alt="街と、その白い壁 〜throw on tako〜" onerror="this.remove()">
+      <h1>ひっぱって、<br>タコを 投げろ。</h1>
+      <p class="lead">ある朝、街の まわりに まっしろな 壁が そびえた。
+        指で ひっぱって 角度と 強さを 決め、はなすと タコが くるくる 回りながら 飛んで いきます。
+        イカ女王の 白い 城に ぶつけて、ブロックを こわす 物理演算パズル。
+        赤い ブロックは 爆発し、支えを ぬけば 城は 一発で 崩れます。
+        前作「猫が消えた街」の 続編、全8面・24レベルの ストーリーつき。</p>
+      <div class="hero-actions">
+        <a class="btn btn-main" href="app/">いますぐ あそぶ</a>
+        <a class="btn btn-sub" href="https://github.com/pikaring/throw-on-tako">GitHubで見る</a>
+      </div>
+      <p class="hero-note">ホーム画面に追加すると、アプリのように全画面で開けます。</p>
+    </div>
+
+    <div class="phone" aria-hidden="true">
+      <div class="screen screen-throw">
+        <div class="sbar">
+          <p class="stop"><span class="sbadge">1面-2</span><span class="sgauge"><i></i></span><span class="spct">62%</span></p>
+          <p class="smsg">赤い ブロックを ねらうと…？</p>
+        </div>
+        <div class="sfield">
+          <span class="ssun"></span>
+          <svg class="sarc" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M11 60 Q 44 -8 80 46" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <span class="ssling"></span>
+          <span class="stako stako--next"></span>
+          <span class="stako stako--fly"></span>
+          <div class="scastle">
+            <span class="sblk" style="left:0;bottom:0;width:20px;height:44px"></span>
+            <span class="sblk h" style="left:48px;bottom:0;width:20px;height:44px"></span>
+            <span class="sblk" style="left:96px;bottom:0;width:20px;height:44px"></span>
+            <span class="sblk" style="left:0;bottom:44px;width:116px;height:14px"></span>
+            <span class="sblk" style="left:8px;bottom:58px;width:18px;height:36px"></span>
+            <span class="sblk r" style="left:47px;bottom:58px;width:22px;height:22px"></span>
+            <span class="sblk" style="left:90px;bottom:58px;width:18px;height:36px"></span>
+            <span class="sblk" style="left:4px;bottom:94px;width:108px;height:12px"></span>
+            <span class="sblk" style="left:30px;bottom:106px;width:56px;height:22px"></span>
+            <span class="sblk fall" style="left:-26px;bottom:6px;width:18px;height:14px;transform:rotate(28deg)"></span>
+            <span class="sblk fall" style="left:-8px;bottom:70px;width:14px;height:12px;transform:rotate(-40deg)"></span>
+          </div>
+        </div>
+        <div class="stray">
+          <span class="on"><b>3</b></span><span class="t2"><b>1</b></span><span class="t3"><b>1</b></span>
+        </div>
+        <div class="swho"><i class="on">ナオ</i><i>フミ</i><i>マキ</i><i>チカ</i></div>
+        <div class="sbtns"><b>やりなおす</b><i>タイトル</i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="specs">
+  <div class="wrap specs-grid">
+    <div class="spec"><b>インストール不要</b><span>ブラウザで開くだけ</span></div>
+    <div class="spec"><b>通信なし</b><span>読みこんだ あとは オフラインでも</span></div>
+    <div class="spec"><b>全8面・24の 城</b><span>1回 投げるごとに ひと区切り</span></div>
+    <div class="spec"><b>スマホもPCも</b><span>ひっぱって はなすだけ</span></div>
+  </div>
+</div>
+
+<section class="goods" id="goods">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">NEKO SHELF</p>
+      <h2>前作から 引きつづき、猫の本と グッズ。</h2>
+      <p>タコと イカの 街にも、猫たちは ちゃんと 帰って きています。前作「猫が消えた街」の ときから 置いている 本と グッズです。</p>
+    </div>
+    <div class="goods-grid">
+
+      <div class="good" data-asin="B0DR89S4JV">
+        <p class="gcat">グッズ</p>
+        <h3>どこでもいっしょ トロ アクリルつままれ</h3>
+        <p>コスパの 公式グッズ。ソニーの 白い猫「トロ」を、耳を つままれた かっこうに した アクリルの キーホルダーです。
+          ひっぱられて 飛んで いく タコたちの 気もちが、すこし わかる かもしれません。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/B0DR89S4JV?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+      <div class="good" data-asin="4408411647">
+        <p class="gcat">マンガ</p>
+        <h3>猫なんかよんでもこない。</h3>
+        <p>杉作／コンペイトウ書房。売れないボクサーの兄弟が 2匹の子猫を 拾ってからの 実話エッセイ漫画。前作に 引きつづき、よんでも こない 猫たちの 本です。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/4408411647?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+      <div class="good" data-asin="B08P717SMC">
+        <p class="gcat">小説</p>
+        <h3>夏への扉〔新版〕</h3>
+        <p>ロバート・A・ハインライン／ハヤカワ文庫SF〔新版〕。「夏に つながる 扉」を さがす 猫ピートの 話から はじまります。白い 壁の 向こうに 出口を さがす この ゲームと、どこか 似ています。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/B08P717SMC?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+      <div class="good" data-asin="B0BBTSRRZJ">
+        <p class="gcat">マンガ</p>
+        <h3>ラーメン赤猫（1）</h3>
+        <p>アンギャマン／ジャンプコミックスDIGITAL（集英社）。猫たちが 営む ラーメン店に、人間の 新人が 雇われる ところから はじまります。
+          商店街で 店番を する イカ女王にも 読んで ほしい 一冊。</p>
+        <a class="glink" href="https://www.amazon.co.jp/dp/B0BBTSRRZJ?tag=redcomet-22" target="_blank" rel="sponsored noopener">Amazonで見る ↗</a>
+      </div>
+
+    </div>
+    <p class="goods-note">リンクは Amazonアソシエイトです。価格と 画像は 毎日 とりなおしています。</p>
+  </div>
+</section>
+
+<section id="about" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">どんなゲーム</p>
+      <h2>ねらって、投げて、崩れるのを 見る。</h2>
+      <p>城は 白い ブロックの 積みかさね。ブロック 1つ 1つに 重さが あり、支えを うしなうと 崩れて 落ちます。
+        めあての わりあい 以上 こわせば クリアです。</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>ひっぱって、はなす</h3>
+        <p>画面を 指で うしろへ ひっぱると 予測線が 出ます。ひく 向きで 角度、ひく 長さで 強さ。はなすと タコが くるくる 回りながら 飛んで いきます。</p>
+        <ul>
+          <li>マウスの ドラッグでも、指でも 同じ 操作</li>
+          <li>予測線の 長さは 投げる 人で ちがう</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>赤い ブロックと 支え</h3>
+        <p>城の あちこちに ある <b>赤い ブロック</b> に あてると 爆発して、まわりを まとめて こわします。
+          下の 支えを ぬけば、上の ブロックも 落ちて いっしょに 消えます。</p>
+        <ul>
+          <li>白 → ふつう、灰色 → かたい、赤 → 爆発</li>
+          <li>崩れた ブロックは 地面に ふれると 消える</li>
+          <li>うまく いけば 一発で 城が まるごと 崩れる</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>8しゅるいの タコ</h3>
+        <p>面が すすむと、投げられる タコが ふえます。おもくて つきぬける タコ、よく はねる タコ、空中で タップすると わかれる タコ……。城の 形を 見て えらびます。</p>
+        <ul>
+          <li>下の トレイで タコを えらぶ（のこりの かず つき）</li>
+          <li>さいごは タコ大王が 城ごと ゆらす</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">04</span>
+        <h3>4人の 投げる 人</h3>
+        <p>ねらいが 正確な ナオ、力もちの フミ、あたると 爆発する マキ、小さい タコを 3びき いっぺんに 投げる チカ。同じ タコでも、投げる 人で まるで ちがう 動きに なります。</p>
+        <ul>
+          <li>投げる たびに 人を かえられる</li>
+          <li>チカは 2面から 仲間に なる</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">05</span>
+        <h3>★と やりなおし</h3>
+        <p>タコを のこして クリアするほど ★が ふえます（のこり 2ひき以上で ★3）。ぜんぶ こわせば ★が 1つ おまけ。
+          タコが なくなっても、同じ 城に すぐ いどめます。</p>
+        <ul>
+          <li>進んだ レベルと ★は この端末の中だけに 保存</li>
+          <li>「えらんで あそぶ」で クリアした 城に もう一度</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">06</span>
+        <h3>おおきな文字・おおきなボタン</h3>
+        <p>前作 <a href="https://pikaring.github.io/cat-on-escape/">猫が消えた街</a> と 同じ 見やすさの つくり。高コントラストで、押すところは すべて 48px 以上。ひらがな中心の わかち書きです。</p>
+        <ul>
+          <li>物理演算も 自前。依存ライブラリなし</li>
+          <li>動きを へらす 設定（prefers-reduced-motion）に 対応</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="takos">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">タコ</p>
+      <h2>投げられて くれる、8ひきの タコ。</h2>
+      <p>前作で 猫を かくした タコたちは、いまでは 街の 人気者。「街の みんなへの おれい」と、自分から 投げられて くれます。1面に 1ぴきずつ 仲間に なります。</p>
+    </div>
+    <div class="chars">
+      <div class="char"><div class="char-face" style="--c:#e0533d"><span>一</span><img src="app/images/story/tako1-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">1面 通学路から</p><h3>タコ一郎</h3><p>ふつうの タコ。まずは これで 投げかたを おぼえる。</p></div>
+      <div class="char"><div class="char-face" style="--c:#d9731f"><span>二</span><img src="app/images/story/tako2-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">2面 商店街から</p><h3>タコ二郎</h3><p>おもくて、白い ブロックを つきぬける。魚屋の たのもしい 若だんな。タコ大王と いっしょに 仲間に なる。</p></div>
+      <div class="char"><div class="char-face" style="--c:#c0398a"><span>三</span><img src="app/images/story/tako3-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">3面 トンネルから</p><h3>タコ三郎</h3><p>よく はねる。壁に あたっても ぽよーんと もどって、また あたる。</p></div>
+      <div class="char"><div class="char-face" style="--c:#3f8f57"><span>四</span><img src="app/images/story/tako4-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">4面 壁工場から</p><h3>タコ四郎</h3><p>空中で タップすると、3びきに わかれる。</p></div>
+      <div class="char"><div class="char-face" style="--c:#2f6fb0"><span>五</span><img src="app/images/story/tako5-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">5面 砂浜から</p><h3>タコ五郎</h3><p>空中で タップすると、まっすぐ 下へ ずどーん。高い 壁に。</p></div>
+      <div class="char"><div class="char-face" style="--c:#b8860b"><span>六</span><img src="app/images/story/tako6-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">6面 海の 上から</p><h3>タコ六郎</h3><p>あたって すこし したら 大ばくはつ。安全 だいいち（？）。</p></div>
+      <div class="char"><div class="char-face" style="--c:#4b3f63"><span>七</span><img src="app/images/story/tako7-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">7面 イカの 城から</p><h3>タコ七郎</h3><p>スミを はいて、まわりの ブロックを もろく する。つぎの 1投が 効く。</p></div>
+      <div class="char"><div class="char-face" style="--c:#8e1b1b"><span>王</span><img src="app/images/story/daiou-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">8面 女王の 間で</p><h3>タコ大王</h3><p>前作の ラスボス。いまは 魚屋の 人気者。6面では 船を ジェット噴射で 進め、さいごは 自分が 投げられて 大きな ゆれを おこす。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="throwers" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">投げる人</p>
+      <h2>だれが 投げるかで、タコの 飛びかたが かわる。</h2>
+      <p>前作の ナオと フミに、ソフトボール部の エース マキと、商店街の 魚屋の 娘 チカが くわわります。</p>
+    </div>
+    <div class="chars">
+      <div class="char"><div class="char-face" style="--c:#27407a"><span>ナ</span><img src="app/images/story/nao-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">ねらい ◎ ／ 力 △</p><h3>ナオ</h3><p>ねらいが 正確で、ぶれが ほとんど ない。予測線が いちばん 長い。そのかわり 力は 弱め。</p></div>
+      <div class="char"><div class="char-face" style="--c:#d9731f"><span>フ</span><img src="app/images/story/fumi-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">ねらい △ ／ 力 ◎</p><h3>フミ</h3><p>破壊力は ナオの 2倍 以上。ただし ねらいが ぶれて、予測線も 短い。</p></div>
+      <div class="char"><div class="char-face" style="--c:#1f7a3d"><span>マ</span><img src="app/images/story/maki-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">あたると ばくはつ</p><h3>マキ</h3><p>となりの クラスの ソフト部 エース。ねらいも 力も 中くらいで、あたると 広く 爆発する。タコ投げを 教えて くれる 人。</p></div>
+      <div class="char"><div class="char-face" style="--c:#b0457a"><span>チ</span><img src="app/images/story/chika-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
+        <p class="tag">ちいさく 3びき</p><h3>チカ</h3><p>商店街の 魚屋の 娘。力は ないけど 手が はやく、小さい タコを 3びき いっぺんに 投げる。2面から。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="howto">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">あそびかた</p>
+      <h2>ひっぱって、はなすだけ。</h2>
+    </div>
+    <div class="steps-box" style="background:#fff;border:1px solid var(--line)">
+      <div class="flow-step"><em>1</em><span>下の トレイで タコを、その下の ボタンで 投げる 人を えらぶ</span></div>
+      <div class="flow-step"><em>2</em><span>画面を うしろへ ひっぱる。ひく 向きが 角度、ひく 長さが 強さ。予測線で ねらう</span></div>
+      <div class="flow-step"><em>3</em><span>はなすと タコが くるくる 回りながら 飛ぶ。タコに よっては 空中で タップすると わざが 出る</span></div>
+      <div class="flow-step"><em>4</em><span>赤い ブロックは 爆発。支えを ぬかれた ブロックは 落ちて、地面に ふれると 消える</span></div>
+      <div class="flow-step"><em>5</em><span>ぜんぶ 止まったら つぎの 1投。めあての わりあい 以上 こわせば クリア</span></div>
+    </div>
+    <p class="note">パソコンでは マウスの ドラッグ、スマホ・タブレットでは 指で ひっぱって あそべます。</p>
+  </div>
+</section>
+
+<section id="story" class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">ストーリー</p>
+      <h2>ある朝、街が 白い 壁で かこまれた。</h2>
+      <p>タコ大王の 事件から しばらく。猫は 塀の 上で ひなたぼっこ、タコたちは 商店街の 人気者。
+        ところが ある朝、ナオと フミの 住む 街が まっしろな 壁で ぐるりと かこまれて しまいます。
+        ふつうの やりかたでは こわせない 壁 ―― でも、ソフト部の エース <b>マキ</b> が タコを ぶつけると、壁が くずれた！
+        魚屋の 娘 <b>チカ</b> と <b>タコ大王</b> も 仲間に くわわり、4人は 壁を こわしながら、海の 向こうの <b>イカ女王</b> の 城を めざします。</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="num">01–04</span>
+        <h3>とじこめられた 街から、外へ</h3>
+        <ul>
+          <li>1面 通学路 ―― タコで 壁が くずれた。でも すぐ もとどおり（イカ子）</li>
+          <li>2面 迷路の 商店街 ―― チカと タコ大王が 仲間に（イカ美）</li>
+          <li>3面 トンネル ―― イカ女王の たくらみが あきらかに（イカ乃）</li>
+          <li>4面 イカの 壁工場 ―― 海へ つづく 吸盤の あと（イカ里）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="num">05–08</span>
+        <h3>海の 向こうの、イカの 城へ</h3>
+        <ul>
+          <li>5面 砂浜 ―― 遠くに 女王の 城。イカ代の たのみ（イカ代）</li>
+          <li>6面 海の 上 ―― タコ大王の ジェットで 船を 進める（イカ江）</li>
+          <li>7面 イカの 城 ―― 女王の 間の 前で まちかまえる（親衛隊長 イカ奈）</li>
+          <li>8面 女王の 間 ―― イカ女王が 壁を つくった ほんとうの わけ（イカ女王）</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">1面は 3つの 城（3レベル）。面の 前と あとに 会話の 場面が あります（タップで すすむ、右上で スキップ）。
+      クリアした 城は タイトルの「えらんで あそぶ」から 会話なしで 遊べます。</p>
+  </div>
+</section>
+
+<section id="make" class="night">
+  <div class="wrap night-grid">
+    <div>
+      <p class="eyebrow">つくり</p>
+      <h2>物理演算まで、HTML / CSS / JavaScript だけ。</h2>
+      <p>フレームワークも ビルドも、物理エンジンの ライブラリも 使っていません。
+        ブロックの 重さ・ぶつかり・崩れかたは <code>app/game.js</code> に 自前で 書いて あります。</p>
+    </div>
+    <div class="night-list">
+      <div class="night-item"><b>城の 図面は 文字の 絵</b><span><code>app/stages.js</code> に <code>W</code>（白）・<code>H</code>（かたい）・<code>R</code>（赤）で 書くだけ。置いた ままで 崩れないか、入れた タコで クリアできるかは スクリプトで 確かめて います。</span></div>
+      <div class="night-item"><b>絵が なくても 遊べる</b><span>タコや 人の 絵は 読みこめた ときだけ 使います。無ければ 図形と 名前の 札で 代わりに 出ます。</span></div>
+      <div class="night-item"><b>保存</b><span>進んだ レベルと ★は LocalStorage に。サーバーには 何も 送りません。</span></div>
+      <div class="night-item"><b>動きが 苦手な 方へ</b><span><code>prefers-reduced-motion</code> に 対応。画面の ゆれや 破片を へらします。</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">よくある質問</p>
+      <h2>気になるところ</h2>
+    </div>
+    <details open><summary>お金は かかりますか？</summary><p>かかりません。無料で、広告も 課金も ありません。</p></details>
+    <details><summary>インストールは 必要ですか？</summary><p>不要です。ブラウザで開くだけ。ホーム画面に追加すると、アプリのように 全画面で 開けます。</p></details>
+    <details><summary>データは どこかに 送られますか？</summary><p>送られません。進んだ レベルも ★も、お使いの端末の中だけに 保存されます。</p></details>
+    <details><summary>どうやって 投げますか？</summary><p>画面を 指（または マウス）で うしろへ ひっぱって、はなします。ひく 向きで 角度、ひく 長さで 強さが 決まります。ひっぱって いる あいだは 予測線が 出ます。</p></details>
+    <details><summary>なかなか 城が 崩れません</summary><p>上の ほうを ねらうより、<b>下の 支え</b>や <b>赤い ブロック</b>を ねらうのが こつです。支えを ぬかれた ブロックは 落ちて、地面に ふれると 消えます。かたい 灰色の ブロックには、おもい タコ二郎や 力の 強い フミが 効きます。</p></details>
+    <details><summary>空中で タップする タコが うまく 使えません</summary><p>タコ四郎（わかれる）と タコ五郎（真下へ おちる）は、飛んで いる あいだに 画面の どこかを タップすると わざが 出ます。タコ五郎は 城の 真上で タップすると、高い 壁を 上から こわせます。</p></details>
+    <details><summary>前作を 遊んで いなくても 大丈夫？</summary><p>大丈夫です。お話は つながって いますが、はじめの 場面で 街の ようすが わかります。前作 <a href="https://pikaring.github.io/cat-on-escape/">猫が消えた街</a> は、ねこを そろえて 逃がす パズルです。</p></details>
+    <details><summary>ついつい やめられません</summary><p>1つの 城は 数投で 終わります。クリアしたら ひと区切り。進んだ レベルは 保存されるので、つぎは「つづきから」遊べます。</p></details>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>タコを 投げて、壁の 向こうへ。</h2>
+    <div class="hero-actions">
+      <a class="btn btn-main" href="app/">いますぐ あそぶ</a>
+      <a class="btn btn-sub" href="https://github.com/pikaring/throw-on-tako">GitHubで見る</a>
+    </div>
+  </div>
+</section>
+
+<section class="family" id="family">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">MORE TOOLS</p>
+      <h2>同じ作者の、ほかのツール。</h2>
+      <p>ブラウザだけで動く道具とゲームを、ひとつのページにまとめています。</p>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-main" href="https://pikaring.github.io/">つくったもの一覧を見る</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>街と、その白い壁 〜throw on tako〜</span>
+    <a href="https://github.com/pikaring/throw-on-tako">GitHub</a>
+    <a href="https://github.com/pikaring/throw-on-tako/blob/main/README.md">README</a>
+    <span class="counter">累計アクセス <b id="counter-value">―</b> 回</span>
+    <span class="sep">MIT License · pikaring · 依存ライブラリなし</span>
+    <span class="disclosure">当サイトはAmazonアソシエイト・プログラムに参加しており、掲載しているリンクから商品が買われると運営者に紹介料が入る場合があります。</span>
+  </div>
+</footer>
+
+<script>
+// アクセスカウンター（ほかのページと同じGAS。page名でサイトごとに別カウント）
+(function () {
+  var el = document.getElementById('counter-value');
+  if (!el) return;
+  var page = location.pathname.replace(/index\.html$/, '');
+  fetch('https://script.google.com/macros/s/AKfycbxkQLZXNAFXkT7zhIO0TmMDGU3A0TQ234Lf-yhw5J7lvFAjCi3KLNLRd_LKd_xlOxPd/exec?page=' + encodeURIComponent(page))
+    .then(function (r) { return r.json(); })
+    .then(function (d) { el.textContent = Number(d.count).toLocaleString('ja-JP'); })
+    .catch(function () { el.textContent = '―'; });
+})();
+</script>
+
+<script>
+// Amazon Creators API で取った商品情報（tools/fetch_goods.py が assets/goods.json に書く）。
+// 取れていれば画像と価格を足し、無ければテキストカードのまま。
+(function () {
+  var cards = document.querySelectorAll('.good[data-asin]');
+  if (!cards.length) return;
+  fetch('assets/goods.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    var at = new Date(d.fetchedAt);
+    var stamp = isNaN(at) ? '' : (at.getMonth() + 1) + '/' + at.getDate() + '時点';
+    cards.forEach(function (c) {
+      var it = d.items && d.items[c.dataset.asin];
+      if (!it) return;
+      if (it.image) {
+        var img = document.createElement('img');
+        img.className = 'gimg'; img.src = it.image; img.alt = ''; img.loading = 'lazy';
+        c.insertBefore(img, c.firstChild);
+      }
+      if (it.price) {
+        var p = document.createElement('p');
+        p.className = 'gprice';
+        p.innerHTML = it.price + (stamp ? ' <small>' + stamp + '</small>' : '');
+        var link = c.querySelector('.glink');
+        c.insertBefore(p, link);
+      }
+      if (it.url) { var a = c.querySelector('.glink'); if (a) a.href = it.url; }
+    });
+  }).catch(function () { /* 取れなければ何もしない */ });
+})();
+</script>
+
+</body>
+</html>
