@@ -287,7 +287,9 @@
     // --- 立ち絵 ---
     function drawFig(inner, k) {
       const face = faceOf[k] || 'normal';
-      const url = faceUrl(k, face);
+      // その 表情の 絵が 読めない ときは、ふつうの 顔の 絵で 代わりに 出す（札よりも 絵を 優先）
+      let url = faceUrl(k, face);
+      if (face !== 'normal' && imgState.get(url) === 'bad' && faceUrl(k, 'normal')) url = faceUrl(k, 'normal');
       inner.textContent = '';
       inner.dataset.face = face;
       if (imageReady(url)) {
@@ -306,7 +308,8 @@
       inner.appendChild(badge);
       if (url && imgState.get(url) !== 'bad') {
         loadImage(url, (ok) => {
-          if (ok && inner.isConnected && inner.dataset.face === face) drawFig(inner, k);
+          // 読めなかった 表情は、ふつうの 顔で かき直す
+          if ((ok || face !== 'normal') && inner.isConnected && inner.dataset.face === face) drawFig(inner, k);
         });
       }
     }

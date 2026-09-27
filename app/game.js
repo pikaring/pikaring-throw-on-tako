@@ -28,6 +28,11 @@
   const MAX_SPEED = 1000;
   const STEP = 1 / 120;
   const SPIN = 2.2;            // タコの まわる はやさ（ゆっくり くるくる）
+  const BLAST_PUSH = 300;      // 爆発で ブロックを おしとばす いきおい
+  const FALL_HURT = 240;       // これより はやく ぶつかると ブロックどうしが きずつく
+  const BOMB_R = 135;          // 六郎の 大ばくはつ
+  const BOMB_POW = 5.5;
+  const QUAKE_R = 260;         // 大王の ゆれ
   const RED_R = 105;           // 赤い ブロックの 爆発の 半径（となりの となりまで とどく）
   const RED_POW = 4.2;         // その 強さ（白は まん中 近くなら こわれる。かたいのは のこる）
 
@@ -248,8 +253,8 @@
         const len = Math.hypot(cx, cy) || 1;
         const m = massOf(b);
         wake(b);
-        b.vx += (cx / len) * 420 * f / Math.sqrt(m);
-        b.vy += ((cy / len) * 420 * f - 120 * f) / Math.sqrt(m);
+        b.vx += (cx / len) * BLAST_PUSH * f / Math.sqrt(m);
+        b.vy += ((cy / len) * BLAST_PUSH * f - 100 * f) / Math.sqrt(m);
       });
     }
 
@@ -381,8 +386,8 @@
       // a から 見て b へ むかう 速さ
       const rv = (a.vx - (b.awake ? b.vx : 0)) * -nx + (a.vy - (b.awake ? b.vy : 0)) * -ny;
       if (!b.awake) {
-        if (rv > 170) {                               // はやく ぶつかった → 相手も 起こして いきおいを わける
-          const dmg = (rv - 170) / 220 * Math.sqrt(ma);
+        if (rv > FALL_HURT) {                               // はやく ぶつかった → 相手も 起こして いきおいを わける
+          const dmg = (rv - FALL_HURT) / 300 * Math.sqrt(ma);
           hurt(b, dmg);
           hurt(a, dmg * 0.6);
           if (b.dead || a.dead) return;
@@ -440,7 +445,7 @@
         t.rot += t.spin * dt;
         if (t.fuse > 0) {
           t.fuse -= dt;
-          if (t.fuse <= 0) { explode(t.x, t.y, 150, 6, 'red'); t.dead = true; continue; }
+          if (t.fuse <= 0) { explode(t.x, t.y, BOMB_R, BOMB_POW, 'red'); t.dead = true; continue; }
         }
         // ブロック
         for (let j = 0; j < blocks.length; j += 1) {
@@ -528,18 +533,18 @@
         });
       }
       if (T.hit === 'quake') {
-        effects.push({ type: 'blast', x: t.x, y: t.y, t: 0, life: 0.6, r: 330, look: 'quake' });
+        effects.push({ type: 'blast', x: t.x, y: t.y, t: 0, life: 0.6, r: QUAKE_R, look: 'quake' });
         shake(16);
         blocks.forEach((b) => {
           if (b.dead) return;
           const d = Math.hypot(b.x + b.w / 2 - t.x, b.y + b.h / 2 - t.y);
-          if (d > 330) return;
-          const f = 1 - d / 330;
-          hurt(b, 1.4 * f);
+          if (d > QUAKE_R) return;
+          const f = 1 - d / QUAKE_R;
+          hurt(b, 1.2 * f);
           if (b.dead) return;
           wake(b);
-          b.vx += Math.sign(b.x + b.w / 2 - t.x || 1) * 260 * f / Math.sqrt(massOf(b));
-          b.vy -= 160 * f;
+          b.vx += Math.sign(b.x + b.w / 2 - t.x || 1) * 190 * f / Math.sqrt(massOf(b));
+          b.vy -= 130 * f;
         });
       }
     }
