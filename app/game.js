@@ -908,7 +908,7 @@
       const P = THROWERS[thrower];
       const im = IMG[faceUrl(thrower)];
       const size = 170;
-      const cx = ANCHOR.x - 62;
+      const cx = ANCHOR.x - 105;   // タコを かまえる 位置が 顔に かからない よう 左に よせる
       const cy = GROUND - size / 2 + 6;
       if (im) ctx.drawImage(im, cx - size / 2, cy - size / 2, size, size);
       else {
