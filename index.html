@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>街と、その白い壁 〜throw on tako〜｜タコを 投げて 城を こわす、物理演算 パズル</title>
-<meta name="description" content="インストール不要・無料・通信なしで、ブラウザだけで遊べるタコ投げ 物理演算パズル『街と、その白い壁』。ひっぱって角度と強さを決め、くるくる回るタコを投げて、イカの白い壁をこわします。赤いブロックで爆発、支えをぬけば一発で崩れる。『猫が消えた街』の続編で、全8面・24レベルのストーリーつき。スマホでもPCでも。">
+<title>街と、その白い壁 〜throw on tako〜｜タコを はじいて イカを たおす、見下ろし型の 物理パズル</title>
+<meta name="description" content="インストール不要・無料・通信なしで、ブラウザだけで遊べるビリヤード風の物理パズル『街と、その白い壁』。画面をひっぱってはなすとタコがとびだし、台のふちやブロックではねかえって、白い壁にまもられたイカをたおします。止まったタコにあてるとコンボ、四すみの穴におとせば一発勝利。『猫が消えた街』の続編で、全8面・24レベルのストーリーつき。スマホでもPCでも。">
 <meta name="theme-color" content="#23506e">
 
 <link rel="canonical" href="https://pikaring.github.io/throw-on-tako/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="街と、その白い壁 〜throw on tako〜｜タコを 投げて 城を こわす、物理演算 パズル">
-<meta property="og:description" content="ある朝、街が まっしろな 壁で かこまれた。ひっぱって はなして、くるくる 回る タコを 投げ、イカの 白い 壁を こわす 物理演算パズル。『猫が消えた街』の 続編、全8面・24レベル。インストール不要・通信なし。">
+<meta property="og:title" content="街と、その白い壁 〜throw on tako〜｜タコを はじいて イカを たおす、見下ろし型の 物理パズル">
+<meta property="og:description" content="ある朝、街が まっしろな 壁で かこまれた。ひっぱって はなして タコを はじき、はねかえりと コンボで 白い 壁の 中の イカを たおす、ビリヤード風の 物理パズル。『猫が消えた街』の 続編、全8面・24レベル。無料・インストール不要・通信なし。">
 <meta property="og:url" content="https://pikaring.github.io/throw-on-tako/">
 <meta property="og:image" content="https://pikaring.github.io/throw-on-tako/assets/icon.png">
 
@@ -20,6 +20,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
+<style>
+  /* ヒーローの 画面モック：見下ろしの 台（site.css の 横から 見た 城の モックを ここで 上書き） */
+  .screen-throw { min-height: 0; }
+  .sboard { display: block; background: #23506e; padding: 8px 8px 6px; }
+  .sboard svg { display: block; width: 100%; height: auto; }
+  .sboard .sguide { fill: none; stroke: #fff; stroke-width: 3.2; stroke-dasharray: 2 9; stroke-linecap: round; }
+  .sboard .spull { fill: none; stroke: #23506e; stroke-opacity: .55; stroke-width: 2.4; stroke-dasharray: 6 6; }
+</style>
 <script>
   /* ホーム画面に くわえた アイコンから 開いた ときは、紹介ページを とばして
      そのまま ゲームへ（すでに 入れて ある 方の 使い勝手を かえない ため）。
@@ -50,7 +58,7 @@
   "name": "街と、その白い壁 〜throw on tako〜",
   "alternateName": "Throw on Tako",
   "url": "https://pikaring.github.io/throw-on-tako/",
-  "description": "インストール不要・無料・通信なしで、ブラウザだけで遊べるタコ投げ 物理演算パズル『街と、その白い壁』。ひっぱって角度と強さを決め、くるくる回るタコを投げて、イカの白い壁をこわします。赤いブロックで爆発、支えをぬけば一発で崩れる。『猫が消えた街』の続編で、全8面・24レベルのストーリーつき。スマホでもPCでも。",
+  "description": "インストール不要・無料・通信なしで、ブラウザだけで遊べるビリヤード風の物理パズル『街と、その白い壁』。画面をひっぱってはなすとタコがとびだし、台のふちやブロックではねかえって、白い壁にまもられたイカをたおします。止まったタコにあてるとコンボ、四すみの穴におとせば一発勝利。『猫が消えた街』の続編で、全8面・24レベルのストーリーつき。スマホでもPCでも。",
   "applicationCategory": "GameApplication",
   "operatingSystem": "すべて（ウェブブラウザ）",
   "inLanguage": "ja",
@@ -93,11 +101,13 @@
     <div>
       <span class="pill"><b>無料</b> · インストール不要 · 通信なし · MIT License</span>
       <img class="hero-logo" src="app/images/story/logo.png" alt="街と、その白い壁 〜throw on tako〜" onerror="this.remove()">
-      <h1>ひっぱって、<br>タコを 投げろ。</h1>
+      <h1>ひっぱって、<br>タコを はじけ。</h1>
       <p class="lead">ある朝、街の まわりに まっしろな 壁が そびえた。
-        指で ひっぱって 角度と 強さを 決め、はなすと タコが くるくる 回りながら 飛んで いきます。
-        イカ女王の 白い 城に ぶつけて、ブロックを こわす 物理演算パズル。
-        赤い ブロックは 爆発し、支えを ぬけば 城は 一発で 崩れます。
+        画面の どこでも 指で ひっぱって はなすと、下の 発射口から 反対向きに タコが とびだします。
+        台の ふちや ブロックで はねかえり、ゆっくり 回りながら すべって、止まると 場に のこる ――
+        ビリヤードの ような 見下ろし型の 物理パズル。
+        のこった タコに あてれば コンボで ダメージ アップ、白い 壁に まもられた イカを たおせば 勝ち。
+        イカを 四すみの 穴に おとせば 一発 勝利です。
         前作「猫が消えた街」の 続編、全8面・24レベルの ストーリーつき。</p>
       <div class="hero-actions">
         <a class="btn btn-main" href="app/">いますぐ あそぶ</a>
@@ -109,33 +119,64 @@
     <div class="phone" aria-hidden="true">
       <div class="screen screen-throw">
         <div class="sbar">
-          <p class="stop"><span class="sbadge">1面-2</span><span class="sgauge"><i></i></span><span class="spct">62%</span></p>
-          <p class="smsg">赤い ブロックを ねらうと…？</p>
+          <p class="stop"><span class="sbadge">2面-2</span><span class="sgauge"><i style="width:75%"></i></span><span class="spct">♥ 3 / 4</span></p>
+          <p class="smsg">止まった タコに あてると コンボ！</p>
         </div>
-        <div class="sfield">
-          <span class="ssun"></span>
-          <svg class="sarc" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path d="M11 60 Q 44 -8 80 46" vector-effect="non-scaling-stroke"/>
+        <div class="sboard">
+          <svg viewBox="-8 -8 376 516" role="presentation">
+            <defs>
+              <clipPath id="mIka"><circle cx="180" cy="140" r="23"/></clipPath>
+              <clipPath id="mTakoA"><circle cx="270" cy="264" r="15"/></clipPath>
+              <clipPath id="mTakoB"><circle cx="180" cy="460" r="16"/></clipPath>
+            </defs>
+            <!-- 台（空色）と マス目 -->
+            <rect x="-8" y="-8" width="376" height="516" rx="18" fill="#173a52"/>
+            <rect x="0" y="0" width="360" height="500" fill="#a8d4e6"/>
+            <g stroke="#ffffff" stroke-opacity=".35" stroke-width="1">
+              <path d="M40 0V410M80 0V410M120 0V410M160 0V410M200 0V410M240 0V410M280 0V410M320 0V410"/>
+              <path d="M0 40H360M0 80H360M0 120H360M0 160H360M0 200H360M0 240H360M0 280H360M0 320H360M0 360H360"/>
+            </g>
+            <!-- 発射口の ばしょ -->
+            <rect x="0" y="410" width="360" height="90" fill="#ffffff" fill-opacity=".35"/>
+            <path d="M0 410H360" stroke="#23506e" stroke-opacity=".5" stroke-width="2" stroke-dasharray="8 8"/>
+            <!-- 四すみの 穴 -->
+            <g fill="#10202c" stroke="#ffe36e" stroke-width="3">
+              <circle cx="0" cy="0" r="24"/><circle cx="360" cy="0" r="24"/>
+              <circle cx="0" cy="500" r="24"/><circle cx="360" cy="500" r="24"/>
+            </g>
+            <!-- ブロック：白 W・かたい H・赤 R -->
+            <g stroke-width="2.5">
+              <g fill="#fbfbf8" stroke="#8fa0b3">
+                <rect x="122" y="82" width="36" height="36" rx="4"/><rect x="202" y="82" width="36" height="36" rx="4"/>
+                <rect x="122" y="122" width="36" height="36" rx="4"/>
+                <rect x="122" y="162" width="36" height="36" rx="4"/><rect x="202" y="162" width="36" height="36" rx="4"/>
+                <rect x="42" y="242" width="36" height="36" rx="4"/>
+              </g>
+              <g fill="#dfe7ee" stroke="#6d8093">
+                <rect x="162" y="82" width="36" height="36" rx="4"/><rect x="82" y="242" width="36" height="36" rx="4"/>
+              </g>
+              <g fill="#e0533d" stroke="#7a2519">
+                <rect x="202" y="122" width="36" height="36" rx="4"/><rect x="282" y="42" width="36" height="36" rx="4"/>
+              </g>
+            </g>
+            <!-- まんなかの イカ（絵が なければ 白い 丸） -->
+            <circle cx="180" cy="140" r="25" fill="#ffffff" stroke="#23506e" stroke-width="3"/>
+            <image href="app/images/story/ika2-normal.png" x="150" y="108" width="60" height="60" clip-path="url(#mIka)"/>
+            <!-- 予測線：右の ふちで はねかえって、イカの 下の すきまへ -->
+            <path class="sguide" d="M180 460 L345 325 L184 191"/>
+            <!-- 引っぱって いる 指（反対向き） -->
+            <path class="spull" d="M180 460 L120 492"/>
+            <circle cx="120" cy="492" r="9" fill="#ffffff" fill-opacity=".85" stroke="#23506e" stroke-width="2"/>
+            <!-- 場に のこった タコ（ここに あてると コンボ） -->
+            <circle cx="270" cy="264" r="16" fill="#e0533d" stroke="#ffffff" stroke-width="2"/>
+            <image href="app/images/story/tako1-normal.png" x="246" y="240" width="48" height="48" clip-path="url(#mTakoA)"/>
+            <!-- 発射口の タコ -->
+            <circle cx="180" cy="460" r="17" fill="#d9731f" stroke="#ffffff" stroke-width="2"/>
+            <image href="app/images/story/tako2-normal.png" x="154" y="434" width="52" height="52" clip-path="url(#mTakoB)"/>
           </svg>
-          <span class="ssling"></span>
-          <span class="stako stako--next"></span>
-          <span class="stako stako--fly"></span>
-          <div class="scastle">
-            <span class="sblk" style="left:0;bottom:0;width:20px;height:44px"></span>
-            <span class="sblk h" style="left:48px;bottom:0;width:20px;height:44px"></span>
-            <span class="sblk" style="left:96px;bottom:0;width:20px;height:44px"></span>
-            <span class="sblk" style="left:0;bottom:44px;width:116px;height:14px"></span>
-            <span class="sblk" style="left:8px;bottom:58px;width:18px;height:36px"></span>
-            <span class="sblk r" style="left:47px;bottom:58px;width:22px;height:22px"></span>
-            <span class="sblk" style="left:90px;bottom:58px;width:18px;height:36px"></span>
-            <span class="sblk" style="left:4px;bottom:94px;width:108px;height:12px"></span>
-            <span class="sblk" style="left:30px;bottom:106px;width:56px;height:22px"></span>
-            <span class="sblk fall" style="left:-26px;bottom:6px;width:18px;height:14px;transform:rotate(28deg)"></span>
-            <span class="sblk fall" style="left:-8px;bottom:70px;width:14px;height:12px;transform:rotate(-40deg)"></span>
-          </div>
         </div>
         <div class="stray">
-          <span class="on"><b>3</b></span><span class="t2"><b>1</b></span><span class="t3"><b>1</b></span>
+          <span class="t2 on"><b>2</b></span><span><b>1</b></span>
         </div>
         <div class="swho"><i class="on">ナオ</i><i>フミ</i><i>マキ</i><i>チカ</i></div>
         <div class="sbtns"><b>やりなおす</b><i>タイトル</i></div>
@@ -148,7 +189,7 @@
   <div class="wrap specs-grid">
     <div class="spec"><b>インストール不要</b><span>ブラウザで開くだけ</span></div>
     <div class="spec"><b>通信なし</b><span>読みこんだ あとは オフラインでも</span></div>
-    <div class="spec"><b>全8面・24の 城</b><span>1回 投げるごとに ひと区切り</span></div>
+    <div class="spec"><b>全8面・24の 台</b><span>1つの 台は 数投で ひと区切り</span></div>
     <div class="spec"><b>スマホもPCも</b><span>ひっぱって はなすだけ</span></div>
   </div>
 </div>
@@ -201,15 +242,17 @@
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">どんなゲーム</p>
-      <h2>ねらって、投げて、崩れるのを 見る。</h2>
-      <p>城は 白い ブロックの 積みかさね。ブロック 1つ 1つに 重さが あり、支えを うしなうと 崩れて 落ちます。
-        めあての わりあい 以上 こわせば クリアです。</p>
+      <h2>はじいて、はねかえして、コンボで たおす。</h2>
+      <p>たて長の 台を 上から 見下ろす、ビリヤードの ような 物理パズルです。
+        白い 壁に まもられた イカの 体力（ハート）を 0 に したら 勝ち。
+        1面の はじめは 1回 あてれば 勝てますが、面が すすむと イカの 体力も、投げられる タコの かずも ふえて いきます。</p>
     </div>
     <div class="cards">
       <div class="card">
         <span class="num">01</span>
         <h3>ひっぱって、はなす</h3>
-        <p>画面を 指で うしろへ ひっぱると 予測線が 出ます。ひく 向きで 角度、ひく 長さで 強さ。はなすと タコが くるくる 回りながら 飛んで いきます。</p>
+        <p>画面の どこでも 指で ひっぱって はなすと、下の 発射口から <b>反対向き</b>に タコが とびだします。ひく 長さが 強さ。
+          予測線は 台の ふちや ブロックで はねかえる 道すじまで 見せて くれます。</p>
         <ul>
           <li>マウスの ドラッグでも、指でも 同じ 操作</li>
           <li>予測線の 長さは 投げる 人で ちがう</li>
@@ -217,41 +260,42 @@
       </div>
       <div class="card">
         <span class="num">02</span>
-        <h3>赤い ブロックと 支え</h3>
-        <p>城の あちこちに ある <b>赤い ブロック</b> に あてると 爆発して、まわりを まとめて こわします。
-          下の 支えを ぬけば、上の ブロックも 落ちて いっしょに 消えます。</p>
+        <h3>のこった タコで コンボ</h3>
+        <p>タコは はねかえりながら ゆっくり 回って すべり、止まると <b>場に のこります</b>。
+          つぎの タコを のこった タコに あてると コンボ。コンボの ついた タコが イカに あたると、コンボ 1つごとに ダメージが <b>＋50%</b>。</p>
         <ul>
-          <li>白 → ふつう、灰色 → かたい、赤 → 爆発</li>
-          <li>崩れた ブロックは 地面に ふれると 消える</li>
-          <li>うまく いけば 一発で 城が まるごと 崩れる</li>
+          <li>はねかえりを つかって 壁の うらへ まわす</li>
+          <li>場の タコを ビリヤードの 玉の ように 使う</li>
         </ul>
       </div>
       <div class="card">
         <span class="num">03</span>
-        <h3>8しゅるいの タコ</h3>
-        <p>面が すすむと、投げられる タコが ふえます。おもくて つきぬける タコ、よく はねる タコ、空中で タップすると わかれる タコ……。城の 形を 見て えらびます。</p>
+        <h3>白い 壁と、四すみの 穴</h3>
+        <p>イカの まわりは 四角い ブロックの 壁。<b>白</b>は 2回 あてると こわれ、<b>かたい</b> ブロックは こわれず、<b>赤</b>は あたると 爆発して まわりの ブロックと ちかくの イカに ダメージ。
+          そして イカを はじいて <b>四すみの 穴</b>に おとせば、体力が のこって いても 一発 勝利です。</p>
         <ul>
-          <li>下の トレイで タコを えらぶ（のこりの かず つき）</li>
-          <li>さいごは タコ大王が 城ごと ゆらす</li>
+          <li>白 → 2回で こわれる、かたい → こわれない、赤 → 爆発</li>
+          <li>穴に おとすと ★が 1つ おまけ</li>
         </ul>
       </div>
       <div class="card">
         <span class="num">04</span>
-        <h3>4人の 投げる 人</h3>
-        <p>ねらいが 正確な ナオ、力もちの フミ、あたると 爆発する マキ、小さい タコを 3びき いっぺんに 投げる チカ。同じ タコでも、投げる 人で まるで ちがう 動きに なります。</p>
+        <h3>8しゅるいの タコと 4人の 投げる 人</h3>
+        <p>面が すすむと、投げられる タコが ふえます。白い ブロックを つきぬける タコ、タップで わかれる タコ、イカへ まっしぐらの タコ……。
+          ねらいの ナオ、力の フミ、爆発の マキ、3びき いっぺんの チカ。同じ タコでも、投げる 人で まるで ちがう 動きに なります。</p>
         <ul>
-          <li>投げる たびに 人を かえられる</li>
-          <li>チカは 2面から 仲間に なる</li>
+          <li>下の トレイで タコを えらぶ（のこりの かず つき）</li>
+          <li>投げる たびに 人を かえられる（チカは 2面から）</li>
         </ul>
       </div>
       <div class="card">
         <span class="num">05</span>
         <h3>★と やりなおし</h3>
-        <p>タコを のこして クリアするほど ★が ふえます（のこり 2ひき以上で ★3）。ぜんぶ こわせば ★が 1つ おまけ。
-          タコが なくなっても、同じ 城に すぐ いどめます。</p>
+        <p>タコを のこして 勝つほど ★が ふえます（のこり 2ひき 以上で ★3、1ぴきで ★2、0で ★1）。穴に おとして 勝てば ★が 1つ おまけ。
+          タコが なくなっても イカが のこって いたら、同じ 台に すぐ「もういちど」。</p>
         <ul>
           <li>進んだ レベルと ★は この端末の中だけに 保存</li>
-          <li>「えらんで あそぶ」で クリアした 城に もう一度</li>
+          <li>「えらんで あそぶ」で クリアした 台に もう一度</li>
         </ul>
       </div>
       <div class="card">
@@ -271,26 +315,26 @@
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">タコ</p>
-      <h2>投げられて くれる、8ひきの タコ。</h2>
+      <h2>はじかれて くれる、8ひきの タコ。</h2>
       <p>前作で 猫を かくした タコたちは、いまでは 街の 人気者。「街の みんなへの おれい」と、自分から 投げられて くれます。1面に 1ぴきずつ 仲間に なります。</p>
     </div>
     <div class="chars">
       <div class="char"><div class="char-face" style="--c:#e0533d"><span>一</span><img src="app/images/story/tako1-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">1面 通学路から</p><h3>タコ一郎</h3><p>ふつうの タコ。まずは これで 投げかたを おぼえる。</p></div>
+        <p class="tag">1面 通学路から</p><h3>タコ一郎</h3><p>ふつうの タコ。まずは これで はじきかたと はねかえりを おぼえる。</p></div>
       <div class="char"><div class="char-face" style="--c:#d9731f"><span>二</span><img src="app/images/story/tako2-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
         <p class="tag">2面 商店街から</p><h3>タコ二郎</h3><p>おもくて、白い ブロックを つきぬける。魚屋の たのもしい 若だんな。タコ大王と いっしょに 仲間に なる。</p></div>
       <div class="char"><div class="char-face" style="--c:#c0398a"><span>三</span><img src="app/images/story/tako3-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">3面 トンネルから</p><h3>タコ三郎</h3><p>よく はねる。壁に あたっても ぽよーんと もどって、また あたる。</p></div>
+        <p class="tag">3面 トンネルから</p><h3>タコ三郎</h3><p>よく はねて、長く すべる。ふちで ぽよーんと はねかえって、壁の うらまで とどく。</p></div>
       <div class="char"><div class="char-face" style="--c:#3f8f57"><span>四</span><img src="app/images/story/tako4-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">4面 壁工場から</p><h3>タコ四郎</h3><p>空中で タップすると、3びきに わかれる。</p></div>
+        <p class="tag">4面 壁工場から</p><h3>タコ四郎</h3><p>うごいて いる あいだに タップすると、3びきに わかれる。</p></div>
       <div class="char"><div class="char-face" style="--c:#2f6fb0"><span>五</span><img src="app/images/story/tako5-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">5面 砂浜から</p><h3>タコ五郎</h3><p>空中で タップすると、まっすぐ 下へ ずどーん。高い 壁に。</p></div>
+        <p class="tag">5面 砂浜から</p><h3>タコ五郎</h3><p>うごいて いる あいだに タップすると、イカへ まっしぐら。</p></div>
       <div class="char"><div class="char-face" style="--c:#b8860b"><span>六</span><img src="app/images/story/tako6-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">6面 海の 上から</p><h3>タコ六郎</h3><p>あたって すこし したら 大ばくはつ。安全 だいいち（？）。</p></div>
+        <p class="tag">6面 海の 上から</p><h3>タコ六郎</h3><p>ぶつかって 1びょう後に 大ばくはつ。安全 だいいち（？）。</p></div>
       <div class="char"><div class="char-face" style="--c:#4b3f63"><span>七</span><img src="app/images/story/tako7-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">7面 イカの 城から</p><h3>タコ七郎</h3><p>スミを はいて、まわりの ブロックを もろく する。つぎの 1投が 効く。</p></div>
+        <p class="tag">7面 イカの 城から</p><h3>タコ七郎</h3><p>スミを はいて、まわりの ブロックを もろく する（かたい ブロックも 白に）。スミの かかった イカは ダメージ 1.5ばい。</p></div>
       <div class="char"><div class="char-face" style="--c:#8e1b1b"><span>王</span><img src="app/images/story/daiou-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">8面 女王の 間で</p><h3>タコ大王</h3><p>前作の ラスボス。いまは 魚屋の 人気者。6面では 船を ジェット噴射で 進め、さいごは 自分が 投げられて 大きな ゆれを おこす。</p></div>
+        <p class="tag">8面 女王の 間で</p><h3>タコ大王</h3><p>前作の ラスボス。いまは 魚屋の 人気者。大きくて おもく、はじめて ぶつかった とき 大きな ゆれで まわりを ふきとばす。</p></div>
     </div>
   </div>
 </section>
@@ -299,18 +343,18 @@
   <div class="wrap">
     <div class="sec-head">
       <p class="eyebrow">投げる人</p>
-      <h2>だれが 投げるかで、タコの 飛びかたが かわる。</h2>
+      <h2>だれが 投げるかで、タコの 動きが かわる。</h2>
       <p>前作の ナオと フミに、ソフトボール部の エース マキと、商店街の 魚屋の 娘 チカが くわわります。</p>
     </div>
     <div class="chars">
       <div class="char"><div class="char-face" style="--c:#27407a"><span>ナ</span><img src="app/images/story/nao-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">ねらい ◎ ／ 力 △</p><h3>ナオ</h3><p>ねらいが 正確で、ぶれが ほとんど ない。予測線が いちばん 長い。そのかわり 力は 弱め。</p></div>
+        <p class="tag">ねらい ◎ ／ 力 △</p><h3>ナオ</h3><p>ねらいが 正確で、ぶれが ほとんど ない。予測線が いちばん 長く、はねかえりの 先まで 見える。そのかわり 力は 0.8 と 弱め。</p></div>
       <div class="char"><div class="char-face" style="--c:#d9731f"><span>フ</span><img src="app/images/story/fumi-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">ねらい △ ／ 力 ◎</p><h3>フミ</h3><p>破壊力は ナオの 2倍 以上。ただし ねらいが ぶれて、予測線も 短い。</p></div>
+        <p class="tag">ねらい △ ／ 力 ◎</p><h3>フミ</h3><p>力は 1.6 で ナオの 2倍。ただし ねらいが ぶれて、予測線も 短い。</p></div>
       <div class="char"><div class="char-face" style="--c:#1f7a3d"><span>マ</span><img src="app/images/story/maki-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">あたると ばくはつ</p><h3>マキ</h3><p>となりの クラスの ソフト部 エース。ねらいも 力も 中くらいで、あたると 広く 爆発する。タコ投げを 教えて くれる 人。</p></div>
+        <p class="tag">あたると ばくはつ</p><h3>マキ</h3><p>となりの クラスの ソフト部 エース。ねらいも 力（1.1）も 中くらいで、はじめて ぶつかった とき 小さな 爆発が おきる。</p></div>
       <div class="char"><div class="char-face" style="--c:#b0457a"><span>チ</span><img src="app/images/story/chika-normal.png" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="tag">ちいさく 3びき</p><h3>チカ</h3><p>商店街の 魚屋の 娘。力は ないけど 手が はやく、小さい タコを 3びき いっぺんに 投げる。2面から。</p></div>
+        <p class="tag">ちいさく 3びき</p><h3>チカ</h3><p>商店街の 魚屋の 娘。手が はやく、小さい タコを 3びき いっぺんに 投げる（1ぴきの 力は 0.6）。2面から。</p></div>
     </div>
   </div>
 </section>
@@ -323,10 +367,10 @@
     </div>
     <div class="steps-box" style="background:#fff;border:1px solid var(--line)">
       <div class="flow-step"><em>1</em><span>下の トレイで タコを、その下の ボタンで 投げる 人を えらぶ</span></div>
-      <div class="flow-step"><em>2</em><span>画面を うしろへ ひっぱる。ひく 向きが 角度、ひく 長さが 強さ。予測線で ねらう</span></div>
-      <div class="flow-step"><em>3</em><span>はなすと タコが くるくる 回りながら 飛ぶ。タコに よっては 空中で タップすると わざが 出る</span></div>
-      <div class="flow-step"><em>4</em><span>赤い ブロックは 爆発。支えを ぬかれた ブロックは 落ちて、地面に ふれると 消える</span></div>
-      <div class="flow-step"><em>5</em><span>ぜんぶ 止まったら つぎの 1投。めあての わりあい 以上 こわせば クリア</span></div>
+      <div class="flow-step"><em>2</em><span>画面の どこでも ひっぱる。とぶ 向きは ひいた 向きの 反対、ひく 長さが 強さ。はねかえる 予測線で ねらう</span></div>
+      <div class="flow-step"><em>3</em><span>はなすと 下の 発射口から タコが とびだす。ふちや ブロックで はねかえり、止まると 場に のこる。タコに よっては うごいて いる あいだに タップで わざ</span></div>
+      <div class="flow-step"><em>4</em><span>のこった タコに あてると コンボ。コンボの ついた タコで イカを 攻撃すると ダメージ アップ</span></div>
+      <div class="flow-step"><em>5</em><span>イカの ハートを 0 に するか、イカを 四すみの 穴に おとせば 勝ち</span></div>
     </div>
     <p class="note">パソコンでは マウスの ドラッグ、スマホ・タブレットでは 指で ひっぱって あそべます。</p>
   </div>
@@ -339,7 +383,8 @@
       <h2>ある朝、街が 白い 壁で かこまれた。</h2>
       <p>タコ大王の 事件から しばらく。猫は 塀の 上で ひなたぼっこ、タコたちは 商店街の 人気者。
         ところが ある朝、ナオと フミの 住む 街が まっしろな 壁で ぐるりと かこまれて しまいます。
-        ふつうの やりかたでは こわせない 壁 ―― でも、ソフト部の エース <b>マキ</b> が タコを ぶつけると、壁が くずれた！
+        けっても おしても びくとも しない 壁 ―― その 下で「朝練に 間に合わない」と ボールを ぶつけて いた ソフト部の エース <b>マキ</b> が、
+        まちがえて タコを 投げたら、壁が くずれた！ そこへ 壁を まもる <b>イカ子</b> が あらわれます。
         魚屋の 娘 <b>チカ</b> と <b>タコ大王</b> も 仲間に くわわり、4人は 壁を こわしながら、海の 向こうの <b>イカ女王</b> の 城を めざします。</p>
     </div>
     <div class="cards">
@@ -347,7 +392,7 @@
         <span class="num">01–04</span>
         <h3>とじこめられた 街から、外へ</h3>
         <ul>
-          <li>1面 通学路 ―― タコで 壁が くずれた。でも すぐ もとどおり（イカ子）</li>
+          <li>1面 通学路 ―― マキが まちがえて 投げた タコで 壁が くずれ、イカ子が 登場（イカ子）</li>
           <li>2面 迷路の 商店街 ―― チカと タコ大王が 仲間に（イカ美）</li>
           <li>3面 トンネル ―― イカ女王の たくらみが あきらかに（イカ乃）</li>
           <li>4面 イカの 壁工場 ―― 海へ つづく 吸盤の あと（イカ里）</li>
@@ -364,8 +409,9 @@
         </ul>
       </div>
     </div>
-    <p class="note">1面は 3つの 城（3レベル）。面の 前と あとに 会話の 場面が あります（タップで すすむ、右上で スキップ）。
-      クリアした 城は タイトルの「えらんで あそぶ」から 会話なしで 遊べます。</p>
+    <p class="note">1面は 3つの 台（3レベル）。面の 前と あとに 会話の 場面が あります（タップで すすむ、右上で スキップ）。
+      背景の 絵は 会話の 場面で 出ます。ゲームの 画面は 見やすい 空色の 台です。
+      クリアした 台は タイトルの「えらんで あそぶ」から 会話なしで 遊べます。</p>
   </div>
 </section>
 
@@ -375,11 +421,11 @@
       <p class="eyebrow">つくり</p>
       <h2>物理演算まで、HTML / CSS / JavaScript だけ。</h2>
       <p>フレームワークも ビルドも、物理エンジンの ライブラリも 使っていません。
-        ブロックの 重さ・ぶつかり・崩れかたは <code>app/game.js</code> に 自前で 書いて あります。</p>
+        タコの はねかえり・すべり・回転、タコどうしの ぶつかりと コンボ、爆発や 穴への 落下は <code>app/game.js</code> に 自前で 書いて あります。</p>
     </div>
     <div class="night-list">
-      <div class="night-item"><b>城の 図面は 文字の 絵</b><span><code>app/stages.js</code> に <code>W</code>（白）・<code>H</code>（かたい）・<code>R</code>（赤）で 書くだけ。置いた ままで 崩れないか、入れた タコで クリアできるかは スクリプトで 確かめて います。</span></div>
-      <div class="night-item"><b>絵が なくても 遊べる</b><span>タコや 人の 絵は 読みこめた ときだけ 使います。無ければ 図形と 名前の 札で 代わりに 出ます。</span></div>
+      <div class="night-item"><b>台の 図面は 文字の 絵</b><span><code>app/stages.js</code> に よこ 9マス × たて 13マスまで、<code>Q</code>（イカ）・<code>W</code>（白）・<code>H</code>（かたい）・<code>R</code>（赤）で 書くだけ。置いた ままで 動かないか、いちばん よい 投げを つづければ 入れた タコ 以内に 勝てるかは、24レベル すべて スクリプトで 確かめて います。</span></div>
+      <div class="night-item"><b>絵が なくても 遊べる</b><span>タコや イカの 絵は 読みこめた ときだけ 使います。無ければ 図形と 名前の 札で 代わりに 出ます。</span></div>
       <div class="night-item"><b>保存</b><span>進んだ レベルと ★は LocalStorage に。サーバーには 何も 送りません。</span></div>
       <div class="night-item"><b>動きが 苦手な 方へ</b><span><code>prefers-reduced-motion</code> に 対応。画面の ゆれや 破片を へらします。</span></div>
     </div>
@@ -395,17 +441,18 @@
     <details open><summary>お金は かかりますか？</summary><p>かかりません。無料で、広告も 課金も ありません。</p></details>
     <details><summary>インストールは 必要ですか？</summary><p>不要です。ブラウザで開くだけ。ホーム画面に追加すると、アプリのように 全画面で 開けます。</p></details>
     <details><summary>データは どこかに 送られますか？</summary><p>送られません。進んだ レベルも ★も、お使いの端末の中だけに 保存されます。</p></details>
-    <details><summary>どうやって 投げますか？</summary><p>画面を 指（または マウス）で うしろへ ひっぱって、はなします。ひく 向きで 角度、ひく 長さで 強さが 決まります。ひっぱって いる あいだは 予測線が 出ます。</p></details>
-    <details><summary>なかなか 城が 崩れません</summary><p>上の ほうを ねらうより、<b>下の 支え</b>や <b>赤い ブロック</b>を ねらうのが こつです。支えを ぬかれた ブロックは 落ちて、地面に ふれると 消えます。かたい 灰色の ブロックには、おもい タコ二郎や 力の 強い フミが 効きます。</p></details>
-    <details><summary>空中で タップする タコが うまく 使えません</summary><p>タコ四郎（わかれる）と タコ五郎（真下へ おちる）は、飛んで いる あいだに 画面の どこかを タップすると わざが 出ます。タコ五郎は 城の 真上で タップすると、高い 壁を 上から こわせます。</p></details>
+    <details><summary>どうやって 投げますか？</summary><p>画面の どこでも 指（または マウス）で ひっぱって、はなします。タコは 下の 発射口から、ひいた 向きの <b>反対</b>へ とびだします。ひく 長さで 強さが 決まり、ひっぱって いる あいだは はねかえる 道すじまで 予測線が 出ます。</p></details>
+    <details><summary>なかなか 勝てません</summary><p>まっすぐ ぶつけるより、<b>コンボ</b>と <b>穴</b>を ねらうのが こつです。止まって 場に のこった タコに あててから イカに とどくと、コンボ 1つごとに ダメージが ＋50%。
+      イカが 穴の そばに いたら、はじいて 四すみの 穴に おとせば 一発 勝利です。赤い ブロックの 爆発も ちかくの イカに ききます。予測線が 長い ナオで、ふちの はねかえりを つかうと ねらいやすく なります。</p></details>
+    <details><summary>タップする タコが うまく 使えません</summary><p>タコ四郎（3びきに わかれる）と タコ五郎（イカへ まっしぐら）は、うごいて いる あいだに 画面の どこかを タップすると わざが 出ます。タコ五郎は、イカとの あいだに ブロックが ない ところで タップすると、まっすぐ とどきます。</p></details>
     <details><summary>前作を 遊んで いなくても 大丈夫？</summary><p>大丈夫です。お話は つながって いますが、はじめの 場面で 街の ようすが わかります。前作 <a href="https://pikaring.github.io/cat-on-escape/">猫が消えた街</a> は、ねこを そろえて 逃がす パズルです。</p></details>
-    <details><summary>ついつい やめられません</summary><p>1つの 城は 数投で 終わります。クリアしたら ひと区切り。進んだ レベルは 保存されるので、つぎは「つづきから」遊べます。</p></details>
+    <details><summary>ついつい やめられません</summary><p>1つの 台は 数投で 終わります。クリアしたら ひと区切り。進んだ レベルは 保存されるので、つぎは「つづきから」遊べます。</p></details>
   </div>
 </section>
 
 <section class="cta">
   <div class="wrap">
-    <h2>タコを 投げて、壁の 向こうへ。</h2>
+    <h2>タコを はじいて、壁の 向こうへ。</h2>
     <div class="hero-actions">
       <a class="btn btn-main" href="app/">いますぐ あそぶ</a>
       <a class="btn btn-sub" href="https://github.com/pikaring/throw-on-tako">GitHubで見る</a>

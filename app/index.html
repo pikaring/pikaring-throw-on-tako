@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>街と、その白い壁 〜throw on tako〜</title>
-<meta name="description" content="街と、その白い壁：タコを ひっぱって 投げて、イカの 白い 城を こわす 物理パズル。ブラウザで すぐ あそべる、通信なしの ゲーム">
+<meta name="description" content="街と、その白い壁：タコを はじいて、白い 壁に まもられた イカを たおす 見下ろし型の 物理パズル。ブラウザで すぐ あそべる、通信なしの ゲーム">
 <meta name="theme-color" content="#23506e">
 
 <!-- ホーム画面に くわえた ときの アイコンと なまえ -->
@@ -23,28 +23,28 @@
 </head>
 <body>
 
-  <!-- ===== ヘッダー：面と レベル・こわした わりあい・ひとこと ===== -->
+  <!-- ===== ヘッダー：面と レベル・イカの 体力・ひとこと ===== -->
   <header class="header">
     <div class="status">
       <span class="status__stage" id="stageName">1面 通学路の 壁</span>
       <span class="status__level" id="levelName">1-1</span>
     </div>
 
-    <!-- こわした わりあい（黄色）と めあての 線 -->
+    <!-- イカの 体力（のこり） -->
     <div class="meter">
-      <div class="gauge" role="progressbar" aria-label="こわした わりあい" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="gauge">
+      <div class="gauge" role="progressbar" aria-label="イカの たいりょく" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="gauge">
         <div class="gauge__bar" id="gaugeBar"></div>
         <div class="gauge__goal" id="gaugeGoal"></div>
       </div>
-      <p class="meter__text"><b id="ratioText">0%</b><span class="meter__goal" id="goalText">めあて 70%</span></p>
+      <p class="meter__text"><b id="ratioText">♥</b><span class="meter__goal" id="goalText">イカの たいりょく</span></p>
     </div>
 
     <p class="message" id="message" role="status" aria-live="polite">タコを ひっぱって はなすと 投げるよ！</p>
   </header>
 
-  <!-- ===== まんなか：城と タコ（TakoGame が 描く） ===== -->
+  <!-- ===== まんなか：見下ろしの 台（TakoGame が 描く） ===== -->
   <main class="field" id="field">
-    <canvas class="field__canvas" id="canvas" tabindex="0" aria-label="タコを 投げる ところ。タコを ひっぱって はなすと 投げる。キーボードでは 矢印で ねらって スペースで 投げる"></canvas>
+    <canvas class="field__canvas" id="canvas" tabindex="0" aria-label="タコを はじく 台。画面を ひっぱって はなすと、下から タコが とびだす。キーボードでは 左右の 矢印で 向き、上下で 強さ、スペースで 投げる"></canvas>
     <p class="field__nogame" id="noGame" hidden>ゲームを じゅんび しています…</p>
   </main>
 
