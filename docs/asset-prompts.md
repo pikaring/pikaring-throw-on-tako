@@ -4,9 +4,28 @@
 書き方・画風の 指定は 前作 cat-on-escape の `docs/story-prompts.md` と そろえて あります
 （前作の 絵と 並べても 同じ 作品に 見えるように）。
 
-ナオ・フミ・タコ一郎〜七郎・タコ大王の 立ち絵と、7つの 背景
-（`bg-road` `bg-shotengai` `bg-roji` `bg-park` `bg-river` `bg-factory` `bg-tunnel`、それに `bg-road-cats`）は
+ナオ・フミ・タコ一郎〜七郎・タコ大王の 立ち絵と、4つの 背景
+（`bg-road` `bg-shotengai` `bg-factory` `bg-tunnel`、それに エンディング用の `bg-road-cats`）は
 前作から コピー済みです。
+
+**できた もの**：マキ・チカ・イカ女王・イカ子〜イカ乃（ふつう・やられた）の 立ち絵（1〜5）。
+**まだの もの**：背景5枚（6）、タイトル（7）、エンディング（8）、ロゴ（9）。
+
+### 物語の 地図（絵を つくる ときの 前提）
+
+- 4人の 住む 街が、白い 壁で ぐるりと かこまれた。**イカ女王の 城は 街の 中では なく、壁の 外・海の 向こうの 岬**に ある。
+- 4人は 壁を こわしながら 街を 出て（トンネル → 壁工場 → 砂浜）、船で 海を わたり、城へ 乗りこむ。
+
+| 面 | 場所（背景） | 相手 |
+| --- | --- | --- |
+| 1 | 通学路 `bg-road` | イカ子 |
+| 2 | 壁で 迷路に なった 商店街 `bg-shotengai` | イカ美 |
+| 3 | 街の 外へ ぬける トンネル `bg-tunnel` | イカ乃 |
+| 4 | イカの 壁工場（もとは 工場跡） `bg-factory` | イカ里 |
+| 5 | 砂浜。遠くに 女王の 城 `bg-beach` | イカ代 |
+| 6 | 海の 上 `bg-sea` | イカ江 |
+| 7 | イカの 城の 中 `bg-castle` | 親衛隊長 イカ奈 |
+| 8 | 女王の 間 `bg-throne` | イカ女王 |
 
 ## ストーリー画面の形と、絵の分け方
 
@@ -34,7 +53,7 @@
 | 3 | イカ女王の立ち絵（表情4つ） | `queen-normal` `queen-angry` `queen-surprised` `queen-down` | 2×2グリッド → 512×512×4 |
 | 4 | イカ子〜イカ乃（ふつう） | `ika1-normal` 〜 `ika7-normal` | 4×2グリッド（右下は空き）→ 512×512×7 |
 | 5 | イカ子〜イカ乃（やられた） | `ika1-down` 〜 `ika7-down` | 4×2グリッド（右下は空き）→ 512×512×7 |
-| 6 | 背景2枚 | `bg-wall.jpg` `bg-castle.jpg` | 1024×1536（たて） |
+| 6 | 背景5枚 | `bg-wall.jpg` `bg-beach.jpg` `bg-sea.jpg` `bg-castle.jpg` `bg-throne.jpg` | 1024×1536（たて） |
 | 7 | タイトル | `title.jpg` | 1024×1536（たて） |
 | 8 | エンディング | `ending.jpg` | 1024×1536（たて） |
 | 9 | タイトルロゴ | `logo.png` | 1536×768（よこ）→ 背景を抜いた PNG |
@@ -49,8 +68,8 @@
 | --- | --- | --- |
 | `maki` | **マキ** | となりの クラスの ソフトボール部 エース。背は フミより すこし 低い（ナオより 頭ひとつ 高い）。日焼けした 肌、黒髪の 高い ポニーテール。制服の 上に 部の ジャージ（みどり）を はおる。さっぱりした 姉御肌。タコ投げを みんなに 教える |
 | `chika` | **チカ** | 商店街の 魚屋の 娘。**小柄**（ナオと 同じか 少し 低い）。こげ茶の 髪を 左右 2つの おだんごに。制服の 上に 魚屋の 紺の 前かけ、頭に 白い 三角巾。手が はやく、小さな タコを 3びき いっぺんに 投げる |
-| `queen` | **イカ女王** | 白い 城の 主。**大きな 白い イカ**。銀の ティアラ、水色の ひらひらした マント（ヒレの 形）、扇子。お嬢さま ことば。ほんとうは「タコの ように 愛されたかった」だけ。こわすぎない |
-| `ika1`〜`ika7` | **イカ子〜イカ乃** | 女王の 手下。1面〜7面に 1ぱいずつ。タコ一郎たちと 同じ 大きさの ちびキャラの イカ。面の 場所に ちなんだ 小物で 見分ける |
+| `queen` | **イカ女王** | 海べりの 白い 城の 主。**大きな うすピンクの イカ**。銀の ティアラ、水色の ひらひらした マント（ヒレの 形）、扇子。お嬢さま ことば。タコ大王とは 海で いっしょに 育った 仲。大王が 陸に 上がって さびしかった。こわすぎない |
+| `ika1`〜`ika7` | **イカ子〜イカ乃** | 女王の 手下。タコ一郎たちと 同じ 大きさの ちびキャラの イカ。小物で 見分ける。ほんとうは 女王を 心配して いて、あまり 乗り気では ない。イカ奈は 親衛隊長（7面） |
 
 ---
 
@@ -196,10 +215,10 @@
 【7はい（左上から右へ）】
 1. イカ子（通学路の 壁の 見はり）：赤い はちまきと 首から さげた ホイッスル。足に 小さな 旗（無地の 赤）
 2. イカ美（商店街の はやりもの好き）：頭に のせた ハート形の サングラス、足の 先に イカ墨色の ネイル。足に 自撮りの スマホ
-3. イカ代（路地裏の うらない師）：むらさきの ベール。足に 水晶玉
-4. イカ奈（公園の 番人）：きいろい サンバイザー。足に 砂場の スコップと バケツ
-5. イカ江（河川敷の おしゃべり）：大きな 麦わら帽子。足に メガホン
-6. イカ里（工場跡の 工場長）：灰色の 作業帽と ゴーグル。足に クリップボード（紙は 無地）
+3. イカ代（砂浜の うらない師）：むらさきの ベール。足に 水晶玉
+4. イカ奈（城の 親衛隊長）：きいろい サンバイザー。足に 砂場の スコップと バケツ
+5. イカ江（海の 上の おしゃべり）：大きな 麦わら帽子。足に メガホン
+6. イカ里（壁工場の 工場長）：灰色の 作業帽と ゴーグル。足に クリップボード（紙は 無地）
 7. イカ乃（トンネルの イカ墨 好き）：白い コック帽の かわりに 黒い バンダナ。足に フォークに まいた イカ墨パスタ
 
 （ここに 共通の立ち絵ブロックを貼る。ただし「1マスに1人」は「1マスに1ぱい」と読みかえる）
@@ -227,85 +246,190 @@
 ・右下の1マスは 空けたまま
 ```
 
-## 6. 背景（`bg-wall`・`bg-castle`）
+## 6. 背景（5枚）
 
 背景は **人物を描きません**。下半分には セリフ窓、まんなかの 左右には 立ち絵が 重なるので、
-**場所が分かる大事なものは上の40%に入れます**。`bg-castle` は 8面の 城の 画面（投げる 画面）にも 使うので、
-**地面の 高さを 画面の 下から 25% くらい**に して、その上は 空と 遠くの 城に します。
+**場所が分かる大事なものは上の40%に入れます**。背景は 投げる 画面（ゲーム）の うしろにも うすく 出ます。
 
 ```
 【背景の構図（厳守）】
 ・人物は描かない（遠くの小さな人かげも描かない）
 ・たて長（2:3）の 1024×1536ピクセル
 ・その場所だと ひと目で分かる目じるし（建物・壁・城など）は、上の40%に入れる
-・下の60%は、地面・道・広場など 単純な面だけにする（そこに会話の窓と人物が重なる）
+・下の60%は、地面・道・床・砂浜・海面など 単純な面だけにする（そこに会話の窓と人物が重なる）
 ・左右のはしに 目立つものを置かない
-・奥へ続く道で、奥ゆきを出す
+・奥へ続く道や 水平線で、奥ゆきを出す
 ```
 
 それぞれ **ナオの絵を添付し、「背景の構図ブロック」と「共通の画風ブロック」を付けて**送ります。
+白い 壁は どの 絵でも 同じ 見た目に そろえます：**白い 四角い ブロック（#fbfbf8、境目は 灰 #b9c3cc）を レンガの ように 積み、
+ところどころ 赤い ブロック（#c0503f）が まじる。上の ふちは イカの ヒレの ような 三角の ぎざぎざ**。
 
 | ファイル | 場所 | 場面の説明（プロンプトに書く内容） |
 | --- | --- | --- |
-| `bg-wall` | 街を かこむ 白い壁（オープニング） | 朝の 住宅街の 通学路（前作の 通学路と 同じ ブロック塀と 電柱）。道の 先を、**まっしろな 高い 壁**が 左右 いっぱいに ふさいでいる。壁は 白い 四角い ブロック（#fbfbf8、ふちは 灰 #b9c3cc）を レンガの ように 積んだ もので、ところどころ **赤い ブロック**（#c0503f）が まじる。壁の 上の ふちは イカの ヒレの ような 三角の ぎざぎざ。壁の 向こうに 空だけが 見える。塀の 上の 猫の 座ぶとんに、猫が 1匹 おどろいて 毛を 逆立てている |
-| `bg-castle` | イカ女王の 白い 城（8面） | 街の まんなかの 広場。奥に **白い ブロックを 積みあげた 大きな 城**。塔が 3本、塔の 先は イカの 頭の 形の とがった 屋根（うすピンク #f3ddd2）。城の 壁にも ところどころ 赤い ブロック。城の 旗は 無地の 水色。空は そら色で、雲が 少し。手前の 広場は 石だたみ（グレー #8d8378 の 単純な 四角） |
+| `bg-wall` | 街を かこむ 白い壁（オープニング） | 朝の 住宅街の 通学路（前作の 通学路と 同じ ブロック塀と 電柱）。道の 先を、**白い 高い 壁**が 左右 いっぱいに ふさいでいる（上の 見た目の 壁）。壁の 向こうに 空だけが 見える。塀の 上の 猫の 座ぶとんに、猫が 1匹 おどろいて 毛を 逆立てている |
+| `bg-beach` | 砂浜（5面） | 昼の 砂浜。まっすぐな 水平線の 海。**海の 向こうの 岬に、白い 城が 小さく 見える**（塔が 3本、塔の 先は イカの 頭の 形の とがった 屋根〈うすピンク #f3ddd2〉、壁に ところどころ 赤い ブロック）。砂浜に 白い 壁が 何枚か 立ち、波打ちぎわに 吸盤の 足あと（まるい あとが 2列）が 城の 方向へ つづく。砂浜の はしに 小さな 漁船が 1そう。下の 60% は 砂浜（#f2d9a0）だけ |
+| `bg-sea` | 海の 上（6面） | 海の まんなかから 見た 景色。空と 海と 水平線。水平線の 近くに 白い 城（`bg-beach` と 同じ 城）が すこし 大きく 見える。海面から、白い 壁が 何枚も 島の ように つき出して いる。波は 単純な 白い 線。下の 60% は 海面（#4a90b8 と #23506e の 2色の 横じま）だけ |
+| `bg-castle` | イカの 城の 中（7面） | 白い ブロックで できた 城の 大きな ろうか。まっすぐ 奥へ のびる 通路の つきあたりに、**水色の 大きな 両開きの とびら**（女王の 間）。天井から 水色の 旗が 2本 さがる（無地）。柱の 上の かざりは イカの 頭の 形。窓の 外は 海。床は 白と 水色の 市松もよう |
+| `bg-throne` | 女王の 間（8面） | 白い 大広間。奥の 段の 上に、**ホタテ貝の 形の 大きな 水色の 玉座**（人は すわって いない）。玉座の うしろの 大きな まるい 窓から 海と 空が 見える。左右に 白い 柱、柱の 上は イカの 頭の 形。床は 水色の じゅうたんが 玉座まで まっすぐ のびる |
 
-### 例：白い壁（`bg-wall`）の組み立て
+### 例：砂浜（`bg-beach`）の組み立て
 
 ```
 ゲームの会話画面の 背景の絵をつくってください。添付した絵と同じ作品です。
 線の太さ・塗り・色は、添付の絵とそろえてください。
 
-【場所】街を かこむ 白い壁
-朝の 住宅街の 通学路（ブロック塀と 電柱）。道の 先を、まっしろな 高い 壁が 左右 いっぱいに ふさいでいる。
-壁は 白い 四角い ブロック（#fbfbf8、ふちは 灰 #b9c3cc）を レンガの ように 積んだ もので、
-ところどころ 赤い ブロック（#c0503f）が まじる。壁の 上の ふちは イカの ヒレの ような 三角の ぎざぎざ。
-壁の 向こうに 空だけが 見える。塀の 上の 猫の 座ぶとんに、猫が 1匹 おどろいて 毛を 逆立てている。
+【場所】砂浜。海の 向こうに イカ女王の 城
+昼の 砂浜。まっすぐな 水平線の 海。海の 向こうの 岬に、白い 城が 小さく 見える
+（塔が 3本、塔の 先は イカの 頭の 形の とがった 屋根〈うすピンク #f3ddd2〉、城の 壁に ところどころ 赤い ブロック #c0503f）。
+砂浜に、白い 四角い ブロック（#fbfbf8、境目は 灰 #b9c3cc）を 積んだ 壁が 何枚か 立つ。
+波打ちぎわに、吸盤の 足あと（まるい あとが 2列）が 城の 方向へ つづく。砂浜の はしに 小さな 漁船が 1そう。
 
 （ここに 背景の構図ブロックを貼る）
 （ここに 共通の画風ブロックを貼る）
 ```
 
-## 7. タイトル（人物入りの1枚絵）
+## 7. タイトル（キービジュアル）
 
-**ナオ・フミ・マキ・チカの 絵と、タコ一郎の 絵を 添付**して、次を送ります。
+**ナオ・フミ・マキ・チカの 立ち絵4枚だけを 添付**して、次を送ります
+（ほかの 作品の 絵は 添付しない ―― 線や キャラの 雰囲気まで 似て しまう）。
 
 ```
-ゲームのタイトル画面の絵をつくってください。添付した 4人が 主人公です。
-4人の 顔・髪型・服・身長差（フミ ＞ マキ ＞ ナオ ≧ チカ）は、添付の絵とそろえてください。
+ゲームのタイトル画面に使う、たて長の1枚絵（キービジュアル）をつくってください。
+添付した4人の女子高生が主人公です。顔・髪型・服・身長は添付の絵とそろえてください。
 
-【場面】
-・夕方の 小さな 街を、高台から 見おろしている
-・街の まわりを、白い ブロックを 積んだ 高い 壁が ぐるりと かこむ。街の まんなかに 白い 城（塔の 先は イカの 頭の 形）
-・手前に 4人が 後ろ姿で 立つ。まんなかの マキが、タコ一郎を ボールの ように ふりかぶって いる
-  （タコ一郎は 目を ぎゅっと つぶり、足を ばたつかせて やる気まんまん）
-・フミは 次の タコを かかえ、チカは 小さな タコを 3びき 手に、ナオは 城を 指さして ねらいを 教える
-・空は オレンジから きいろ
+【物語】
+4人が住む街が、ある日とつぜん白い巨大な壁でかこまれた。壁をつくったのは、海べりの白い城に住むイカの女王。
+4人は壁をこわして街の外へ出て、海の城を目指す。
 
-【構図】
-・たて長（2:3）の 1024×1536ピクセル
-・上の3分の1は 空だけにして、何も描かない（タイトルの ロゴを 重ねる）
-・下の3分の1は 地面だけにする（ボタンを重ねる）
-・人物は まんなかの3分の1に
+【全体の構図：上から下へ、4つの帯を重ねる。高い所から、街ごしに海を見わたす視点】
+1. 上の帯（画面の上から0〜30%）：夕方の空と、イカ女王の巨大なシルエット
+ ・水平線の上の空いっぱいに、イカの女王が大きくそびえ、街を見おろす。胸から上だけ見える
+ ・体は こい あおむらさき（#23506e）の1色のシルエット。細かい模様は描かない
+ ・頭はひし形のイカの頭。そこに小さなティアラ、ひだのある高いえり、片方の足で扇子を口もとに
+ ・目だけは白く細い半月の形で、にやりと見おろす（こわくない、いたずらっぽい顔）
+ ・空は夕方のオレンジ（#e07b2a）から、きいろ（#ffe36e）の横じまのベタ塗り
+2. ロゴの帯（画面の上から22〜38%）：ここにタイトルのロゴを重ねる
+ ・女王の胸からえりのあたり。細かいものは描かず、シルエットの面だけにする
+3. 海と城と壁の帯（画面の上から30〜50%）
+ ・いちばん奥は海（海の あお #23506e と そら色 #a8d4e6 の ベタ塗り）。水平線が まっすぐ 横に通る
+ ・海べりの岬に、白い城がひとつ建つ。塔の先はイカの頭の形。城は小さく遠くに見える
+ ・城の手前に、白い四角いブロックを積んだ高い壁が、画面の左はしから右はしまで横に続く
+ （#fbfbf8、境目は灰色 #b9c3cc、ところどころ赤いブロック #c0503f）
+ ・壁は街の奥がわだけ。ゆるく弓なりにカーブして、左右のはしは画面の外へ切れる
+ ・城は壁の外にある。壁の上から、城と海が見える
+4. 街と4人の帯（画面の上から45〜100%）
+ ・壁の内がわに、4人の住む街が広がる。低い家並み、商店街のアーケード、公園の緑、川、工場のえんとつ、電柱
+ ・街は画面の下まで続く。手前ほど家が大きくなり、4人のうしろで街並みが自然に溶けこむ
+ ・手前に壁は描かない。街と4人のあいだに、仕切りやふちを描かない
+ ・屋根や塀の上に猫が2〜3匹
+ ・4人が並んで立つ（画面の上から50〜90%）
+ ・左から順に、ナオ・マキ・フミ・チカ
+ ・まんなかの2人（マキ・フミ）は少し手前で大きく、左右の2人（ナオ・チカ）は少しうしろで小さく。
+ 4人が扇形にかたまり、たがいの肩が少し重なる
+ ・4人とも正面向き。ひざから上
+ ・4人のまわりを、小さな赤いタコのキャラクターが3〜4匹、くるくる回りながら飛ぶ。
+ タコのうしろに、回転を表す白い弧の線を1本ずつ
+ ・4人のうしろから、画面の中心へ向かって広がる、きいろ（#ffe36e）の太い集中線をベタ塗りで数本
 
-（ここに 共通の画風ブロックを貼る）
+【4人のポーズ】
+・ナオ：小柄。黒髪のショートボブ、赤いふちの丸メガネ、紺のブレザーに赤いリボン。
+ 片手をまっすぐ前に伸ばし、遠くの海の城を指さす。きりっとした顔
+・マキ：背が高め。日焼けした肌、黒髪の高いポニーテールをきいろのヘアゴムでむすぶ。
+ みどりの半そでシャツに赤いリボン。タコを1匹ボールのように持ち、ソフトボールの投球フォームでふりかぶる。
+ にかっと笑う
+・フミ：いちばん背が高い。明るい茶色のゆる巻きロングヘア、きいろのヘアピン2本、金色の小さなピアス、
+ 大きめのベージュのカーディガン。小さな赤いタコを1匹、両腕でだきかかえ、自信たっぷりの笑顔でウインク
+・チカ：いちばん小柄。こげ茶の髪を左右2つのおだんごにして、うすいそら色の三角巾。
+ 白いシャツをうでまくり、赤いリボン、紺の前かけ。指のあいだに小さなオレンジ色のタコを3匹はさみ、
+ 前へつき出す。元気な顔
+・身長の差：フミ ＞ マキ ＞ ナオ ≧ チカ
+
+【下のはし】
+・画面の下から12%は、4人の足もとの街の道路と家の屋根だけ。ボタンを重ねるので、顔・手・タコを入れない
+
+【サイズ】
+・たて長（2:3）、1024×1536ピクセル
+
+【画風（厳守）】
+・シンプルな線と色の、フラットな絵本・アニメ調のイラスト。添付の4人の絵と同じ線と塗り
+・輪郭線はこい茶色（#3a2a20）の、太さが一定の線。線の強弱や、スケッチ風の重ね線は使わない
+・塗りはベタ塗りだけ。グラデーション、テクスチャ、ぼかし、光の反射、炎や稲妻のリアルな効果は使わない
+・遠くのもの（海・城・壁）も同じ線の太さ・ベタ塗り。ぼかさない
+・イカの女王のシルエットと4人と猫とタコ以外の、人物やキャラクターは描かない
+・絵の中に文字・ロゴ・数字・看板の文字・吹き出しを一切描かない
+・健全で明るい雰囲気。女王は大きいけれど、こわくない
 ```
+
+日本語で 構図が くずれる ときは 英語で：
+
+```
+Create a portrait key-visual illustration for a game's title screen. The four high-school girls in the
+attached images are the heroes; keep their faces, hair, clothes and relative heights exactly.
+
+Story: the girls' hometown was suddenly enclosed by a giant white wall built by the Squid Queen, who lives in
+a white castle on the seashore OUTSIDE the town. The girls will break the wall and head for the sea castle.
+
+Viewpoint: from high ground, looking over the town toward the sea. Four stacked bands, top to bottom.
+1. TOP (0-30%): evening sky in flat orange (#e07b2a) and yellow (#ffe36e) stripes, and a giant flat
+   single-color silhouette of the Squid Queen (deep blue-violet #23506e) rising above the horizon, chest up:
+   diamond squid head with a small tiara, tall ruffled collar, a folding fan held near her mouth.
+   Only thin white smug half-moon eyes; mischievous, not scary.
+2. LOGO BAND (22-38%): her chest/collar area, plain flat silhouette with no detail (a logo goes here).
+3. SEA, CASTLE AND WALL (30-50%): the sea at the very back with a straight horizon. On a small cape on the
+   shore stands one small, distant white castle with squid-head-shaped tower roofs. In front of it, a tall wall
+   of stacked white square blocks (#fbfbf8, grey seams #b9c3cc, a few red blocks #c0503f) runs across the full
+   width, curving gently, its ends cropped by the frame. The wall is ONLY on the far side of the town.
+   The castle is OUTSIDE the wall, visible beyond it.
+4. TOWN AND GIRLS (45-100%): the girls' hometown spreads inside the wall all the way down to the bottom
+   edge: low houses, a shopping arcade, park greenery, a river, a factory chimney, utility poles, 2-3 cats
+   on roofs. Buildings get larger toward the viewer and blend naturally behind the girls.
+   NO wall, border or rim in the foreground.
+   The four girls (50-90%) grouped in a fan shape, shoulders slightly overlapping, facing the viewer, knees up.
+   Left to right: Nao, Maki, Fumi, Chika; Maki and Fumi slightly closer and larger.
+   - Nao: small, black short bob, round red-framed glasses, navy blazer, red bow; arm stretched forward,
+     pointing at the distant sea castle; determined.
+   - Maki: tall, tanned, high black ponytail with a yellow hair tie, green short-sleeve shirt, red bow;
+     winding up a softball pitch with a small red octopus as the ball; big grin.
+   - Fumi: tallest, light-brown loose wavy long hair, two yellow hairpins, small gold earring, oversized beige
+     cardigan; hugs a small red octopus; confident smile with a wink.
+   - Chika: smallest, dark-brown hair in two side buns, pale sky-blue headscarf, white shirt with rolled sleeves,
+     red bow, navy apron; thrusts forward three tiny orange octopuses between her fingers; energetic.
+   - Height order: Fumi > Maki > Nao >= Chika.
+   3-4 small red octopus mascots fly around them, each with one white spin arc.
+   A few thick flat yellow (#ffe36e) radial speed lines burst from behind the girls.
+Bottom 12%: only streets and rooftops at their feet (buttons go here); no faces, hands or octopuses.
+
+Size: portrait 2:3, 1024x1536.
+
+Style (strict): flat picture-book / anime illustration matching the attached characters. Uniform-width dark
+brown outline (#3a2a20), flat fills only; no gradients, textures, blur, glossy highlights or realistic effects.
+Distant sea, castle and wall use the same line weight, no depth-of-field blur.
+No characters other than the queen silhouette, the four girls, cats and octopuses.
+Absolutely no text, letters, numbers, logos, signs with writing or speech bubbles anywhere.
+Wholesome and cheerful; the queen is huge but not scary.
+```
+
+- **手前に 壁が 出て しまう**：「The town continues to the bottom edge; the girls stand on a street inside the town」を 足す。
+- **城が 壁の 内側に 入って しまう**：「castle on the sea side, beyond the wall」と 場所を 2回 書く。
+- **4人が くずれる**：先に 女王の シルエットと 街だけを 人物なしで 作り、その絵と 4人を 添付して「この 背景の 手前に 4人を 扇形に」と 頼む。
 
 ## 8. エンディング（人物入りの1枚絵）
 
-**ナオ・フミ・マキ・チカ・イカ女王・タコ大王の 絵を 添付**して、次を送ります。
+**ナオ・フミ・マキ・チカ・イカ女王・タコ大王・タコ一郎の 絵を 添付**して、次を送ります。
 
 ```
 白い 壁が 消えた あとの、エンディングの絵をつくってください。添付した 人物たちが 出ます。
 顔・髪型・服は添付の絵とそろえてください。
 
 【場面】
-・朝の 商店街（アーケード、魚屋の 店先）。空は そら色。壁は もう どこにも ない
-・魚屋の 店先で、イカ女王が 前かけを して イカ焼きを 売っている（少し 照れた 顔）。となりで チカが 手つだう
+・朝の 商店街の 魚屋の 店先。空は そら色。白い 壁は もう どこにも ない
+・海から やって きた イカ女王と タコ大王（猫耳カチューシャ）が、とれたての 魚が 入った 木箱を ふたりで 店に とどけて いる。
+ 女王は 少し 照れた 笑顔、大王は 得意げ
+・チカが 前かけ すがたで 木箱を うけとり、元気に 笑う
 ・店の 上に、タコと イカが ならんで 手を つないだ 絵の 大きな ポスター（文字は なし）
-・ナオと フミが イカ焼きを 手に 笑う。マキが タコ一郎を 肩に のせている
-・タコ大王（猫耳カチューシャ）が イカ子たちと いっしょに 配達の 箱を はこぶ
-・店先の 段ボール箱で 猫が 1匹 ねている
+・ナオと フミが ならんで 笑って 見て いる。マキの 肩に タコ一郎が のって いる
+・店先の 段ボール箱で 猫が 1匹 ねて いる。屋根の 上に 小さな イカが 2〜3ばい 手を ふって いる
 
 【構図】
 ・たて長（2:3）の 1024×1536ピクセル
@@ -396,7 +520,8 @@ python3 tools/make_sprite.py app/images/story ikas-down.png:4x2:ika1-down,ika2-d
 python3 -c "from PIL import Image; im=Image.open('wall.png').convert('RGB'); im.resize((1024, round(im.height*1024/im.width)), Image.LANCZOS).save('app/images/story/bg-wall.jpg', quality=80, optimize=True, progressive=True)"
 ```
 
-`castle.png` → `bg-castle.jpg`、`title.png` → `title.jpg`、`ending.png` → `ending.jpg` も 同じです。
+`beach.png` → `bg-beach.jpg`、`sea.png` → `bg-sea.jpg`、`castle.png` → `bg-castle.jpg`、`throne.png` → `bg-throne.jpg`、
+`title.png` → `title.jpg`、`ending.png` → `ending.jpg` も 同じです。
 
 - 背景の **下半分は セリフ窓で 隠れます**。画面の 縦横比に よって 左右が 少し 切れるので、大事な ものは まんなか寄りに。
 

@@ -37,7 +37,6 @@
       ika5:  { name: 'イカ江',   side: 'right', size: 0.8,    faces: faces('ika5', IKA) },
       ika6:  { name: 'イカ里',   side: 'right', size: 0.8,    faces: faces('ika6', IKA) },
       ika7:  { name: 'イカ乃',   side: 'right', size: 0.8,    faces: faces('ika7', IKA) },
-      guard: { name: '親衛隊長', side: 'right', size: 0.9,    faces: faces('guard', IKA) },
       queen: { name: 'イカ女王', side: 'right', height: 1,    faces: faces('queen', ['normal', 'angry', 'surprised', 'down']) },
     },
 
@@ -64,7 +63,7 @@
       { name: 'イカの 壁工場',   bg: 'factory',   boss: 'ika6',  tako: 'tako4' },
       { name: '砂浜の 壁',       bg: 'beach',     boss: 'ika3',  tako: 'tako5' },
       { name: '海の 上の 壁',    bg: 'sea',       boss: 'ika5',  tako: 'tako6' },
-      { name: 'イカの 城',       bg: 'castle',    boss: 'guard', tako: 'tako7' },
+      { name: 'イカの 城',       bg: 'castle',    boss: 'ika4',  tako: 'tako7' },
       { name: '女王の 間',       bg: 'throne',    boss: 'queen', tako: 'daiou' },
     ],
 
@@ -204,13 +203,14 @@
       stage7: [
         { bg: 'castle', left: 'nao', right: 'fumi', text: '水門から、4人は\nイカの 城へ しのびこんだ。' },
         { who: 'nao', face: 'serious', text: 'この 先が、\n女王の 間の\nようです。' },
-        { right: 'guard', who: 'guard', face: 'normal', text: 'そこまでだイカ！\nわたしは 女王さま 親衛隊長。\nここは 一歩も 通さんイカ！' },
+        { right: 'ika4', who: 'ika4', face: 'normal', text: 'そこまでだイカ！\n女王さまの 親衛隊長、\nイカ奈が おあいてイカ！' },
+        { who: 'ika4', text: '気は すすまなくても、\nここを まもるのが\n親衛隊長の つとめイカ。' },
         { right: 'tako7', who: 'tako7', face: 'normal', text: 'タコ七郎タコ。\nぶつかると スミを はいて、\nまわりの 壁を もろく するタコ。' },
         { right: 'chika', who: 'chika', face: 'serious', text: 'ここまで 来て\nひきかえせない！\nみんな、いくよ！' },
       ],
 
       clear7: [
-        { bg: 'castle', left: 'nao', right: 'guard:down', who: 'guard', face: 'down', text: 'む、むねんイカ…\n女王さまを…\nたのむイカ…' },
+        { bg: 'castle', left: 'nao', right: 'ika4:down', who: 'ika4', face: 'down', text: 'む、むねんイカ…\n女王さまを…\nたのむイカ…' },
         { right: 'daiou', who: 'daiou', face: 'normal', text: 'さいごは わしを 投げるダコ。\nこの 大きな からだで、\n壁ごと ゆらして やるダコ。' },
         { who: 'daiou', text: 'それに… 女王とは\nちゃんと 会って\n話さねば ならんダコ。' },
       ],
