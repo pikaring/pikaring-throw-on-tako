@@ -57,8 +57,8 @@
 
   // ---------- ブロック ----------
   const KINDS = {
-    W: { hp: 2,   fill: '#fbfbf8', edge: '#b9c3cc' },   // 白い ブロック
-    H: { hp: 6,   fill: '#dfe7ee', edge: '#7d8fa0' },   // かたい ブロック
+    W: { hp: 3,   fill: '#fbfbf8', edge: '#b9c3cc' },   // 白い ブロック
+    H: { hp: 8,   fill: '#dfe7ee', edge: '#7d8fa0' },   // かたい ブロック
     R: { hp: 1,   fill: '#e0533d', edge: '#8e1b1b' },   // 赤い ブロック（ばくはつ）
   };
 
@@ -214,6 +214,7 @@
       if (b.dead) return;
       b.dead = true;
       topoDirty = true;
+      for (let i = 0; i < blocks.length; i += 1) blocks[i].jammed = false;
       broken += 1;
       const cx = b.x + b.w / 2;
       const cy = b.y + b.h / 2;
@@ -310,7 +311,7 @@
           if (!sp) { if (!b.awake) wake(b); b.tip = 0; continue; }
           let tip = 0;
           if (cx < sp.lo - 1) tip = -1; else if (cx > sp.hi + 1) tip = 1;
-          if (tip && !wedged(b, tip)) { wake(b); b.tip = tip; } else b.tip = 0;
+          if (tip && !b.jammed && !wedged(b, tip)) { wake(b); b.tip = tip; } else b.tip = 0;
         }
       }
       // 起きて いる ブロック：うごかす
@@ -353,6 +354,8 @@
         }
         if (b.x > WORLD_W + 60 || b.x + b.w < -60) { destroy(b, 'out'); continue; }
         const speed = Math.abs(b.vx) + Math.abs(b.vy);
+        // すべり落ちる はずが なにかに つっかえて 動けない → 「つっかえ」として ねむる（まわりが こわれたら また しらべる）
+        if (b.tip && speed < 14) { b.jam = (b.jam || 0) + dt; if (b.jam > 0.8) { b.jammed = true; b.tip = 0; } } else b.jam = 0;
         if (speed < 14 && !b.tip && support(b)) {
           b.still += dt;
           if (b.still > 0.2) { b.awake = false; b.vx = 0; b.vy = 0; b.still = 0; }
@@ -370,7 +373,9 @@
       const mb = massOf(b);
       let nx = 0;
       let ny = 0;
-      if (oy < ox) ny = a.y + a.h / 2 < b.y + b.h / 2 ? -1 : 1;   // a が 上なら n は 上むき
+      const above = a.y + a.h / 2 < b.y + b.h / 2;
+      // a が 上なら n は 上むき。数px の 段差は 横から ぶつからずに のりこえる（ひっかかって 止まらない ように）
+      if (oy < ox || (above && oy <= 5 && ox > 0.5)) ny = above ? -1 : 1;
       else nx = a.x + a.w / 2 < b.x + b.w / 2 ? -1 : 1;
       const pen = ny ? oy : ox;
       // a から 見て b へ むかう 速さ
@@ -496,7 +501,7 @@
         const sp = Math.hypot(t.vx, t.vy);
         if (sp < 30) t.rest += dt; else t.rest = 0;
         if (t.rest > 0.5 || t.x > WORLD_W + 200 || t.x < -200 || t.life > (T.life || 7)) {
-          if (t.fuse > 0) { t.fuse = 0.01; continue; }
+          if (t.fuse > 0) continue;                    // 導火線が のこって いる あいだは 消さない（ばくはつを 待つ）
           t.fade = 0.001;
         }
         if (!reduceMotion()) {

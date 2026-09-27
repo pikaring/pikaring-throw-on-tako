@@ -91,16 +91,25 @@ function runThrow(g, c) {
   if (!g._sim.throwNow()) return { t: 0 };
   let t = 0;
   let tapped = c.tapX == null;
+  let dbgAt = '';
   while (g.phase !== 'aim' && t < 20) {
     g._sim.step(1 / 60);
     t += 1 / 60;
+    if (process.env.SIMDBG && !dbgAt && t > 12) dbgAt = dbgState(g);
     if (!tapped) {
       const ts = g._sim.takos();
       if (!ts.length) tapped = true;
       else if (ts[0].x >= c.tapX) { g._sim.tap(); tapped = true; }
     }
   }
+  if (process.env.SIMDBG && t > 12) console.error('long', JSON.stringify(c), t.toFixed(1), g.phase, dbgAt);
   return { t };
+}
+function dbgState(g) {
+  {
+    return g._sim.takos().length + ' takos ' +
+      g._sim.blocks().filter((b) => !b.dead && b.awake).map((b) => `${b.kind}${b.w / 34 | 0}x${b.h / 34 | 0} @${b.x.toFixed(1)},${b.y.toFixed(1)} v${b.vx.toFixed(1)},${b.vy.toFixed(1)} tip${b.tip} still${b.still.toFixed(2)}`).join(' | ');
+  }
 }
 
 function castleSpan(g) {
@@ -167,22 +176,60 @@ function solve(lv) {
 }
 
 // ---------- 実行 ----------
-const pick = process.argv.slice(2).map(Number).filter(Boolean);
-const list = pick.length ? STAGES.filter((lv) => pick.includes(lv.no)) : STAGES;
-const verbose = process.argv.includes('-v') || pick.length > 0;
-
-console.log('| No | 名前 | ブロック | goal | 静止 | クリア | 使った タコ | こわした わりあい | ふつうの 1投 | 計算 |');
-console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
-let allOk = true;
-for (const lv of list) {
+//   node tools/sim_check.js          ぜんぶ（CPU の かずだけ 並列）
+//   node tools/sim_check.js 5 12     レベルを えらんで（投げの 記録も 出す）
+function checkLevel(lv, verbose) {
   const t0 = Date.now();
   drawCheck(lv);
   const bad = staticCheck(lv);
   const r = solve(lv);
   const n = Object.values(lv.takos).reduce((a, b) => a + b, 0);
   const ok = !bad.length && r.ok;
-  if (!ok) allOk = false;
-  console.log(`| ${lv.no} | ${lv.name} | ${r.total} | ${lv.goal} | ${bad.length ? 'NG ' + bad.slice(0, 4).join(' ') : 'OK'} | ${r.ok ? 'OK' : 'NG'} | ${r.used} / ${n} | ${Math.round(r.ratio * 100)}% | ${Math.round(r.typical * 100)}% | ${((Date.now() - t0) / 1000).toFixed(1)}s |`);
-  if (verbose) console.log('   ' + r.log.join('  ') + `  (1投の 最長 ${r.maxT.toFixed(1)}秒)`);
+  let line = `| ${lv.no} | ${lv.name} | ${r.total} | ${lv.goal} | ${bad.length ? 'NG ' + bad.slice(0, 4).join(' ') : 'OK'} | ${r.ok ? 'OK' : 'NG'} | ${r.used} / ${n} | ${Math.round(r.ratio * 100)}% | ${Math.round(r.typical * 100)}% | ${((Date.now() - t0) / 1000).toFixed(1)}s |`;
+  if (verbose) line += '\n   ' + r.log.join('  ') + `  (1投の 最長 ${r.maxT.toFixed(1)}秒)`;
+  return { no: lv.no, ok, line };
 }
-process.exit(allOk ? 0 : 1);
+
+const args = process.argv.slice(2);
+if (args[0] === '--worker') {
+  const nos = args.slice(1).map(Number);
+  STAGES.filter((lv) => nos.includes(lv.no)).forEach((lv) => {
+    process.stdout.write(JSON.stringify(checkLevel(lv, true)) + '\n');
+  });
+  process.exit(0);
+}
+
+const pick = args.map(Number).filter(Boolean);
+const list = pick.length ? STAGES.filter((lv) => pick.includes(lv.no)) : STAGES;
+const verbose = args.includes('-v') || pick.length > 0;
+const jobs = Math.max(1, Math.min(list.length, require('os').cpus().length));
+
+console.log('| No | 名前 | ブロック | goal | 静止 | クリア | 使った タコ | こわした わりあい | ふつうの 1投 | 計算 |');
+console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
+
+// 重い（うしろの）レベルから 順に くばる
+const buckets = Array.from({ length: jobs }, () => []);
+list.slice().reverse().forEach((lv, i) => {
+  const k = Math.floor(i / jobs) % 2 ? jobs - 1 - (i % jobs) : i % jobs;
+  buckets[k].push(lv.no);
+});
+const { spawn } = require('child_process');
+const results = [];
+let running = 0;
+buckets.filter((b) => b.length).forEach((nos) => {
+  running += 1;
+  const ch = spawn(process.execPath, [__filename, '--worker', ...nos.map(String)], { stdio: ['ignore', 'pipe', 'inherit'] });
+  let buf = '';
+  ch.stdout.on('data', (d) => { buf += d; });
+  ch.on('close', (code) => {
+    buf.split('\n').filter(Boolean).forEach((l) => results.push(JSON.parse(l)));
+    if (code) results.push({ no: nos[0], ok: false, line: `| ${nos.join(',')} | (エラーで 止まった) |` });
+    running -= 1;
+    if (running) return;
+    results.sort((a, b) => a.no - b.no);
+    results.forEach((r) => console.log(verbose ? r.line : r.line.split('\n')[0]));
+    const bad = results.filter((r) => !r.ok);
+    console.log(bad.length ? `\nNG: ${bad.map((r) => r.no).join(', ')}` : '\nぜんぶ OK');
+    process.exit(bad.length || results.length < list.length ? 1 : 0);
+  });
+});
