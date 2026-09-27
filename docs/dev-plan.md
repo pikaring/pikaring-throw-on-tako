@@ -4,7 +4,7 @@
 前作 cat-on-escape の `docs/story-mode.md` と 同じ やり方です。ここに 書いた 形（ファイル・データ・関数）を 守れば、
 ほかの 担当を 待たずに 進められます。
 
-公開 URL は `https://pikaring.github.io/throw-on-tako/`（リポジトリ名を `throw-on-tako` に 変える 前提）。
+公開 URL は `https://pikaring.github.io/white-squid/`（リポジトリ名 `white-squid`）。
 
 ## どんな ゲームか
 

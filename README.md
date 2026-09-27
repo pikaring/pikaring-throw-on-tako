@@ -1,4 +1,4 @@
-# throw-on-tako（街と、その白い壁 〜The City and Its White Squid〜）
+# white-squid（街と、その白い壁 〜The City and Its White Squid〜）
 
 たて画面の 台を 上から 見下ろす、**ビリヤード（モンスト）風の 物理パズル** です。
 画面の どこでも 指で **ひっぱって はなす** と、下の 発射口から 反対向きに タコが とびだします。
@@ -10,8 +10,8 @@
 バックエンドなし（HTML / CSS / Vanilla JavaScript のみ）。物理演算も 自前で、依存ライブラリは ありません。
 進み具合は LocalStorage に 保存します。見た目と 操作感は 前作に 合わせて あります。
 
-**紹介ページ → https://pikaring.github.io/throw-on-tako/**
-**あそぶ → https://pikaring.github.io/throw-on-tako/app/**
+**紹介ページ → https://pikaring.github.io/white-squid/**
+**あそぶ → https://pikaring.github.io/white-squid/app/**
 
 ## ファイル
 
@@ -158,23 +158,22 @@ MIT License
 
 ## 公開の 手順
 
-公開 URL は `https://pikaring.github.io/throw-on-tako/` を 前提に 書いて あります
+公開 URL は `https://pikaring.github.io/white-squid/` を 前提に 書いて あります
 （`index.html` の canonical・OG・JSON-LD、`app/index.html` の canonical、`sitemap.xml`）。
 
-1. **リポジトリ名を `throw-on-tako` に 変える**
-   GitHub の Settings → General → Repository name。
-   ちがう 名前に する ときは、上の ファイルと この README の URL を ぜんぶ 書きかえる。
+1. **リポジトリ名は `white-squid`**（`pikaring-throw-on-tako` から 改名ずみ）。
+   名前を 変える ときは、上の ファイルと この README の URL を ぜんぶ 書きかえる。
 2. **GitHub Pages を 有効に する**
    Settings → Pages → Source: `Deploy from a branch` → Branch: `main` / `/ (root)`。
    数分後に 紹介ページと `/app/` が 開けるか 確かめる。
 3. **Secrets を 登録する**（本・グッズの 画像と 価格を 出す とき）
    `CREATORS_CLIENT_ID` / `CREATORS_CLIENT_SECRET`。Actions の `goods` ワークフローを 1回 手動で 動かすと すぐ 反映される。
 4. **`pikaring.github.io` リポジトリ（ポータル）の 側で**
-   - 一覧（根の `index.html`）に throw-on-tako の カードを 足す（アイコンは `https://pikaring.github.io/throw-on-tako/assets/icon.png`）。
+   - 一覧（根の `index.html`）に white-squid の カードを 足す（アイコンは `https://pikaring.github.io/white-squid/assets/icon.png`）。
      ポータルの JSON-LD（`ItemList`）にも 1つ 足す
-   - 根の `robots.txt` に `Sitemap: https://pikaring.github.io/throw-on-tako/sitemap.xml` の 行を 足す
+   - 根の `robots.txt` に `Sitemap: https://pikaring.github.io/white-squid/sitemap.xml` の 行を 足す
      （robots.txt は 根に 1つだけ。このリポジトリには 置かない）
-5. **Search Console** で URLプレフィックスの プロパティ `https://pikaring.github.io/throw-on-tako/` を 足し、
+5. **Search Console** で URLプレフィックスの プロパティ `https://pikaring.github.io/white-squid/` を 足し、
    `sitemap.xml` を 送信する（確認ファイルを 置いたら 消さずに 残す）。
 6. GA4 は 紹介ページに 入れて あるので、設定は いらない（測定ID `G-3FCFQY4W85` を ほかの サイトと 共用。`/app/` には 入れない）。
 7. 実際の 画面の 画像（`assets/og.png`）が できたら、`index.html` の JSON-LD に `screenshot` を 足す（`og:image` は `assets/icon.png` の まま）。
