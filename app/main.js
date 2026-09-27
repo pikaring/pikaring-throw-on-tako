@@ -1,4 +1,4 @@
-/* 街と、その白い壁 〜throw on tako〜 ―― 画面と 流れ。
+/* 街と、その白い壁 〜The City and Its White Squid〜 ―― 画面と 流れ。
  *
  *   タイトル（StoryPlayer.showTitle）
  *     ├ はじめから   → prologue → stage1 → 1-1 → 1-2 → 1-3 → clear1 → stage2 → … → 8-3 → clear8 → ending → タイトル

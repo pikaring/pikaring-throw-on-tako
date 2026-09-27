@@ -1,4 +1,4 @@
-/* 街と、その白い壁 〜throw on tako〜 の 台本。形は docs/story-mode.md を 見る。 */
+/* 街と、その白い壁 〜The City and Its White Squid〜 の 台本。形は docs/story-mode.md を 見る。 */
 (() => {
   'use strict';
 
@@ -15,7 +15,7 @@
   window.STORY = {
     title: '街と、その白い壁',
     logo: 'images/story/logo.png',   // タイトルの ロゴ（読めなければ title と subtitle の 文字）
-    subtitle: '〜throw on tako〜',
+    subtitle: '〜The City and Its White Squid〜',
 
     cast: {
       nao:   { name: 'ナオ',     side: 'left',  height: 0.8,  faces: faces('nao', HERO) },

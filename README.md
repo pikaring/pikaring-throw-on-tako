@@ -1,4 +1,4 @@
-# throw-on-tako（街と、その白い壁 〜throw on tako〜）
+# throw-on-tako（街と、その白い壁 〜The City and Its White Squid〜）
 
 たて画面の 台を 上から 見下ろす、**ビリヤード（モンスト）風の 物理パズル** です。
 画面の どこでも 指で **ひっぱって はなす** と、下の 発射口から 反対向きに タコが とびだします。
