@@ -65,15 +65,16 @@ function checkLevel(no, verbose) {
       const have = Object.keys(av.left).filter((k) => av.left[k] > 0);
       if (!have.length) break;
       const tries = [];
-      for (const kind of have) for (const who of av.who) for (const p of powers) for (const a of angles) {
+      for (const kind of have) for (const who of av.who) for (const lx of [180, 90, 270]) for (const p of powers) for (const a of angles) {
         sim.restore(res);
+        sim.setLaunch(lx);
         sim.aim(Math.cos(a), Math.sin(a), p, who, kind);
         if (TG.TAKOS[kind].tap) { for (let i = 0; i < 9; i += 1) sim.step(1 / 30); sim.tap(); }
         const st = sim.runUntilQuiet(14);
         const broken = sim.blocks().filter((x) => x.dead).length;
         const near = sim.takos().filter((t) => Math.hypot(t.x - sim.ika().x, t.y - sim.ika().y) < 90).length;
         const score = (st.won ? 1000 : 0) + (st.maxHp - st.hp) * 10 + st.combo + broken * 2 + near * 0.5;
-        tries.push({ score: score + (st.got.length - got.length) * 3, kind, who, p, a, won: st.won, pocket: st.pocket, hp: st.hp, got: st.got, state: sim.save() });
+        tries.push({ score: score + (st.got.length - got.length) * 3, kind, who, lx, p, a, won: st.won, pocket: st.pocket, hp: st.hp, got: st.got, state: sim.save() });
       }
       tries.sort((x, y) => y.score - x.score);
       const pick = tries[Math.min(tries.length - 1, Math.floor(tries.length * pickRank))];
@@ -82,7 +83,7 @@ function checkLevel(no, verbose) {
       const newly = pick.got.slice(got.length);
       got = pick.got;
       used += 1;
-      log.push(`${pick.who}/${pick.kind} ${Math.round((pick.a * 180) / Math.PI)}° ${pick.p} → hp ${pick.hp.toFixed(1)}${newly.length ? ' +' + newly.join('') : ''}${pick.pocket ? ' ポケット' : ''}`);
+      log.push(`${pick.who}/${pick.kind} x${pick.lx} ${Math.round((pick.a * 180) / Math.PI)}° ${pick.p} → hp ${pick.hp.toFixed(1)}${newly.length ? ' +' + newly.join('') : ''}${pick.pocket ? ' ポケット' : ''}`);
       if (pick.won) return { won: true, used, log, pocket: pick.pocket };
     }
     return { won: false, used, log };
