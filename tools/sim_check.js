@@ -5,6 +5,8 @@
  *
  * 確かめる こと：
  *   (a) 何も 投げずに まわしても イカも ブロックも うごかない
+ *   (c) 1回 以内の はねかえりで イカに あたる 道が ある（発射口の 位置・角度を ぜんぶ ためす）
+ *   (d) 1マスの せまい 通路が ない
  *   (b) 毎回 いちばん よい 投げ（角度×強さ×人×タコ）を えらんで、入れた タコの かず 以内に 勝てる
  *   あわせて「上位 10% の 投げ」を 続けた ときの 結果も 出す（そこそこ 上手な 人の めやす。合否には 入れない）
  */
@@ -36,6 +38,19 @@ function checkLevel(no, verbose) {
   const before = JSON.stringify(sim.ika());
   sim.step(1);
   const still = JSON.stringify(sim.ika()) === before;
+  // (c) 何回 はねかえれば あたるか（発射口の 位置と 角度を ぜんぶ ためす。ブロックも はねかえりに 数える）
+  const bounces = sim.minBounces();
+  // (d) 1マスの せまい 通路（W・H か 台の ふちに はさまれた 1マスの すきま）。赤 R は あてれば 消える まと なので 数えない
+  const grid = lv.rows.map((r) => r.padEnd(9, '.'));
+  const isWall = (r, c) => c < 0 || c > 8 || (r >= 0 && r < grid.length && /[WH]/.test(grid[r][c]));
+  const isWallV = (r, c) => r < 0 || (r < grid.length && c >= 0 && c <= 8 && /[WH]/.test(grid[r][c]));
+  const narrow = [];
+  grid.forEach((row, r) => { for (let c = 0; c < 9; c += 1) {
+    if (/[WH]/.test(row[c])) continue;
+    const h = isWall(r, c - 1) && isWall(r, c + 1) && (/[WH]/.test(row[c - 1] || '') || /[WH]/.test(row[c + 1] || ''));
+    const v = r + 1 < grid.length && isWallV(r - 1, c) && isWallV(r + 1, c) && (r > 0 && /[WH]/.test(grid[r - 1][c]) || /[WH]/.test(grid[r + 1][c]));
+    if (h || v) narrow.push(r + ',' + c);
+  } });
 
   // ひろった アイテムで 使える 人と タコが ふえる
   function available(got, used) {
@@ -90,9 +105,8 @@ function checkLevel(no, verbose) {
   }
   const best = play(0);
   const good = play(0.1);
-  return { no, name: lv.name, hp: lv.hp, n: Object.values(lv.takos).reduce((a, b) => a + b, 0), still, best, good, verbose, nao: naoOnly() };
-  /** ナオと タコ一郎だけで（アイテムを ひろわずに）勝てるか の めやす */
-  function naoOnly() { return null; }
+  return { no, name: lv.name, hp: lv.hp, n: Object.values(lv.takos).reduce((a, b) => a + b, 0), still, best, good, verbose, bounces, narrow };
+
 }
 
 if (process.argv[2] === '--child') {
@@ -114,13 +128,13 @@ if (process.argv[2] === '--child') {
   function report() {
     results.sort((a, b) => a.no - b.no);
     let ok = true;
-    console.log('| No | 名前 | 体力 | タコ | 静止 | 最良 | 上位10% |');
-    console.log('|---|---|---|---|---|---|---|');
+    console.log('| No | 名前 | 体力 | タコ | 静止 | 反射 | 細い通路 | 最良 | 上位10% |');
+    console.log('|---|---|---|---|---|---|---|---|---|');
     results.forEach((r) => {
       const b = r.best.won ? `${r.best.used}/${r.n}${r.best.pocket ? ' 穴' : ''}` : `✕ ${r.best.used}/${r.n}`;
       const g = r.good.won ? `${r.good.used}/${r.n}${r.good.pocket ? ' 穴' : ''}` : '✕';
-      console.log(`| ${r.no} | ${r.name} | ${r.hp} | ${r.n} | ${r.still ? 'OK' : 'NG'} | ${b} | ${g} |`);
-      if (!r.still || !r.best.won) ok = false;
+      console.log(`| ${r.no} | ${r.name} | ${r.hp} | ${r.n} | ${r.still ? 'OK' : 'NG'} | ${r.bounces} | ${r.narrow.length ? r.narrow.join(' ') : 'なし'} | ${b} | ${g} |`);
+      if (!r.still || !r.best.won || r.bounces > 1 || r.narrow.length) ok = false;
       if (pickNos.length) { console.log('  最良:', r.best.log.join(' / ')); console.log('  上位10%:', r.good.log.join(' / ')); }
     });
     process.exit(ok ? 0 : 1);

@@ -33,17 +33,17 @@
   // r：大きさ、mass：重さ、fr：まさつ（大きいほど 早く 止まる）、dmg：イカへの ダメージ
   // tap：うごいて いる あいだに タップした ときの わざ、hit：はじめて ぶつかった ときの わざ
   const TAKOS = {
-    tako1: { name: 'タコ一郎', short: '一郎', r: 15, mass: 1,   fr: 300, dmg: 1,   note: 'ふつうの タコ',                     color: '#e0533d' },
-    tako2: { name: 'タコ二郎', short: '二郎', r: 16, mass: 2,   fr: 320, dmg: 1.3, note: 'おもくて つきぬける。かたい ブロックも こわせる', color: '#d9731f', pierce: true },
-    tako3: { name: 'タコ三郎', short: '三郎', r: 15, mass: 1,   fr: 150, dmg: 1,   note: 'よく はねて 長く すべる',           color: '#c0398a', bounce: 1 },
-    tako4: { name: 'タコ四郎', short: '四郎', r: 15, mass: 0.9, fr: 300, dmg: 0.9, note: 'タップで 3びきに わかれる',         color: '#3f8f57', tap: 'split' },
-    tako5: { name: 'タコ五郎', short: '五郎', r: 15, mass: 1.1, fr: 300, dmg: 1.1, note: 'タップで イカへ まっしぐら',         color: '#2f6fb0', tap: 'dash' },
-    tako6: { name: 'タコ六郎', short: '六郎', r: 16, mass: 1,   fr: 300, dmg: 1,   note: 'ぶつかって 1びょう後に 大ばくはつ',   color: '#b8860b', hit: 'bomb' },
-    tako7: { name: 'タコ七郎', short: '七郎', r: 15, mass: 1,   fr: 300, dmg: 1,   note: 'スミで ブロックを もろく、イカを よわく', color: '#4b3f63', hit: 'ink' },
-    daiou: { name: 'タコ大王', short: '大王', r: 24, mass: 3.2, fr: 280, dmg: 2,   note: '大きな ゆれで まわりを ふきとばす',   color: '#8e1b1b', hit: 'quake' },
+    tako1: { name: 'タコ一郎', short: '一郎', r: 15, mass: 1,   fr: 150, dmg: 1,   note: 'ふつうの タコ',                     color: '#e0533d' },
+    tako2: { name: 'タコ二郎', short: '二郎', r: 16, mass: 2,   fr: 170, dmg: 1.3, note: 'おもくて つきぬける。かたい ブロックも こわせる', color: '#d9731f', pierce: true },
+    tako3: { name: 'タコ三郎', short: '三郎', r: 15, mass: 1,   fr: 90, dmg: 1,   note: 'よく はねて 長く すべる',           color: '#c0398a', bounce: 1 },
+    tako4: { name: 'タコ四郎', short: '四郎', r: 15, mass: 0.9, fr: 150, dmg: 0.9, note: 'タップで 3びきに わかれる',         color: '#3f8f57', tap: 'split' },
+    tako5: { name: 'タコ五郎', short: '五郎', r: 15, mass: 1.1, fr: 150, dmg: 1.1, note: 'タップで イカへ まっしぐら',         color: '#2f6fb0', tap: 'dash' },
+    tako6: { name: 'タコ六郎', short: '六郎', r: 16, mass: 1,   fr: 150, dmg: 1,   note: 'ぶつかって 1びょう後に 大ばくはつ',   color: '#b8860b', hit: 'bomb' },
+    tako7: { name: 'タコ七郎', short: '七郎', r: 15, mass: 1,   fr: 150, dmg: 1,   note: 'スミで ブロックを もろく、イカを よわく', color: '#4b3f63', hit: 'ink' },
+    daiou: { name: 'タコ大王', short: '大王', r: 24, mass: 3.2, fr: 160, dmg: 2,   note: '大きな ゆれで まわりを ふきとばす',   color: '#8e1b1b', hit: 'quake' },
   };
   // 台に 置いて ある 白い 玉：あてると うごき、コンボに なる。イカに あたれば ダメージ
-  TAKOS.ball = { name: '白い 玉', short: '玉', r: 14, mass: 1.3, fr: 230, dmg: 1, note: '', color: '#fbfbf8', ball: true };
+  TAKOS.ball = { name: '白い 玉', short: '玉', r: 14, mass: 1.3, fr: 150, dmg: 1, note: '', color: '#fbfbf8', ball: true };
   const TAKO_ORDER = ['tako1', 'tako2', 'tako3', 'tako4', 'tako5', 'tako6', 'tako7', 'daiou'];
 
   // ---------- 投げる 人 ----------
@@ -80,6 +80,7 @@
   };
   const HIT_PAD = 9;          // イカの あたり判定は 見た目より これだけ 広い（かすっても あたり。道すじは まげない）
   const ASSIST = (4 * Math.PI) / 180;   // ナオの ねらい補正：この 角度 以内なら イカに あたる 向きへ よせる
+  const RED_R = 115;          // 赤い ブロックの 爆発の 半径
   const HITSTOP = 0.06;       // あたった 瞬間 とめる 時間（コンボは すこし 長く）
 
   const IMG = {};
@@ -263,7 +264,7 @@
         const sp = 60 + rand() * 180;
         effects.push({ type: 'shard', x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: 0, life: 0.6 + rand() * 0.3, size: 5 + rand() * 6, rot: rand() * 6, color: b.inked ? '#4b3f63' : KINDS[b.kind].fill });
       }
-      if (b.kind === 'R') pending.push({ t: 0.1, fn: () => explode(cx, cy, 115, 2, 'red') });
+      if (b.kind === 'R') pending.push({ t: 0.1, fn: () => explode(cx, cy, RED_R, 2, 'red') });
     }
 
     /** strong：かたい ブロックも けずれる あたり（二郎・爆発） */
@@ -550,6 +551,7 @@
       const T = TAKOS[takoKind];
       const e = T.bounce ? 0.97 : 0.85;
       let v = speed || MAX_SPEED;
+      let bounces = 0;
       let x = from.x;
       let y = from.y;
       let dist = 0;
@@ -562,9 +564,15 @@
         x += dx * 3;
         y += dy * 3;
         dist += 3;
-        if (x - r < 0 || x + r > W) { dx = -dx; x = clamp(x, r, W - r); v *= e; }
-        if (y - r < 0 || y + r > H) { dy = -dy; y = clamp(y, r, H - r); v *= e; }
+        if (x - r < 0 || x + r > W) { dx = -dx; x = clamp(x, r, W - r); v *= e; bounces += 1; }
+        if (y - r < 0 || y + r > H) { dy = -dy; y = clamp(y, r, H - r); v *= e; bounces += 1; }
         const hitB = blocks.find((b) => !b.dead && x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h);
+        if (hitB && hitB.kind === 'R') {                     // 赤い ブロック：そこで ばくはつ。イカに とどくか を かえす
+          const bx = hitB.x + hitB.w / 2;
+          const by = hitB.y + hitB.h / 2;
+          const blastHits = !!ika && !ika.dead && Math.hypot(ika.x - bx, ika.y - by) < RED_R + ika.r;
+          return { pts, hit: false, red: { x: bx, y: by, reach: blastHits }, bounces };
+        }
         if (hitB) {
           const ox = Math.min(x + r - hitB.x, hitB.x + hitB.w - (x - r));
           const oy = Math.min(y + r - hitB.y, hitB.y + hitB.h - (y - r));
@@ -572,9 +580,10 @@
           x += dx * 3;
           y += dy * 3;
           v *= e;
+          bounces += 1;
         }
         pts.push(x, y, dist);
-        if (reach > 0 && Math.hypot(ika.x - x, ika.y - y) < reach) return { pts, hit: true };
+        if (reach > 0 && Math.hypot(ika.x - x, ika.y - y) < reach) return { pts, hit: true, bounces };
         const bump = takos.find((t) => !t.moving && Math.hypot(t.x - x, t.y - y) < t.r + r);
         if (bump) return { pts, hit: false, bump };
       }
@@ -1007,6 +1016,15 @@
         ctx.lineWidth = 3;
         ctx.beginPath(); ctx.arc(b.x, b.y, b.r + 5 + Math.sin(Date.now() / 120) * 2, 0, Math.PI * 2); ctx.stroke();
       }
+      if (dir.path.red) {                                  // 赤い ブロックに あたる：ばくはつの ひろさを 見せる
+        const rd = dir.path.red;
+        ctx.strokeStyle = rd.reach ? '#e0533d' : 'rgba(224,83,61,.5)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([6, 5]);
+        ctx.beginPath(); ctx.arc(rd.x, rd.y, RED_R, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([]);
+        if (rd.reach) { ctx.strokeStyle = '#ffe36e'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(ika.x, ika.y, ika.r + 6 + Math.sin(Date.now() / 120) * 2, 0, Math.PI * 2); ctx.stroke(); }
+      }
       if (dir.path.hit) {                                  // あたる：イカを 光らせる
         ctx.strokeStyle = '#ffe36e';
         ctx.lineWidth = 4;
@@ -1186,6 +1204,18 @@
         step: update, draw,
         blocks: () => blocks, takos: () => takos, ika: () => ika,
         setLaunch(x) { launchX = x; },
+        minBounces() {
+          let best = 99;
+          const r = TAKOS.tako1.r;
+          for (let lx = r + 4; lx <= W - r - 4; lx += 10) {
+            for (let d = -179; d <= -1; d += 0.5) {
+              const a = (d * Math.PI) / 180;
+              const p = tracePath({ x: lx, y: LAUNCH.y }, Math.cos(a), Math.sin(a), 3000, r, MAX_SPEED);
+              if ((p.hit || (p.red && p.red.reach)) && p.bounces < best) best = p.bounces;
+            }
+          }
+          return best;
+        },
         aim(dx, dy, k, who, kind) {
           if (who) setThrower(who);
           if (kind) setTako(kind);
