@@ -707,7 +707,7 @@
         const ih = bg.height * s;
         const par = maxCam() > minCam() ? (camX - minCam()) / (maxCam() - minCam()) : 0;           // すこしだけ 横に ずらす（奥行き）
         ctx.globalAlpha = 0.55;
-        ctx.drawImage(bg, (W - iw) / 2 - (par - 0.5) * Math.min(40, (iw - W) / 2 + 0), (Hh - ih) / 2, iw, ih);
+        ctx.drawImage(bg, (W - iw) / 2 - (par - 0.5) * Math.min(40, (iw - W) / 2 + 0), (Hh - ih) * 0.2, iw, ih);   // 上寄せ（背景の 目じるしは 上の 40% に ある）
         ctx.globalAlpha = 1;
       }
       const sk = shakeAmt ? (Math.random() * 2 - 1) * shakeAmt : 0;
