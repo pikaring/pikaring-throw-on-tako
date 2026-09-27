@@ -26,6 +26,7 @@
     chika: '#b0457a',
     daiou: '#8e1b1b',
     queen: '#5b6b8a',
+    guard: '#3f4f6b',
   };
   const TAKO_COLOR = '#c0392b';
   const IKA_COLOR = '#7c8ea3';
