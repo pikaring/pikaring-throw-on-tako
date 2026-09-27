@@ -1,7 +1,7 @@
 # このリポジトリの きまり
 
 pikaring の ツール群（tap-on-kotoba / tap-on-neko / reach-on-sanma / all-in-texas /
-ride-on-qc / eat-on-gpx / rock-on-mj / cat-on-escape / throw-on-tako）は、**見た目も 作りも そろえる**方針です。
+ride-on-qc / eat-on-gpx / rock-on-mj / cat-on-escape / white-squid）は、**見た目も 作りも そろえる**方針です。
 新しいページや 節を つくるときは、**先にある ページを 見て 同じ形に 合わせてください**。
 迷ったら tap-on-neko と reach-on-sanma が 基準です。
 
