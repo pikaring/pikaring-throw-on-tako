@@ -73,20 +73,20 @@
         { bg: 'roadcats', left: null, right: null, text: 'タコ大王の 事件から\nしばらく たった 街。' },
         { text: '猫たちは 塀の 上で ひなたぼっこ。\nタコたちは 商店街の\nマスコットとして 大人気。' },
         { left: 'nao', right: 'fumi', who: 'fumi', face: 'happy', text: 'ナオ、おっはー！\nきょうも 魚屋の タコ大王、\n行列 すごいって。' },
-        { who: 'nao', face: 'happy', text: 'おはよう、フミ。\nタコと 猫と 人が なかよく\nくらす 街に なりましたね。' },
+        { who: 'nao', face: 'happy', text: 'おはよう、フミ。\nタコと 猫と 人が なかよく\nくらす 街に なったね。' },
         { text: '…その とき。\nゴゴゴゴゴ……' },
         { bg: 'wall', who: 'fumi', face: 'surprised', text: 'え、ちょ、なにあれ！？\n街の まわりに\nまっしろな 壁が！' },
-        { who: 'nao', face: 'surprised', text: '通学路の 先も、\n川の 向こうも…\nぜんぶ ふさがれて います。' },
+        { who: 'nao', face: 'surprised', text: '通学路の 先も、\n川の 向こうも…\nぜんぶ ふさがれてる。' },
         { text: 'ホーッホッホッ…\nどこからか、高い\nわらい声が ひびいた。' },
         { who: 'fumi', face: 'serious', text: 'だれ！？\nてか これ、\nどう やって 出んの！？' },
-        { who: 'nao', face: 'serious', text: 'この ままでは\n学校にも、\n街の 外にも 行けません。' },
+        { who: 'nao', face: 'serious', text: 'この ままじゃ\n学校にも、\n街の 外にも 行けないわ。' },
       ],
 
       // ───── 1面 通学路：タコで 壁が くずれる ─────
       stage1: [
         { bg: 'wall', left: 'nao', right: 'fumi', text: 'ふたりは そのまま、\n白い 壁の 下まで\nかけよった。' },
         { who: 'fumi', face: 'normal', text: 'かったー！\nけっても おしても\nびくとも しない。' },
-        { who: 'nao', face: 'serious', text: '石でも コンクリートでも\nない ですね。\nすこし… ぷにぷに します。' },
+        { who: 'nao', face: 'serious', text: '石でも コンクリートでも\nないね。\nすこし… ぷにぷに する。' },
         { text: 'ボン！ ボン！ ボン！\nとなりで、だれかが 壁に\nボールを ぶつけて いる。' },
         { right: 'maki', who: 'maki', face: 'serious', text: 'もう！ 朝練に\n間に合わない じゃん！\nどいてよ、この 壁！' },
         { who: 'fumi', face: 'surprised', text: 'マキ！？\nとなりの クラスの\nソフト部 エースの？' },
@@ -94,7 +94,7 @@
         { right: 'tako1', who: 'tako1', face: 'down', text: 'タ、タコ〜〜〜！？\nそれ ボールじゃ\nないタコ〜！' },
         { text: 'べちゃっ。\n…ガラガラガラ！\n白い 壁が くずれ落ちた。' },
         { left: 'nao', right: 'maki', who: 'maki', face: 'surprised', text: 'え… ボールじゃ\nびくとも しなかったのに、\nタコで くずれた！？' },
-        { who: 'nao', face: 'serious', text: 'この 壁、\nタコに よわいの かも\nしれません。' },
+        { who: 'nao', face: 'serious', text: 'この 壁、\nタコに よわいの かも\nしれない。' },
         { right: 'tako1', who: 'tako1', face: 'normal', text: 'い、いたくは ないタコ。\nやわらかいから へいきタコ。\nもっと 投げて いいタコ！' },
         { right: 'ika1', who: 'ika1', face: 'normal', text: 'ちょっと まったイカ！\nこの 壁は イカ子が\nまもって いるイカ！' },
         { right: 'maki', who: 'maki', face: 'happy', text: 'じゃあ、あの イカに\nタコを ぶつければ いいんだね。\nソフト部 エースに まかせて！' },
@@ -107,14 +107,14 @@
         { who: 'fumi', face: 'surprised', text: 'うそ、もどった！？\nせっかく あけたのに！' },
         { who: 'ika1', text: 'イカの 壁は すぐ\nふっかつ するイカ。\nおぼえてろイカ〜！' },
         { right: 'maki', who: 'maki', face: 'serious', text: 'こわせる けど、\nタコが ぜんぜん 足りない。\nもっと 一気に 投げないと。' },
-        { who: 'nao', face: 'normal', text: 'タコなら…\n商店街の 魚屋さんに、\nタコ大王さんが います。' },
+        { who: 'nao', face: 'normal', text: 'タコなら…\n商店街の 魚屋さんに、\nタコ大王さんが いるよ。' },
       ],
 
       // ───── 2面 商店街：壁の 迷路・チカと タコ大王 ─────
       stage2: [
         { bg: 'shotengai', left: 'nao', right: 'fumi', text: '商店街に 来ると、\n道の あちこちに 白い 壁が\nはえて いた。' },
         { who: 'fumi', face: 'surprised', text: 'ちょ、行き止まり！\nこっちも！\n商店街が 迷路じゃん！' },
-        { who: 'nao', face: 'serious', text: '壁が ふえて います。\n魚屋さんまで\nたどりつけません。' },
+        { who: 'nao', face: 'serious', text: '壁が ふえてる。\n魚屋さんまで\nたどりつけない。' },
         { right: 'chika', who: 'chika', face: 'happy', text: 'おーい！\nこっち こっち！\nうら道から 来たよ！' },
         { who: 'fumi', face: 'happy', text: 'チカ！\n魚屋さんとこの！' },
         { right: 'daiou', who: 'daiou', face: 'normal', text: 'はなしは 聞いたダコ。\n街の ピンチなら、\nわしらも 手を かすダコ！' },
@@ -123,7 +123,7 @@
         { right: 'tako2', who: 'tako2', face: 'normal', text: 'へい らっしゃいタコ！\nおいらは おもいから、\n壁も つきぬけるタコ！' },
         { right: 'chika', who: 'chika', face: 'serious', text: 'あたしも 行く。\n力は ないけど、タコを\n3びき いっぺんに 投げられる！' },
         { right: 'ika2', who: 'ika2', face: 'normal', text: 'あら、はやりの タコより\nイカの ほうが ずっと\n映えるイカ〜。' },
-        { who: 'nao', face: 'serious', text: 'イカ美さん ですね。\n道を あけて もらいます。' },
+        { who: 'nao', face: 'serious', text: 'あなたが イカ美ね。\n道を あけて もらうわ。' },
       ],
 
       clear2: [
@@ -139,7 +139,7 @@
         { right: 'tako3', who: 'tako3', face: 'normal', text: 'かくれんぼ名人、\nタコ三郎 参上タコ！\nぼくは よく はねるタコ！' },
         { text: 'ところが、出口の 手前に\nまた 白い 壁。' },
         { right: 'ika7', who: 'ika7', face: 'normal', text: 'ここから 先は\n通さないイカ。\nイカ乃が まもるイカ！' },
-        { left: 'nao', who: 'nao', face: 'serious', text: 'どうして こんな\n壁を つくるんですか。' },
+        { left: 'nao', who: 'nao', face: 'serious', text: 'どうして こんな\n壁を つくるの？' },
         { who: 'ika7', text: '女王さまの ご命令イカ。\nタコばかり かわいがられて、\nうらやましいんだイカ。' },
         { who: 'ika7', text: 'だから この 街を\nイカの 街に\nかえて やるんだイカ！' },
         { right: 'fumi', who: 'fumi', face: 'serious', text: 'なにそれ！\nやきもちで 街ごと\nとじこめる とか！' },
@@ -150,7 +150,7 @@
         { bg: 'tunnel', left: 'nao', right: 'ika7:down', who: 'ika7', face: 'down', text: 'スミが… きれたイカ…' },
         { right: 'daiou', who: 'daiou', face: 'normal', text: '…なんでも ないダコ。\n先を いそぐダコ。' },
         { text: 'トンネルを ぬけると、\nそこは 古い 工場の\nうらぐち だった。' },
-        { left: 'nao', who: 'nao', face: 'surprised', text: 'えんとつから、\n白い 煙が\n出て います。' },
+        { left: 'nao', who: 'nao', face: 'surprised', text: 'えんとつから、\n白い 煙が\n出てる。' },
       ],
 
       // ───── 4面 工場：イカの 壁工場 ─────
@@ -160,13 +160,13 @@
         { right: 'maki', who: 'maki', face: 'serious', text: '機械を 止めよう。\nこれ 以上 ふえたら、\n街が うまっちゃう。' },
         { right: 'ika6', who: 'ika6', face: 'normal', text: 'だれイカ！\nイカ里の 工場に\n入って きたのは！' },
         { right: 'tako4', who: 'tako4', face: 'normal', text: 'タコ四郎タコ。\n空中で タップ されたら\n3びきに わかれるタコ！' },
-        { left: 'nao', who: 'nao', face: 'serious', text: '見つかりました。\nでも、ここで\n止めるしか ありません。' },
+        { left: 'nao', who: 'nao', face: 'serious', text: '見つかっちゃった。\nでも、ここで\n止めるしか ないわ。' },
       ],
 
       clear4: [
         { bg: 'factory', left: 'nao', right: 'ika6:down', who: 'ika6', face: 'down', text: 'ライン 停止イカ…\n本日の 生産、\nしゅうりょうイカ…' },
         { right: 'chika', who: 'chika', face: 'surprised', text: 'ねえ、見て。\n床に まるい あとが\nならんでる。' },
-        { who: 'nao', face: 'serious', text: '吸盤の あとです。\n工場の うらから…\n海の ほうへ。' },
+        { who: 'nao', face: 'serious', text: '吸盤の あとだ。\n工場の うらから…\n海の ほうへ。' },
         { right: 'daiou', who: 'daiou', face: 'normal', text: '海…\nやはり、そうダコか。' },
       ],
 
@@ -174,10 +174,10 @@
       stage5: [
         { bg: 'beach', left: 'nao', right: 'fumi', text: '吸盤の あとを たどって、\n4人は 海べりの\n砂浜に 出た。' },
         { who: 'fumi', face: 'surprised', text: '見て！ 海の 向こう！\nまっしろな お城が\nある！' },
-        { who: 'nao', face: 'serious', text: 'あれが、イカ女王の\nお城… ですね。' },
+        { who: 'nao', face: 'serious', text: 'あれが、イカ女王の\nお城… なのね。' },
         { right: 'tako5', who: 'tako5', face: 'normal', text: 'つりで きたえた タコ五郎タコ。\n空中で タップ されたら\nまっすぐ 下へ おちるタコ！' },
         { right: 'ika3', who: 'ika3', face: 'normal', text: 'うらないの 結果が 出たイカ。\nあなたたちの 運勢は…\n「壁に ぶつかる」イカ。' },
-        { left: 'nao', who: 'nao', face: 'normal', text: 'いま ちょうど\n壁に ぶつかって います。' },
+        { left: 'nao', who: 'nao', face: 'normal', text: 'いま ちょうど\n壁に ぶつかってる。' },
       ],
 
       clear5: [
@@ -195,13 +195,12 @@
         { right: 'fumi', who: 'fumi', face: 'happy', text: 'はやっ！\nこれ、ぜったい\n遊園地より すごい！' },
         { text: 'ところが、海の 上に\nとつぜん 白い 壁が\nいくつも わきあがった。' },
         { right: 'ika5', who: 'ika5', face: 'normal', text: 'イカ江の 壁イカ〜。\nここから 先は\n通せないイカ〜。' },
-        { who: 'ika5', text: '…ほんとは あんまり\n気が すすまないイカ〜。\nイカ奈も そう言ってるイカ〜。' },
         { right: 'tako6', who: 'tako6', face: 'normal', text: '安全 だいいち、タコ六郎タコ。\nぶつかって しばらく したら\n大ばくはつ するタコ！ ヨシ！' },
         { left: 'nao', who: 'nao', face: 'surprised', text: '安全とは…\nいったい…' },
       ],
 
       clear6: [
-        { bg: 'sea', left: 'nao', right: 'ika5:down', who: 'ika5', face: 'down', text: 'やられたイカ〜。\nでも ちょっと\nすっきりしたイカ〜。' },
+        { bg: 'sea', left: 'nao', right: 'ika5:down', who: 'ika5', face: 'down', text: 'やられたイカ〜。\nでも あなたがたなら\n女王さまを 止められるカも。' },
         { who: 'ika5', text: 'お城の うらに、\n小さな 水門が あるイカ〜。\nそこから 入れるイカ〜。' },
         { right: 'maki', who: 'maki', face: 'happy', text: 'ありがと！\nイカたちも、\nほんとは 困ってたんだね。' },
       ],
@@ -209,15 +208,15 @@
       // ───── 7面 イカの 城：親衛隊長 ─────
       stage7: [
         { bg: 'castle', left: 'nao', right: 'fumi', text: '水門から、4人は\nイカの 城へ しのびこんだ。' },
-        { who: 'nao', face: 'serious', text: 'この 先が、\n女王の 間の\nようです。' },
-        { right: 'ika4', who: 'ika4', face: 'normal', text: 'そこまでだイカ！\n女王さまの 親衛隊長、\nイカ奈が おあいてイカ！' },
-        { who: 'ika4', text: '気は すすまなくても、\nここを まもるのが\n親衛隊長の つとめイカ。' },
+        { who: 'nao', face: 'serious', text: 'この 先が、\n女王の 間 みたい。' },
+        { right: 'ika4', who: 'ika4', face: 'normal', text: 'そこまでだイカ！\nこの 先は 女王さまの 間。\n一歩も 通さないイカ！' },
+        { who: 'ika4', text: 'これまでの イカたちとは\nわけが ちがうわよ。\n親衛隊長 イカ奈が まもる！' },
         { right: 'tako7', who: 'tako7', face: 'normal', text: 'タコ七郎タコ。\nぶつかると スミを はいて、\nまわりの 壁を もろく するタコ。' },
         { right: 'chika', who: 'chika', face: 'serious', text: 'ここまで 来て\nひきかえせない！\nみんな、いくよ！' },
       ],
 
       clear7: [
-        { bg: 'castle', left: 'nao', right: 'ika4:down', who: 'ika4', face: 'down', text: 'む、むねんイカ…\n女王さまを…\nたのむイカ…' },
+        { bg: 'castle', left: 'nao', right: 'ika4:down', who: 'ika4', face: 'down', text: 'む、むねんイカ…\nタコ大王、あなたなら\n女王さまを 止められる…' },
         { right: 'daiou', who: 'daiou', face: 'normal', text: 'さいごは わしを 投げるダコ。\nこの 大きな からだで、\n壁ごと ゆらして やるダコ。' },
         { who: 'daiou', text: 'それに… 女王とは\nちゃんと 会って\n話さねば ならんダコ。' },
       ],
@@ -242,7 +241,7 @@
         { right: 'queen', who: 'queen', face: 'surprised', text: '…でしたら、\nわたくしが 陸に\n上がれば よいのですわ！' },
         { right: 'chika', who: 'chika', face: 'happy', text: 'じゃあ 女王さまも\nうちで はたらく？\n人手は 大かんげい！' },
         { who: 'queen', face: 'normal', text: 'よ、よろしくってよ。\n魚の 目利きなら、\nだれにも まけませんわ。' },
-        { left: 'nao', who: 'nao', face: 'happy', text: '壁が… とけて\nいきます。' },
+        { left: 'nao', who: 'nao', face: 'happy', text: '壁が… とけて\nいく。' },
       ],
 
       // ───── エンディング ─────
@@ -250,7 +249,7 @@
         { bg: 'roadcats', left: null, right: null, text: 'それから しばらく たった\nある日の あさ。' },
         { text: '白い 壁は すっかり 消え、\n通学路の 先には\nいつもの 空が ひろがって いる。' },
         { left: 'nao', right: 'fumi', who: 'fumi', face: 'happy', text: 'ナオ、おっはー！\n見た？ 魚屋さんの\n「タコと イカの 日」！' },
-        { who: 'nao', face: 'happy', text: 'はい。 タコちゃんと\nイカちゃんの ならんだ\nポスターが かわいかったです。' },
+        { who: 'nao', face: 'happy', text: 'うん。 タコちゃんと\nイカちゃんの ならんだ\nポスター、かわいかった。' },
         { right: 'chika', who: 'chika', face: 'happy', text: '大王と 女王さま、朝いちばんに\n海から 魚を とって きて\nくれるんだ。 父ちゃんも 大よろこび！' },
         { right: 'queen', who: 'queen', face: 'normal', text: 'ごきげんよう。 きょうの\nおすすめは イカですわ。\n…タコも、まあ わるく ないですわ。' },
         { right: 'daiou', who: 'daiou', face: 'normal', text: 'まいど ありダコ！\n腰の ぐあいは どうダコ、\nおやじさん？' },
