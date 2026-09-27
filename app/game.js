@@ -27,6 +27,8 @@
   const MAX_SPEED = 1000;
   const STEP = 1 / 120;
   const SPIN = 2.2;            // タコの まわる はやさ（ゆっくり くるくる）
+  const RED_R = 105;           // 赤い ブロックの 爆発の 半径（となりの となりまで とどく）
+  const RED_POW = 4.2;         // その 強さ（白は まん中 近くなら こわれる。かたいのは のこる）
 
   // ---------- タコ ----------
   // mass：重さ（あたった ときの 強さ）、bounce：はねかえり、tap：空中で タップした ときの わざ、hit：あたった ときの わざ
@@ -116,6 +118,7 @@
     let pending = [];     // { t, fn } 時間差の できごと（赤い ブロックの 連鎖 など）
     let total = 0;
     let broken = 0;
+    let topoDirty = true;  // ブロックが 消えた／うごいた → 支えを しらべなおす
     let level = null;
     let stage = { bg: '', bgColor: '#a8d4e6', boss: '', bossName: '' };
     let boss = null;      // { perch, x, y, vy, down }
@@ -173,6 +176,7 @@
       pending = [];
       total = blocks.length;
       broken = 0;
+      topoDirty = true;
       seed = 7 + (lv.no || 1) * 131;
       // イカは いちばん 高い ブロックの 上に すわる
       let perch = null;
@@ -204,6 +208,7 @@
     function destroy(b, why) {
       if (b.dead) return;
       b.dead = true;
+      topoDirty = true;
       broken += 1;
       const cx = b.x + b.w / 2;
       const cy = b.y + b.h / 2;
@@ -215,7 +220,7 @@
           size: 6 + rand() * 8, rot: rand() * 6, color: b.inked ? '#4b3f63' : KINDS[b.kind].fill });
       }
       if (why === 'ground') effects.push({ type: 'dust', x: cx, y: GROUND, t: 0, life: 0.5, w: b.w });
-      if (b.kind === 'R') pending.push({ t: 0.12, fn: () => explode(cx, cy, 125, 5, 'red') });
+      if (b.kind === 'R') pending.push({ t: 0.12, fn: () => explode(cx, cy, RED_R, RED_POW, 'red') });
       emitStats();
     }
 
@@ -266,22 +271,42 @@
         if (Math.abs(s.y - bottom) > 1.5) continue;
         const l = Math.max(s.x, b.x);
         const r = Math.min(s.x + s.w, b.x + b.w);
-        if (r - l < 2) continue;
+        if (r - l <= 0.01) continue;                  // collideBlocks と おなじ しきい値（ずれると 宙で 止まる）
         lo = Math.min(lo, l);
         hi = Math.max(hi, r);
       }
       return lo <= hi ? { lo, hi } : null;
     }
 
-    function stepBlocks(dt) {
-      // ねむって いる ブロック：支えを しらべる
+    /** dir の がわ（-1 左／1 右）に ぴったり となりあう ブロックが あるか（あれば すべり出せない） */
+    function wedged(b, dir) {
+      const edge = dir > 0 ? b.x + b.w : b.x;
       for (let i = 0; i < blocks.length; i += 1) {
-        const b = blocks[i];
-        if (b.dead) continue;
-        const sp = support(b);
-        const cx = b.x + b.w / 2;
-        if (!sp) { if (!b.awake) wake(b); b.tip = 0; continue; }
-        if (cx < sp.lo - 1) { wake(b); b.tip = -1; } else if (cx > sp.hi + 1) { wake(b); b.tip = 1; } else b.tip = 0;
+        const s = blocks[i];
+        if (s === b || s.dead) continue;
+        const face = dir > 0 ? s.x : s.x + s.w;
+        if (Math.abs(face - edge) > 1.5) continue;
+        if (Math.min(s.y + s.h, b.y + b.h) - Math.max(s.y, b.y) > b.h * 0.5) return true;
+      }
+      return false;
+    }
+
+    function stepBlocks(dt) {
+      // 支えを しらべる（なにも うごいて いない ときは しらべない ―― 軽く する ため）
+      let anyAwake = false;
+      for (let i = 0; i < blocks.length && !anyAwake; i += 1) if (!blocks[i].dead && blocks[i].awake) anyAwake = true;
+      if (anyAwake || topoDirty) {
+        topoDirty = false;
+        for (let i = 0; i < blocks.length; i += 1) {
+          const b = blocks[i];
+          if (b.dead) continue;
+          const sp = support(b);
+          const cx = b.x + b.w / 2;
+          if (!sp) { if (!b.awake) wake(b); b.tip = 0; continue; }
+          let tip = 0;
+          if (cx < sp.lo - 1) tip = -1; else if (cx > sp.hi + 1) tip = 1;
+          if (tip && !wedged(b, tip)) { wake(b); b.tip = tip; } else b.tip = 0;
+        }
       }
       // 起きて いる ブロック：うごかす
       for (let i = 0; i < blocks.length; i += 1) {
@@ -360,7 +385,7 @@
         } else {                                      // ゆっくり → 動かない 相手として おしもどす
           a.x += nx * pen;
           a.y += ny * pen;
-          if (ny) { if (a.vy * ny < 0) a.vy = 0; a.vx *= 0.82; } else if (a.vx * nx < 0) a.vx = -a.vx * 0.1;
+          if (ny) { if (a.vy * ny < 0) a.vy = 0; if (!a.tip) a.vx *= 0.82; } else if (a.vx * nx < 0) a.vx = -a.vx * 0.1;
           return;
         }
       }
@@ -595,7 +620,8 @@
         if (phase === 'settle') {
           quietT = everyoneQuiet() ? quietT + dt : 0;
           if (quietT > 0.35 || flyT > 14) {
-            blocks.forEach((b) => { b.awake = false; b.vx = 0; b.vy = 0; });
+            blocks.forEach((b) => { b.awake = false; b.vx = 0; b.vy = 0; b.tip = 0; });
+            topoDirty = true;
             phase = 'aim';
             camTarget = 0;
             follow = true;
@@ -1046,7 +1072,24 @@
       stats: () => ({ broken, total, ratio: total ? broken / total : 0 }),
       bossDown() { if (boss && !boss.fall) { boss.down = true; } },
       // テスト用（node で 物理だけ まわす）
-      _sim: { step: update, blocks: () => blocks, takos: () => takos, setPull: (p) => { pull = p; phase = 'aim'; }, throwNow, setPhase: (p) => { phase = p; } },
+      _sim: {
+        step: update,
+        physics(dt) { stepBlocks(dt); },                       // ブロックだけ まわす（置いた ままで 崩れないかの 確認）
+        blocks: () => blocks,
+        takos: () => takos,
+        setPull: (p) => { pull = p; phase = 'aim'; },
+        throwNow,
+        tap: useTap,
+        setPhase: (p) => { phase = p; },
+        save: () => ({ blocks: blocks.map((b) => Object.assign({}, b)), seed, broken }),
+        restore(s) {
+          blocks = s.blocks.map((b) => Object.assign({}, b));
+          seed = s.seed; broken = s.broken;
+          takos = []; pending = []; effects = [];
+          topoDirty = true; phase = 'aim'; pull = null;
+          if (boss) boss.perch = blocks.reduce((m, b) => (!b.dead && (!m || b.y < m.y) ? b : m), null);
+        },
+      },
     };
   }
 

@@ -1,11 +1,11 @@
-/* Cat on Escape 紹介ページ
-   ほかのツールと共通のデザイン（tap-on-neko / tap-on-kotoba と同じ site.css）。
-   アクセントだけ このアプリの みどりに してある。
+/* throw on tako（街と、その白い壁）紹介ページ
+   ほかのツールと共通のデザイン（tap-on-neko / tap-on-kotoba / cat-on-escape と同じ site.css）。
+   アクセントだけ このアプリの 海の あおに してある。
    ヒーローの画面モックは app/ の配色を そのまま 縮めたもの。 */
 
 :root {
-  --ember: #3f8f57;
-  --ember-dark: #2f5d3a;
+  --ember: #2f6fb0;
+  --ember-dark: #23506e;
   --ink: #1f2226;
   --body: #4f545c;
   --muted: #868c96;
@@ -235,120 +235,121 @@ details p { margin-top: 12px; font-size: 15px; padding-left: 24px; }
 }
 
 
-/* ========== ゲーム画面の モック（ねこの ともだち） ========== */
-/* ---- ねこを にがせ の 画面モック ---- */
-.screen-slide {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 0;
-  gap: 0;
-  background: #fff8ec;
-  overflow: hidden;
+
+
+/* ========== ゲーム画面の モック（タコを 投げて 白い 城を こわす） ========== */
+.screen-throw {
+  display: flex; flex-direction: column;
+  padding: 0; gap: 0; min-height: 470px;
+  background: #fff8ec; overflow: hidden;
 }
-
-.sbar {
-  padding: 12px 14px 14px;
-  background: #2f5d3a;
-  color: #fff;
-}
-
-.sscore { margin: 0; font-size: 13px; text-align: center; }
-.sscore b { font-size: 22px; color: #ffe36e; vertical-align: -1px; margin: 0 6px; }
-
+.sbar { padding: 11px 13px 12px; background: #23506e; color: #fff; }
+.stop { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; }
 .sbadge {
-  display: inline-block;
-  background: #fff;
-  color: #2f5d3a;
-  border-radius: 999px;
-  padding: 2px 10px;
-  font-size: 11px;
-  font-weight: 700;
+  display: inline-block; background: #fff; color: #23506e; border-radius: 999px;
+  padding: 1px 10px; font-size: 11px; font-weight: 700; white-space: nowrap;
 }
-
+.sgauge { flex: 1; height: 10px; border-radius: 999px; background: #ffffff40; overflow: hidden; }
+.sgauge i { display: block; width: 62%; height: 100%; background: #ffe36e; border-radius: 999px; }
+.spct { font-size: 13px; color: #ffe36e; font-variant-numeric: tabular-nums; }
 .smsg {
-  margin: 9px 0 0;
-  padding: 7px 10px;
-  background: #fff;
-  border-radius: 12px;
-  color: #1b1b1b;
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
+  margin: 8px 0 0; padding: 6px 10px; background: #fff; border-radius: 12px;
+  color: #1b1b1b; font-size: 12.5px; font-weight: 700; text-align: center;
 }
 
+/* 空と 地面。城は 右に、投げる 人は 左に */
 .sfield {
-  position: relative;
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 0;
-  background: linear-gradient(to bottom, #ffe9c7 0%, #ffe9c7 80%, #d9a15b 80%, #d9a15b 100%);
+  position: relative; flex: 1 1 auto; min-height: 250px;
+  background: linear-gradient(to bottom, #a8d4e6 0%, #d8eef6 72%, #9cc5a1 72%, #9cc5a1 78%, #8d8378 78%);
 }
+.ssun { position: absolute; top: 14px; left: 18px; width: 30px; height: 30px; border-radius: 50%; background: #ffe36e; }
+.sarc { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sarc path { fill: none; stroke: #ffffff; stroke-width: 2.4; stroke-dasharray: 2 6; stroke-linecap: round; }
 
-.sboard {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  width: 224px;
-  padding: 6px;
-  background: #fff;
-  border: 4px solid #2f5d3a;
-  border-radius: 16px;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, .22);
+/* 投げる 人（ゴムの ひも と 台）*/
+.ssling { position: absolute; left: 9%; bottom: 28%; width: 8px; height: 46px; background: #3a2a20; border-radius: 4px; }
+.ssling:before, .ssling:after {
+  content: ""; position: absolute; top: -12px; width: 6px; height: 16px; background: #3a2a20; border-radius: 3px;
 }
+.ssling:before { left: -6px; transform: rotate(-20deg); }
+.ssling:after { right: -6px; transform: rotate(20deg); }
 
-.sdot {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+/* 飛ぶ タコ（くるくる 回る）。画像が なければ 赤い 丸 */
+.stako {
+  position: absolute; width: 38px; height: 38px; border-radius: 50%;
+  background: #e0533d url("../app/images/story/tako1-normal.png") center / 128% no-repeat;
+  box-shadow: 0 4px 6px #0003;
 }
+.stako--fly { left: 44%; top: 20%; transform: rotate(-35deg); animation: sspin 2.4s linear infinite; }
+.stako--next { left: calc(9% - 15px); bottom: calc(28% + 40px); width: 30px; height: 30px; transform: rotate(10deg); }
+@keyframes sspin { to { transform: rotate(325deg); } }
 
-.sdot.k { background-image: url("../app/images/face-kuro.png"); }
-.sdot.c { background-image: url("../app/images/face-chashiro.png"); }
-.sdot.t { background-image: url("../app/images/face-kijitora.png"); }
-.sdot.h { background-image: url("../app/images/face-hachiware.png"); }
-
-/* 右へ はしって にげる ねこ */
-.srunner {
-  position: absolute;
-  top: 44%;
-  width: 34px;
-  height: 34px;
-  background-image: url("../app/images/face-hachiware.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, .34));
+/* 白い ブロックの 城 */
+.scastle { position: absolute; right: 7%; bottom: 28%; width: 116px; height: 132px; }
+.sblk {
+  position: absolute; background: #fbfbf8; border: 2px solid #b9c3cc; border-radius: 3px;
+  box-shadow: inset 0 -3px 0 #e6ebef;
 }
+.sblk.h { background: #dfe7ee; border-color: #7d8fa0; }
+.sblk.r { background: #e0533d; border-color: #8e1b1b; box-shadow: inset 0 -3px 0 #c0443a; }
+.sblk.fall { opacity: .85; }
 
-.srunner--a { right: 30%; transform: rotate(-7deg); }
-.srunner--b { right: 15%; transform: rotate(6deg) translateY(-5px); opacity: .92; }
-.srunner--c { right: 0;   transform: rotate(-5deg); opacity: .7; }
-
-.sbtns {
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  background: #fff;
-  border-top: 4px solid #2f5d3a;
+/* タコの トレイと 投げる 人 */
+.stray { display: flex; gap: 6px; padding: 8px 10px; background: #fff; border-top: 4px solid #23506e; }
+.stray span {
+  position: relative; width: 38px; height: 38px; border-radius: 12px; border: 2px solid #d6dde3;
+  background: #fff url("../app/images/story/tako1-normal.png") center / 90% no-repeat;
 }
-
-.sbtns i,
-.sbtns b {
-  flex: 1 1 0;
-  padding: 12px 4px;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 13px;
-  font-style: normal;
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.35;
+.stray span.on { border-color: #e07b2a; box-shadow: 0 0 0 2px #ffe36e; }
+.stray span.t2 { background-image: url("../app/images/story/tako2-normal.png"); }
+.stray span.t3 { background-image: url("../app/images/story/tako3-normal.png"); }
+.stray span b {
+  position: absolute; right: -5px; bottom: -5px; min-width: 18px; height: 18px; padding: 0 4px;
+  border-radius: 9px; background: #23506e; color: #fff; font-size: 11px; line-height: 18px; text-align: center;
 }
-
+.swho { display: flex; gap: 6px; padding: 0 10px 8px; background: #fff; }
+.swho i {
+  flex: 1 1 0; padding: 5px 2px; border-radius: 10px; border: 2px solid #d6dde3;
+  font-size: 11px; font-style: normal; font-weight: 700; text-align: center; color: #1b1b1b;
+}
+.swho i.on { border-color: #23506e; background: #e7f0f8; }
+.sbtns { display: flex; gap: 8px; padding: 0 10px 10px; background: #fff; }
+.sbtns i, .sbtns b {
+  flex: 1 1 0; padding: 10px 4px; border-radius: 14px; color: #fff;
+  font-size: 13px; font-style: normal; font-weight: 700; text-align: center; line-height: 1.35;
+}
 .sbtns b { background: #c65a00; }
-.sbtns i { background: #1f7a3d; }
+.sbtns i { background: #23506e; }
+
+/* ---- タコと 人の しょうかい ---- */
+.chars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.char {
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; display: flex; flex-direction: column; gap: 6px; transition: box-shadow .2s, transform .2s;
+}
+.alt .char { background: var(--paper); }
+section:not(.alt) .char { background: var(--white); }
+.char:hover { box-shadow: 0 18px 44px -20px #1f22262e; transform: translateY(-2px); }
+.char-face {
+  position: relative; width: 88px; height: 88px; border-radius: 22px; margin-bottom: 6px;
+  background: var(--c, var(--ember)); overflow: hidden;
+  display: grid; place-items: center; color: #fff; font-size: 34px; font-weight: 700;
+}
+.char-face img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--white); }
+.char h3 { font-size: 17px; }
+.char .tag { font-size: 12px; font-weight: 700; color: var(--ember-dark); letter-spacing: .06em; }
+.char p { font-size: 14px; line-height: 1.7; }
+
+/* 上の 共通の @media より あとに 書いて いるので、ここで もう一度 たたむ */
+@media (max-width: 900px) { .chars { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) {
+  .chars { grid-template-columns: 1fr; }
+  .char { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 16px; }
+  .char-face { width: 64px; height: 64px; border-radius: 16px; font-size: 26px; margin: 0; }
+  .char .tag { flex: 1; }
+  .char h3, .char p { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stako--fly { animation: none; }
+}
