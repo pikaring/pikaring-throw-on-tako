@@ -230,13 +230,14 @@
   // ---------- 得点 ----------
   // レベルごと：イカへの ダメージ・穴に おとした ボーナス・さいだい コンボ・のこった タコ一郎。
   // 面の さいご（X-3）で、あまった アイテム（タコ二郎〜大王・なかま）を 得点に かえて、面の 合計を ハイスコアと くらべる
-  const PT = { dmg: 100, pocket: 1000, combo: 200, tako1: 300, itemTako: 500, mate: 800 };
+  const PT = { dmg: 100, pocket: 1000, pocketHp: 500, combo: 200, tako1: 300, itemTako: 500, mate: 800 };
   const fmtPt = (v) => Number(v || 0).toLocaleString('ja-JP');
   function levelScore(st) {
     const maxHp = Number(st && st.maxHp) || 1;
     const hp = Math.max(0, Number(st && st.hp) || 0);
     const rows = [['イカへの ダメージ', Math.round((maxHp - hp) * PT.dmg)]];
-    if (st && st.pocket) rows.push(['穴に おとした', PT.pocket + Math.round(hp * PT.dmg)]);
+    // 穴に おとすと、のこって いた 体力 1つごとに 大きな ボーナス（たおしきる より ずっと 高い）
+    if (st && st.pocket) rows.push(['穴に おとした' + (hp > 0 ? '（のこり ♥' + fmtHp(hp) + '）' : ''), PT.pocket + Math.round(hp * PT.pocketHp)]);
     if (st && st.combo > 1) rows.push(['さいだい コンボ ' + st.combo, st.combo * PT.combo]);
     if (left.tako1 > 0) rows.push(['のこった タコ一郎 ×' + left.tako1, left.tako1 * PT.tako1]);
     return { rows, total: rows.reduce((s, r) => s + r[1], 0) };

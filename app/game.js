@@ -21,8 +21,8 @@
   const CELL = 40;            // 図面の 1マス（たて 13マス × よこ 9マス が 上の 520 に のる）
   const LINE_Y = 530;         // 発射ラインより 下は 発射口の ばしょ
   const LAUNCH = { x: 180, y: 590 };
-  const POCKET_R = 24;        // 四すみの 穴
-  const POCKET_IN = 30;       // イカの 中心が この 距離に 入ったら 落ちる
+  const POCKET_R = 36;        // 四すみの 穴
+  const POCKET_IN = 52;       // イカの 中心が この 距離に 入ったら 落ちる（穴の ふちに イカが かかれば 落ちる）
   const MAX_PULL = 120;       // これ以上 引いても 強さは おなじ（画面の px）
   const MAX_SPEED = 980;
   const STEP = 1 / 120;
@@ -285,7 +285,8 @@
         const px = clamp(x, b.x, b.x + b.w);
         const py = clamp(y, b.y, b.y + b.h);
         if (Math.hypot(px - x, py - y) > R) return;
-        hitBlock(b, look === 'maki' ? 1 : 2, true);   // 爆発は かたい ブロックも けずる
+        if (b.kind === 'H') { b.flash = 0.12; breakBlock(b); return; }   // 爆発は かたい ブロックも 1回で こわす（マキ・六郎・赤）
+        hitBlock(b, look === 'maki' ? 1 : 2, true);
       });
       const push = (o) => {
         const dx = o.x - x;
@@ -502,7 +503,7 @@
           }
           if (collide(t, ika, 0.85) > 0) t.moving = true;
         });
-        applyFriction(ika, 340, dt);
+        applyFriction(ika, 260, dt);   // すこし すべる（穴に おとしやすく）
         if (speedOf(ika) < STOP) { ika.vx = 0; ika.vy = 0; }
         // 穴に おちる
         for (let i = 0; i < POCKETS.length; i += 1) {
