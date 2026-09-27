@@ -206,7 +206,6 @@
 
     const s = stageOf(level);
     const info = stageInfo(s);
-    const bg = (STORY.backgrounds && STORY.backgrounds[info.bg]) || {};
     stageNameEl.textContent = stageTitle(s).trim();
     levelNameEl.textContent = levelName(level);
     const g = Math.round(goalOf() * 100);
@@ -220,7 +219,8 @@
     say(lv.hint || 'タコを ひっぱって、はなすと 投げるよ！');
 
     if (game) {
-      game.load(lv, { bg: bg.image || '', bgColor: bg.color || '#a8d4e6', boss: info.boss || '', bossName: castName(info.boss) });
+      // 背景の 絵は ストーリーだけで 使う。投げる 画面は 白い ブロックが 見やすい 空色 1色に そろえる
+      game.load(lv, { bg: '', bgColor: '#a8d4e6', boss: info.boss || '', bossName: castName(info.boss) });
       game.setTako(takoKey);
       game.setThrower(throwerKey);
       if (!started) { started = true; game.start(); }
