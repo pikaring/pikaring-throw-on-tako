@@ -159,7 +159,7 @@
         { who: 'fumi', face: 'surprised', text: 'ここで 壁、\nつくってたんだ！\nそりゃ ふえる わけだ。' },
         { right: 'maki', who: 'maki', face: 'serious', text: '機械を 止めよう。\nこれ 以上 ふえたら、\n街が うまっちゃう。' },
         { right: 'ika6', who: 'ika6', face: 'normal', text: 'だれイカ！\nイカ里の 工場に\n入って きたのは！' },
-        { right: 'tako4', who: 'tako4', face: 'normal', text: 'タコ四郎タコ。\n空中で タップ されたら\n3びきに わかれるタコ！' },
+        { right: 'tako4', who: 'tako4', face: 'normal', text: 'タコ四郎タコ。\nすべってる ときに タップで\n3びきに わかれるタコ！' },
         { left: 'nao', who: 'nao', face: 'serious', text: '見つかっちゃった。\nでも、ここで\n止めるしか ないわ。' },
       ],
 
@@ -175,7 +175,7 @@
         { bg: 'beach', left: 'nao', right: 'fumi', text: '吸盤の あとを たどって、\n4人は 海べりの\n砂浜に 出た。' },
         { who: 'fumi', face: 'surprised', text: '見て！ 海の 向こう！\nまっしろな お城が\nある！' },
         { who: 'nao', face: 'serious', text: 'あれが、イカ女王の\nお城… なのね。' },
-        { right: 'tako5', who: 'tako5', face: 'normal', text: 'つりで きたえた タコ五郎タコ。\n空中で タップ されたら\nまっすぐ 下へ おちるタコ！' },
+        { right: 'tako5', who: 'tako5', face: 'normal', text: 'つりで きたえた タコ五郎タコ。\nタップ されたら イカへ\nまっしぐらタコ！' },
         { right: 'ika3', who: 'ika3', face: 'normal', text: 'うらないの 結果が 出たイカ。\nあなたたちの 運勢は…\n「壁に ぶつかる」イカ。' },
         { left: 'nao', who: 'nao', face: 'normal', text: 'いま ちょうど\n壁に ぶつかってる。' },
       ],

@@ -169,7 +169,6 @@
   let ended = false;        // この レベルの 結果が でた
 
   const takoLeft = () => Object.keys(left).reduce((s, k) => s + (left[k] || 0), 0);
-  const goalOf = () => (lv && typeof lv.goal === 'number' ? lv.goal : 0.7);
 
   function initGame() {
     if (!TG || typeof TG.create !== 'function' || !canvas.getContext) {
@@ -208,19 +207,18 @@
     const info = stageInfo(s);
     stageNameEl.textContent = stageTitle(s).trim();
     levelNameEl.textContent = levelName(level);
-    const g = Math.round(goalOf() * 100);
-    gaugeGoal.style.left = g + '%';
-    goalText.textContent = 'めあて ' + g + '%';
-    gauge.setAttribute('aria-valuetext', '0% こわした。めあては ' + g + '%');
+    // ゲージは イカの 体力（のこり）。めあての 線は 使わない
+    gaugeGoal.hidden = true;
+    goalText.textContent = 'イカの たいりょく';
 
     buildTray();
     buildThrowers();
-    showRatio(0);
+    showHp(Number(lv.hp) || 1, Number(lv.hp) || 1);
     say(lv.hint || 'タコを ひっぱって、はなすと 投げるよ！');
 
     if (game) {
       // 背景の 絵は ストーリーだけで 使う。投げる 画面は 白い ブロックが 見やすい 空色 1色に そろえる
-      game.load(lv, { bg: '', bgColor: '#a8d4e6', boss: info.boss || '', bossName: castName(info.boss) });
+      game.load(lv, { boss: info.boss || '', bossName: castName(info.boss) });
       game.setTako(takoKey);
       game.setThrower(throwerKey);
       if (!started) { started = true; game.start(); }
@@ -370,18 +368,23 @@
   }
 
   // ---------- ゲームからの しらせ ----------
-  function showRatio(r) {
-    ratio = r;
-    const pct = Math.round(r * 100);
-    gaugeBar.style.width = Math.min(100, pct) + '%';
-    ratioText.textContent = pct + '%';
+  /** イカの 体力を ゲージに（のこりが へるほど バーが みじかく なる） */
+  function showHp(hp, max) {
+    const m = Math.max(1, max);
+    const h = Math.max(0, hp);
+    ratio = 1 - h / m;
+    const pct = Math.round((h / m) * 100);
+    gaugeBar.style.width = pct + '%';
+    ratioText.textContent = '♥ ' + fmtHp(h) + ' / ' + fmtHp(m);
     gauge.setAttribute('aria-valuenow', String(pct));
-    gauge.classList.toggle('is-goal', r >= goalOf());
+    gauge.setAttribute('aria-valuetext', 'イカの たいりょく のこり ' + fmtHp(h));
+    gauge.classList.toggle('is-goal', h <= 0);
   }
+  const fmtHp = (v) => String(Math.round(v * 10) / 10);
 
   function onStats(st) {
     if (!st) return;
-    showRatio(st.ratio || 0);
+    showHp(st.hp, st.maxHp);
   }
 
   function onThrow(kind) {
@@ -394,24 +397,23 @@
     }
     refreshTray();
     const t = TAKOS[kind];
-    say(t && (t.tap) ? 'いけー！（空中で タップすると わざ！）' : 'いけー！');
+    say(t && (t.tap) ? 'いけー！（うごいて いる あいだに タップで わざ！）' : 'いけー！');
   }
 
   function onTurnEnd(st) {
-    if (ended || !lv) return;
-    const r = st && typeof st.ratio === 'number' ? st.ratio : ratio;
-    showRatio(r);
-    if (r >= goalOf()) { levelClear(r); return; }
-    if (takoLeft() <= 0) { levelFail(r); return; }
-    const rest = Math.max(1, Math.ceil((goalOf() - r) * 100));
-    say('あと ' + rest + '% こわそう！　のこり ' + takoLeft() + 'ひき');
+    if (ended || !lv || !st) return;
+    showHp(st.hp, st.maxHp);
+    if (st.won) { levelClear(st); return; }
+    if (takoLeft() <= 0) { levelFail(st); return; }
+    const tip = st.combo > 0 ? 'コンボ ' + st.combo + '！ ' : '';
+    say(tip + 'イカの のこり ♥' + fmtHp(st.hp) + '　タコ のこり ' + takoLeft() + 'ひき');
   }
 
   // ---------- クリア／失敗 ----------
-  function starCount(r) {
+  function starCount(st) {
     const n = takoLeft();
     let s = n >= 2 ? 3 : n === 1 ? 2 : 1;
-    if (r >= 0.999) s += 1;
+    if (st && st.pocket) s += 1;      // 穴に おとしたら おまけ
     return Math.min(3, s);
   }
 
@@ -421,10 +423,10 @@
     node.setAttribute('aria-label', 'ほし ' + n + 'つ');
   }
 
-  function levelClear(r) {
+  function levelClear(st) {
     ended = true;
     playing = false;
-    const stars = starCount(r);
+    const stars = starCount(st);
     save.stars[level] = Math.max(starsOf(level), stars);
     if (mode === 'story') save.level = level + 1;
     writeSave();
@@ -434,8 +436,7 @@
     endTitle.textContent = levelName(level) + ' クリア！';
     endStars.hidden = false;
     setStars(endStars, stars);
-    const pct = Math.round(r * 100);
-    endText.textContent = 'こわした わりあい ' + pct + '%\nのこった タコ ' + takoLeft() + 'ひき' + (pct >= 100 ? '\nぜんぶ こわした！' : '');
+    endText.textContent = (st && st.pocket ? 'イカを 穴に おとした！ 一発 勝利！' : 'イカを たおした！') + '\nのこった タコ ' + takoLeft() + 'ひき' + (st && st.combo > 1 ? '\nさいだい コンボ ' + st.combo : '');
     endMain.dataset.go = 'next';
     endSub.dataset.go = 'rest';
     endMainText.textContent = level >= LAST && mode === 'pick' ? 'えらぶ 画面へ' : 'つぎへ';
@@ -443,13 +444,13 @@
     openEnd();
   }
 
-  function levelFail(r) {
+  function levelFail(st) {
     ended = true;
     playing = false;
     say('タコが なくなっちゃった…');
     endTitle.textContent = 'もう すこし！';
     endStars.hidden = true;
-    endText.textContent = 'こわした わりあい ' + Math.round(r * 100) + '%\nめあては ' + Math.round(goalOf() * 100) + '%';
+    endText.textContent = 'イカの のこり ♥' + fmtHp(st ? st.hp : 0) + '\n場の タコに あてて コンボを ねらおう';
     endMain.dataset.go = 'retry';
     endSub.dataset.go = 'title';
     endMainText.textContent = 'もういちど';
