@@ -493,6 +493,21 @@ button { font-family: inherit; }
   white-space: pre-line;
 }
 
+.score {
+  margin: -6px auto 16px;
+  max-width: 360px;
+  font-size: clamp(15px, 3.8vw, 18px);
+}
+.score[hidden] { display: none; }
+.score__row { display: flex; justify-content: space-between; gap: 12px; padding: 2px 4px; }
+.score__pts { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+.score__head { margin: 8px 0 2px; padding: 0 4px; font-size: .88em; color: var(--c-header); font-weight: 700; }
+.score__row.is-total { border-top: 2px solid #d4cfc4; margin-top: 4px; padding-top: 6px; font-weight: 700; }
+.score__row.is-stage { border-top: 3px double #d4cfc4; margin-top: 6px; padding-top: 6px; font-weight: 800; font-size: 1.12em; }
+.score__row.is-best { color: #8a6d1f; font-weight: 700; }
+.score__row.is-new { color: #c0392b; }
+.picks__best { margin-left: 10px; font-size: .78em; font-weight: 700; color: #8a6d1f; }
+
 .end__actions {
   display: flex;
   flex-direction: column;

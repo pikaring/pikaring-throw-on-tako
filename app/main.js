@@ -12,7 +12,7 @@
 (() => {
   'use strict';
 
-  const SAVE_KEY = 'throwontako.story';   // { level, stars: { 1: 3, … }, seenPrologue, carry: { 2: { throwers: ['fumi'], takos: { tako2: 1 } } } }
+  const SAVE_KEY = 'throwontako.story';   // { level, stars: { 1: 3, … }, seenPrologue, carry: { 2: { throwers: ['fumi'], takos: { tako2: 1 } } }, scores: { 1: 2300 }, best: { 1: 8400 } }
   const PER_STAGE = 3;                     // 1面 ＝ 3レベル
   const LAST_STORY_LEVEL = 24;             // 24 の あと clear8 → ending
 
@@ -68,7 +68,7 @@
   const stageTitle = (s) => s + '面 ' + (stageInfo(s).name || '');
 
   // ---------- 保存 ----------
-  let save = { level: 1, stars: {}, seenPrologue: false, carry: {} };
+  let save = { level: 1, stars: {}, seenPrologue: false, carry: {}, scores: {}, best: {} };
   function loadSave() {
     try {
       const v = JSON.parse(localStorage.getItem(SAVE_KEY));
@@ -77,6 +77,8 @@
         save.stars = v.stars && typeof v.stars === 'object' ? v.stars : {};
         save.seenPrologue = !!v.seenPrologue;
         save.carry = v.carry && typeof v.carry === 'object' ? v.carry : {};
+        save.scores = v.scores && typeof v.scores === 'object' ? v.scores : {};
+        save.best = v.best && typeof v.best === 'object' ? v.best : {};
       }
     } catch (e) { /* 読めなくても はじめから */ }
   }
@@ -109,6 +111,7 @@
   const endTitle = $('endTitle');
   const endStars = $('endStars');
   const endText = $('endText');
+  const endScore = $('endScore');
   const endMain = $('btnEndMain');
   const endMainText = $('endMainText');
   const endSub = $('btnEndSub');
@@ -210,17 +213,46 @@
     return { throwers, takos };
   }
 
-  /** クリアした ときに、手に 入れた アイテムを 同じ 面の つぎの レベルへ もちこす（前より 多い ほうを のこす） */
+  /** あまった アイテムの タコ（二郎〜大王。一郎は レベルごとに くばられる ので 入れない） */
+  function leftoverItems() {
+    const takos = {};
+    Object.keys(left).forEach((k) => { if (k !== 'tako1' && left[k] > 0) takos[k] = left[k]; });
+    return takos;
+  }
+
+  /** クリアした ときに、なかまと あまった タコを 同じ 面の つぎの レベルへ もちこす（さいごに クリアした ときの もの） */
   function saveCarry() {
     const nx = level + 1;
     if (nx > LAST || stageOf(nx) !== stageOf(level)) return;
-    const old = carryFor(nx);
-    const throwers = old.throwers.slice();
-    gained.throwers.forEach((k) => { if (!throwers.includes(k)) throwers.push(k); });
-    const takos = Object.assign({}, old.takos);
-    Object.keys(gained.takos).forEach((k) => { takos[k] = Math.max(takos[k] || 0, gained.takos[k]); });
-    save.carry[nx] = { throwers, takos };
+    save.carry[nx] = { throwers: gained.throwers.slice(), takos: leftoverItems() };
   }
+
+  // ---------- 得点 ----------
+  // レベルごと：イカへの ダメージ・穴に おとした ボーナス・さいだい コンボ・のこった タコ一郎。
+  // 面の さいご（X-3）で、あまった アイテム（タコ二郎〜大王・なかま）を 得点に かえて、面の 合計を ハイスコアと くらべる
+  const PT = { dmg: 100, pocket: 1000, combo: 200, tako1: 300, itemTako: 500, mate: 800 };
+  const fmtPt = (v) => Number(v || 0).toLocaleString('ja-JP');
+  function levelScore(st) {
+    const maxHp = Number(st && st.maxHp) || 1;
+    const hp = Math.max(0, Number(st && st.hp) || 0);
+    const rows = [['イカへの ダメージ', Math.round((maxHp - hp) * PT.dmg)]];
+    if (st && st.pocket) rows.push(['穴に おとした', PT.pocket + Math.round(hp * PT.dmg)]);
+    if (st && st.combo > 1) rows.push(['さいだい コンボ ' + st.combo, st.combo * PT.combo]);
+    if (left.tako1 > 0) rows.push(['のこった タコ一郎 ×' + left.tako1, left.tako1 * PT.tako1]);
+    return { rows, total: rows.reduce((s, r) => s + r[1], 0) };
+  }
+  function stageBonus() {
+    const rows = [];
+    const it = leftoverItems();
+    Object.keys(it).forEach((k) => rows.push(['あまった ' + (TAKOS[k] ? TAKOS[k].name : k) + ' ×' + it[k], it[k] * PT.itemTako]));
+    if (gained.throwers.length) {
+      const names = gained.throwers.map((k) => (THROWERS[k] || THROWER_FALLBACK[k] || { name: k }).name).join('・');
+      rows.push(['なかま（' + names + '）', gained.throwers.length * PT.mate]);
+    }
+    return { rows, total: rows.reduce((s, r) => s + r[1], 0) };
+  }
+  const bestOf = (s) => Math.max(0, Number(save.best[s]) || 0);
+  const isStageEnd = (n) => n >= LAST || stageOf(n + 1) !== stageOf(n);
 
   function loadLevel(n) {
     level = Math.max(1, Math.min(LAST, n));
@@ -486,6 +518,19 @@
     const stars = starCount(st);
     save.stars[level] = Math.max(starsOf(level), stars);
     if (mode === 'story') save.level = level + 1;
+    const ls = levelScore(st);
+    save.scores[level] = ls.total;
+    let stage = null;
+    if (isStageEnd(level)) {
+      const s = stageOf(level);
+      let sum = 0;
+      for (let n = 1; n <= LAST; n += 1) if (stageOf(n) === s) sum += Math.max(0, Number(save.scores[n]) || 0);
+      const bonus = stageBonus();
+      const total = sum + bonus.total;
+      const prev = bestOf(s);
+      stage = { s, sum, bonus, total, prev, isNew: total > prev };
+      if (stage.isNew) save.best[s] = total;
+    }
     saveCarry();
     writeSave();
     if (game && typeof game.bossDown === 'function') game.bossDown();
@@ -494,12 +539,41 @@
     endTitle.textContent = levelName(level) + ' クリア！';
     endStars.hidden = false;
     setStars(endStars, stars);
-    endText.textContent = (st && st.pocket ? 'イカを 穴に おとした！ 一発 勝利！' : 'イカを たおした！') + '\nのこった タコ ' + takoLeft() + 'ひき' + (st && st.combo > 1 ? '\nさいだい コンボ ' + st.combo : '');
+    endText.textContent = st && st.pocket ? 'イカを 穴に おとした！ 一発 勝利！' : 'イカを たおした！';
+    showScore(ls, stage);
     endMain.dataset.go = 'next';
     endSub.dataset.go = 'rest';
     endMainText.textContent = level >= LAST && mode === 'pick' ? 'えらぶ 画面へ' : 'つぎへ';
     endSubText.textContent = 'きょうは ここまで';
     openEnd();
+  }
+
+  /** おわりの 画面の 得点表 */
+  function showScore(ls, stage) {
+    endScore.textContent = '';
+    const row = (label, pts, cls) => {
+      const r = el('div', 'score__row' + (cls ? ' ' + cls : ''));
+      r.appendChild(el('span', 'score__label', label));
+      r.appendChild(el('span', 'score__pts', (cls ? '' : '+') + fmtPt(pts)));
+      endScore.appendChild(r);
+    };
+    ls.rows.forEach((r) => row(r[0], r[1]));
+    row(levelName(level) + ' の 得点', ls.total, 'is-total');
+    if (stage) {
+      if (stage.bonus.rows.length) {
+        endScore.appendChild(el('p', 'score__head', 'あまった アイテムを 得点に'));
+        stage.bonus.rows.forEach((r) => row(r[0], r[1]));
+      }
+      row(stage.s + '面の 合計', stage.total, 'is-stage');
+      row(stage.isNew ? 'ハイスコア 更新！' : 'ハイスコア', stage.isNew ? stage.total : stage.prev, 'is-best' + (stage.isNew ? ' is-new' : ''));
+    } else {
+      const s = stageOf(level);
+      let sum = 0;
+      for (let n = 1; n <= level; n += 1) if (stageOf(n) === s) sum += Math.max(0, Number(save.scores[n]) || 0);
+      row(s + '面 ここまで', sum, 'is-stage');
+      if (bestOf(s)) row('ハイスコア', bestOf(s), 'is-best');
+    }
+    endScore.hidden = false;
   }
 
   function levelFail(st) {
@@ -508,6 +582,7 @@
     say('タコが なくなっちゃった…');
     endTitle.textContent = 'もう すこし！';
     endStars.hidden = true;
+    endScore.hidden = true;
     endText.textContent = 'イカの のこり ♥' + fmtHp(st ? st.hp : 0) + '\n場の タコに あてて コンボを ねらおう';
     endMain.dataset.go = 'retry';
     endSub.dataset.go = 'title';
@@ -654,7 +729,9 @@
     byStage.forEach((list, s) => {
       if (list[0] > top) return;   // まだ 見えない 面は 出さない
       const box = el('section', 'picks__stage');
-      box.appendChild(el('h3', 'picks__name', stageTitle(s).trim()));
+      const head = el('h3', 'picks__name', stageTitle(s).trim());
+      if (bestOf(s)) head.appendChild(el('span', 'picks__best', 'ハイスコア ' + fmtPt(bestOf(s))));
+      box.appendChild(head);
       const row = el('div', 'picks__row');
       list.forEach((n) => {
         const b = el('button', 'pick');
