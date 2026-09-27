@@ -12,7 +12,7 @@
 (() => {
   'use strict';
 
-  const SAVE_KEY = 'throwontako.story';   // { level, stars: { 1: 3, … }, seenPrologue }
+  const SAVE_KEY = 'throwontako.story';   // { level, stars: { 1: 3, … }, seenPrologue, carry: { 2: { throwers: ['fumi'], takos: { tako2: 1 } } } }
   const PER_STAGE = 3;                     // 1面 ＝ 3レベル
   const LAST_STORY_LEVEL = 24;             // 24 の あと clear8 → ending
 
@@ -68,7 +68,7 @@
   const stageTitle = (s) => s + '面 ' + (stageInfo(s).name || '');
 
   // ---------- 保存 ----------
-  let save = { level: 1, stars: {}, seenPrologue: false };
+  let save = { level: 1, stars: {}, seenPrologue: false, carry: {} };
   function loadSave() {
     try {
       const v = JSON.parse(localStorage.getItem(SAVE_KEY));
@@ -76,6 +76,7 @@
         save.level = Math.max(1, Number(v.level) || 1);
         save.stars = v.stars && typeof v.stars === 'object' ? v.stars : {};
         save.seenPrologue = !!v.seenPrologue;
+        save.carry = v.carry && typeof v.carry === 'object' ? v.carry : {};
       }
     } catch (e) { /* 読めなくても はじめから */ }
   }
@@ -165,6 +166,9 @@
   let takoKey = '';
   let throwerKey = 'nao';
   let unlocked = { nao: true };   // この レベルで 使える 投げる 人（はじめは ナオだけ。アイテムで ふえる）
+  // 手に 入れた アイテム（まえの レベルから もちこした ぶん＋この レベルで ひろった ぶん）。
+  // クリアすると 同じ 面の つぎの レベルへ もちこす。面が かわると なし（X-1 は いつも ナオと タコ一郎だけ）
+  let gained = { throwers: [], takos: {} };
   let ratio = 0;
   let playing = false;      // 投げられる 状態（モーダルや 場面の あいだは false）
   let ended = false;        // この レベルの 結果が でた
@@ -195,6 +199,29 @@
   }
 
   let started = false;
+  /** この レベルに もちこむ アイテム（同じ 面の まえの レベルで 手に 入れた もの） */
+  function carryFor(n) {
+    const c = innerOf(n) > 1 && save.carry && save.carry[n];
+    const throwers = c && Array.isArray(c.throwers) ? c.throwers.filter((k) => THROWER_KEYS.includes(k) && k !== 'nao') : [];
+    const takos = {};
+    if (c && c.takos && typeof c.takos === 'object') {
+      Object.keys(c.takos).forEach((k) => { const v = Math.max(0, Number(c.takos[k]) || 0); if (v && TAKOS[k]) takos[k] = v; });
+    }
+    return { throwers, takos };
+  }
+
+  /** クリアした ときに、手に 入れた アイテムを 同じ 面の つぎの レベルへ もちこす（前より 多い ほうを のこす） */
+  function saveCarry() {
+    const nx = level + 1;
+    if (nx > LAST || stageOf(nx) !== stageOf(level)) return;
+    const old = carryFor(nx);
+    const throwers = old.throwers.slice();
+    gained.throwers.forEach((k) => { if (!throwers.includes(k)) throwers.push(k); });
+    const takos = Object.assign({}, old.takos);
+    Object.keys(gained.takos).forEach((k) => { takos[k] = Math.max(takos[k] || 0, gained.takos[k]); });
+    save.carry[nx] = { throwers, takos };
+  }
+
   function loadLevel(n) {
     level = Math.max(1, Math.min(LAST, n));
     lv = levelAt(level);
@@ -206,6 +233,13 @@
     takoKey = 'tako1';
     const tk = lv.takos && typeof lv.takos === 'object' ? lv.takos : { tako1: 4 };
     Object.keys(tk).forEach((k) => { left[k] = Math.max(0, Number(tk[k]) || 0); });
+    // まえの レベルで 手に 入れた なかまと タコを もちこす
+    const carry = carryFor(level);
+    carry.throwers.forEach((k) => { unlocked[k] = true; });
+    Object.keys(carry.takos).forEach((k) => { left[k] = (left[k] || 0) + carry.takos[k]; });
+    gained = { throwers: carry.throwers.slice(), takos: Object.assign({}, carry.takos) };
+    const carryNames = carry.throwers.map((k) => (THROWERS[k] || THROWER_FALLBACK[k] || { name: k }).name)
+      .concat(Object.keys(carry.takos).map((k) => (TAKOS[k] ? TAKOS[k].name : k) + (carry.takos[k] > 1 ? '×' + carry.takos[k] : '')));
 
     const s = stageOf(level);
     const info = stageInfo(s);
@@ -218,7 +252,8 @@
     buildTray();
     buildThrowers();
     showHp(Number(lv.hp) || 1, Number(lv.hp) || 1);
-    say(lv.hint || 'タコを ひっぱって、はなすと 投げるよ！');
+    const hint = lv.hint || 'タコを ひっぱって、はなすと 投げるよ！';
+    say(carryNames.length ? 'まえの レベルから ' + carryNames.join('・') + 'も いっしょ！　' + hint : hint);
 
     if (game) {
       // 背景の 絵は ストーリーだけで 使う。投げる 画面は 白い ブロックが 見やすい 空色 1色に そろえる
@@ -396,11 +431,13 @@
     if (ended || !lv) return;
     if (type === 'thrower') {
       unlocked[key] = true;
+      if (!gained.throwers.includes(key)) gained.throwers.push(key);
       buildThrowers();
       const p = THROWERS[key] || THROWER_FALLBACK[key];
       say(p.name + 'が なかまに なった！ 下の ボタンで えらべるよ');
     } else if (type === 'tako') {
       left[key] = (left[key] || 0) + 1;
+      gained.takos[key] = (gained.takos[key] || 0) + 1;
       buildTray();
       const t = TAKOS[key];
       say((t ? t.name : key) + 'を ゲット！ ' + (t && t.note ? '（' + t.note + '）' : ''));
@@ -449,6 +486,7 @@
     const stars = starCount(st);
     save.stars[level] = Math.max(starsOf(level), stars);
     if (mode === 'story') save.level = level + 1;
+    saveCarry();
     writeSave();
     if (game && typeof game.bossDown === 'function') game.bossDown();
 
