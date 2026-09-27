@@ -168,7 +168,9 @@
   let left = {};            // のこりの タコ { tako1: 3, … }
   let takoKey = '';
   let throwerKey = 'nao';
-  let unlocked = { nao: true };   // この レベルで 使える 投げる 人（はじめは ナオだけ。アイテムで ふえる）
+  // なかまの のこり 回数（ナオは いくらでも。フミ・マキ・チカは アイテム 1つで USES 回。0 に なったら 使えない）
+  const USES = 3;
+  let uses = {};
   // 手に 入れた アイテム（まえの レベルから もちこした ぶん＋この レベルで ひろった ぶん）。
   // クリアすると 同じ 面の つぎの レベルへ もちこす。面が かわると なし（X-1 は いつも ナオと タコ一郎だけ）
   let gained = { throwers: [], takos: {} };
@@ -205,7 +207,12 @@
   /** この レベルに もちこむ アイテム（同じ 面の まえの レベルで 手に 入れた もの） */
   function carryFor(n) {
     const c = innerOf(n) > 1 && save.carry && save.carry[n];
-    const throwers = c && Array.isArray(c.throwers) ? c.throwers.filter((k) => THROWER_KEYS.includes(k) && k !== 'nao') : [];
+    // throwers：{ fumi: 2 }（のこり 回数）。まえの 形（なまえの ならび）は USES 回と みなす
+    const throwers = {};
+    if (c && Array.isArray(c.throwers)) c.throwers.forEach((k) => { if (THROWER_KEYS.includes(k) && k !== 'nao') throwers[k] = USES; });
+    else if (c && c.throwers && typeof c.throwers === 'object') {
+      Object.keys(c.throwers).forEach((k) => { const v = Math.max(0, Math.floor(Number(c.throwers[k]) || 0)); if (v && THROWER_KEYS.includes(k) && k !== 'nao') throwers[k] = v; });
+    }
     const takos = {};
     if (c && c.takos && typeof c.takos === 'object') {
       Object.keys(c.takos).forEach((k) => { const v = Math.max(0, Number(c.takos[k]) || 0); if (v && TAKOS[k]) takos[k] = v; });
@@ -220,17 +227,24 @@
     return takos;
   }
 
-  /** クリアした ときに、なかまと あまった タコを 同じ 面の つぎの レベルへ もちこす（さいごに クリアした ときの もの） */
+  /** なかまの のこり 回数（0 より 多い ものだけ） */
+  function leftoverUses() {
+    const o = {};
+    Object.keys(uses).forEach((k) => { if (uses[k] > 0) o[k] = uses[k]; });
+    return o;
+  }
+
+  /** クリアした ときに、なかまの のこり 回数と あまった タコを 同じ 面の つぎの レベルへ もちこす（さいごに クリアした ときの もの） */
   function saveCarry() {
     const nx = level + 1;
     if (nx > LAST || stageOf(nx) !== stageOf(level)) return;
-    save.carry[nx] = { throwers: gained.throwers.slice(), takos: leftoverItems() };
+    save.carry[nx] = { throwers: leftoverUses(), takos: leftoverItems() };
   }
 
   // ---------- 得点 ----------
   // レベルごと：イカへの ダメージ・穴に おとした ボーナス・さいだい コンボ・のこった タコ一郎。
   // 面の さいご（X-3）で、あまった アイテム（タコ二郎〜大王・なかま）を 得点に かえて、面の 合計を ハイスコアと くらべる
-  const PT = { dmg: 100, pocket: 1000, pocketHp: 500, combo: 200, tako1: 300, itemTako: 500, mate: 800 };
+  const PT = { dmg: 100, pocket: 1000, pocketHp: 500, combo: 200, tako1: 300, itemTako: 500, mateUse: 300 };
   const fmtPt = (v) => Number(v || 0).toLocaleString('ja-JP');
   function levelScore(st) {
     const maxHp = Number(st && st.maxHp) || 1;
@@ -246,10 +260,8 @@
     const rows = [];
     const it = leftoverItems();
     Object.keys(it).forEach((k) => rows.push(['あまった ' + (TAKOS[k] ? TAKOS[k].name : k) + ' ×' + it[k], it[k] * PT.itemTako]));
-    if (gained.throwers.length) {
-      const names = gained.throwers.map((k) => (THROWERS[k] || THROWER_FALLBACK[k] || { name: k }).name).join('・');
-      rows.push(['なかま（' + names + '）', gained.throwers.length * PT.mate]);
-    }
+    const u = leftoverUses();
+    Object.keys(u).forEach((k) => rows.push(['なかま ' + (THROWERS[k] || THROWER_FALLBACK[k] || { name: k }).name + ' のこり ' + u[k] + '回', u[k] * PT.mateUse]));
     return { rows, total: rows.reduce((s, r) => s + r[1], 0) };
   }
   const bestOf = (s) => Math.max(0, Number(save.best[s]) || 0);
@@ -261,17 +273,17 @@
     ended = false;
     ratio = 0;
     left = {};
-    unlocked = { nao: true };
+    uses = {};
     throwerKey = 'nao';
     takoKey = 'tako1';
     const tk = lv.takos && typeof lv.takos === 'object' ? lv.takos : { tako1: 4 };
     Object.keys(tk).forEach((k) => { left[k] = Math.max(0, Number(tk[k]) || 0); });
     // まえの レベルで 手に 入れた なかまと タコを もちこす
     const carry = carryFor(level);
-    carry.throwers.forEach((k) => { unlocked[k] = true; });
+    Object.keys(carry.throwers).forEach((k) => { uses[k] = carry.throwers[k]; });
     Object.keys(carry.takos).forEach((k) => { left[k] = (left[k] || 0) + carry.takos[k]; });
-    gained = { throwers: carry.throwers.slice(), takos: Object.assign({}, carry.takos) };
-    const carryNames = carry.throwers.map((k) => (THROWERS[k] || THROWER_FALLBACK[k] || { name: k }).name)
+    gained = { throwers: Object.keys(carry.throwers), takos: Object.assign({}, carry.takos) };
+    const carryNames = Object.keys(carry.throwers).map((k) => (THROWERS[k] || THROWER_FALLBACK[k] || { name: k }).name + '（' + carry.throwers[k] + '回）')
       .concat(Object.keys(carry.takos).map((k) => (TAKOS[k] ? TAKOS[k].name : k) + (carry.takos[k] > 1 ? '×' + carry.takos[k] : '')));
 
     const s = stageOf(level);
@@ -393,7 +405,7 @@
 
   // ---------- 投げる 人 ----------
   function throwersOf() {
-    return THROWER_KEYS.filter((k) => unlocked[k]);
+    return THROWER_KEYS.filter((k) => k === 'nao' || uses[k] > 0);
   }
 
   function buildThrowers() {
@@ -413,9 +425,10 @@
       const lockNote = 'アイテムで なかまに';
       body.appendChild(el('span', 'thrower__note', ok ? String(p.note || '').replace(/\s*／\s*/g, '\n') : lockNote));
       b.appendChild(body);
+      if (k !== 'nao' && ok) b.appendChild(el('span', 'thrower__count', String(uses[k])));   // のこり 回数
       b.disabled = !ok;
       b.classList.toggle('is-locked', !ok);
-      b.setAttribute('aria-label', p.name + '（' + (ok ? p.note : lockNote) + '）');
+      b.setAttribute('aria-label', p.name + '（' + (ok ? p.note + (k !== 'nao' ? '。のこり ' + uses[k] + '回' : '') : lockNote) + '）');
       b.addEventListener('click', () => pickThrower(k));
       throwerList.appendChild(b);
     });
@@ -463,11 +476,11 @@
   function onItem(code, type, key) {
     if (ended || !lv) return;
     if (type === 'thrower') {
-      unlocked[key] = true;
+      uses[key] = (uses[key] || 0) + USES;
       if (!gained.throwers.includes(key)) gained.throwers.push(key);
       buildThrowers();
       const p = THROWERS[key] || THROWER_FALLBACK[key];
-      say(p.name + 'が なかまに なった！ 下の ボタンで えらべるよ');
+      say(p.name + 'が なかまに なった！ ' + USES + '回 投げて もらえるよ（のこり ' + uses[key] + '回）');
     } else if (type === 'tako') {
       left[key] = (left[key] || 0) + 1;
       gained.takos[key] = (gained.takos[key] || 0) + 1;
@@ -477,9 +490,21 @@
     }
   }
 
-  function onThrow(kind) {
+  function onThrow(kind, who) {
     const k = left[kind] != null ? kind : takoKey;
     if (left[k] > 0) left[k] -= 1;
+    // なかまは 1回 投げると 1 へる。0 に なったら ナオに もどす
+    const by = who || throwerKey;
+    let done = '';
+    if (by !== 'nao' && uses[by] > 0) {
+      uses[by] -= 1;
+      if (uses[by] <= 0) {
+        done = (THROWERS[by] || THROWER_FALLBACK[by] || { name: by }).name + 'は これで おしまい。';
+        throwerKey = 'nao';
+        if (game) game.setThrower('nao');
+      }
+      buildThrowers();
+    }
     // なくなったら つぎの タコを えらんで おく
     if (!(left[takoKey] > 0)) {
       const nx = takoList().find((x) => left[x] > 0);
@@ -487,7 +512,7 @@
     }
     refreshTray();
     const t = TAKOS[kind];
-    say(t && (t.tap) ? 'いけー！（うごいて いる あいだに タップで わざ！）' : 'いけー！');
+    say(done + (t && (t.tap) ? 'いけー！（うごいて いる あいだに タップで わざ！）' : 'いけー！'));
   }
 
   function onTurnEnd(st) {

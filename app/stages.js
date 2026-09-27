@@ -1,6 +1,7 @@
 /* 街と、その白い壁 ―― 24の 台（8面 × 3）。window.STAGES をつくる。
  *
- *   見下ろし型。図面は よこ 9マス × たて 13マスまで（1マス 40）。いちばん 上の 行が 台の 上の はし。
+ *   見下ろし型。台は よこ 13マス × たて 8マス（1マス 40）。いちばん 上の 行が 台の 上の はし。
+ *   図面は よこ 9マスで 書き、イカが 左より なら 台の 左はしに、右より なら 右はしに よせて 置く（のこりの 4列は あき）。
  *     Q イカ（1ぴき）  W 白い ブロック（2回で こわれる）  H かたい ブロック（ふつうの タコでは こわれない。二郎・爆発で こわれる。七郎の スミで 白に なる）
  *     R 赤い ブロック（あたると 爆発）  O 白い 玉（あてると うごく。コンボに なる）  . なにもない
  *   四すみには 穴が ある ので、左上・右上の マスは あけて おく。
@@ -20,8 +21,9 @@
   const COUNT = [0, 3, 5, 5, 6, 6, 7, 8, 9];
 
   /** アイテムを 図面に 入れる。'f@r,c' は 空いた マスに 置く、'f#r,c' は その マスの ブロックの 中に かくす */
+  const COLS = 13;
   function placeItems(rows, list) {
-    const out = rows.map((r) => r.padEnd(9, '.'));
+    const out = rows.map((r) => r.padEnd(COLS, '.'));
     const hide = {};
     (list || []).forEach((spec) => {
       const m = /^(.)([@#])(\d+),(\d+)$/.exec(spec);
@@ -29,7 +31,7 @@
       const [, code, how, rs, cs] = m;
       const r = Number(rs);
       const c = Number(cs);
-      while (out.length <= r) out.push('.........');
+      while (out.length <= r) out.push('.'.repeat(COLS));
       const cell = out[r][c];
       if (how === '@') {
         if (cell !== '.') throw new Error(spec + ' の マスが 空いて いない（' + cell + '）');
@@ -42,8 +44,23 @@
     return { rows: out, hide };
   }
 
-  const L = (no, hp, rows, hint, list) => {
+  /** 9マスの 図面を 13マスの 台に：イカの ある がわの はしに よせる */
+  function widen(rows, list) {
+    const nine = rows.map((r) => r.padEnd(9, '.'));
+    const qc = nine.reduce((c, r) => (r.indexOf('Q') >= 0 ? r.indexOf('Q') : c), 4);
+    const off = qc <= 4 ? 0 : COLS - 9;
+    const pad = '.'.repeat(COLS - 9);
+    return {
+      rows: nine.map((r) => (off ? pad + r : r + pad)),
+      list: (list || []).map((sp) => sp.replace(/^(.)([@#])(\d+),(\d+)$/, (m, c, h, r, col) => c + h + r + ',' + (Number(col) + off))),
+    };
+  }
+
+  const L = (no, hp, rows9, hint, list9) => {
     const stage = Math.ceil(no / 3);
+    const wide = widen(rows9, list9);
+    const rows = wide.rows;
+    const list = wide.list;
     const b = placeItems(rows, list);
     return { no, stage, name: stage + '-' + (no - (stage - 1) * 3), hp, rows: b.rows, hide: b.hide, takos: { tako1: COUNT[stage] }, throwers: stage === 1 ? T13 : T4, hint };
   };
@@ -132,7 +149,7 @@
       '.........',
       '.O.......',
       '......O..',
-    ], '四郎は うごいて いる あいだに タップで 3びきに', ['4@4,2', '4#3,6', '3@2,1', 'f#3,7', 'm@5,5', 'c@4,4']),
+    ], '四郎は うごいて いる あいだに タップで スミ レーザー！ まっすぐ こわす', ['4@4,2', '4#3,6', '3@2,1', 'f#3,7', 'm@5,5', 'c@4,4']),
     L(11, 6, [
       '.........',
       '..QR.....',
