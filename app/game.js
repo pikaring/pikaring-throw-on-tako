@@ -48,7 +48,7 @@
   // power：ダメージの 倍率、wobble：ねらいの ぶれ（ラジアン）、guide：予測線の 長さ、
   // blast：はじめて ぶつかった ときの 爆発の 半径、count／size：いっぺんに 投げる かずと 大きさ
   const THROWERS = {
-    nao:   { name: 'ナオ', power: 0.8, wobble: 0.004, guide: 1800, note: 'ねらい ◎ ／ 力 △',  color: '#27407a' },
+    nao:   { name: 'ナオ', power: 0.8, wobble: 0,     guide: 1800, note: 'ねらい ◎ ／ 力 △',  color: '#27407a', assist: true },
     fumi:  { name: 'フミ', power: 1.6, wobble: 0.09,  guide: 110, note: 'ねらい △ ／ 力 ◎',  color: '#d9731f' },
     maki:  { name: 'マキ', power: 1.1, wobble: 0.025, guide: 380, note: 'あたると ばくはつ', color: '#1f7a3d', blast: 60 },
     chika: { name: 'チカ', power: 0.6, wobble: 0.03,  guide: 380, note: 'ちいさく 3びき',    color: '#b0457a', count: 3, size: 0.72 },
@@ -76,8 +76,9 @@
     7: { type: 'tako', key: 'tako7' },
     D: { type: 'tako', key: 'daiou' },
   };
-  const MAGNET_R = 150;       // イカの まわり これだけ 近づくと、タコが イカの ほうへ すこし まがる
-  const MAGNET_TURN = 2.6;    // まがる はやさ（ラジアン／秒）
+  const HIT_PAD = 9;          // イカの あたり判定は 見た目より これだけ 広い（かすっても あたり。道すじは まげない）
+  const ASSIST = (4 * Math.PI) / 180;   // ナオの ねらい補正：この 角度 以内なら イカに あたる 向きへ よせる
+  const HITSTOP = 0.06;       // あたった 瞬間 とめる 時間（コンボは すこし 長く）
 
   const IMG = {};
   function img(url) {
@@ -156,6 +157,7 @@
     let offX = 0;
     let offY = 0;
     let shakeAmt = 0;
+    let hitStop = 0;      // あたった 瞬間の 一時停止（のこり 秒）
 
     // 入力
     let pull = null;      // 画面の px での 引っぱり { x, y }
@@ -207,19 +209,23 @@
     // =========================================================
     //  できごと
     // =========================================================
-    function popText(x, y, text, color) {
-      effects.push({ type: 'text', x, y, text, color: color || '#ffffff', t: 0, life: 0.9 });
+    function popText(x, y, text, color, size) {
+      effects.push({ type: 'text', x, y, text, color: color || '#ffffff', size: size || 18, t: 0, life: size ? 1.0 : 0.9 });
     }
     function shake(a) { if (!reduceMotion()) shakeAmt = Math.max(shakeAmt, a); }
 
-    function hurtIka(amount, x, y, combo) {
+    function hurtIka(amount, x, y, combo, hx, hy) {
       if (!ika || ika.dead || won) return;
       const d = Math.max(0.1, amount * (ika.inked ? 1.5 : 1));
       ika.hp = Math.max(0, ika.hp - d);
-      ika.hurt = 0.25;
+      ika.hurt = 0.3;
       const shown = Math.round(d * 10) / 10;
-      popText(x, y - 10, (combo > 0 ? 'コンボ×' + (combo + 1) + '  ' : '') + '−' + shown, combo > 0 ? '#ffe36e' : '#ffffff');
-      shake(combo > 0 ? 8 : 5);
+      // あたった ところに 火花、大きな 数字、一瞬 とめる、ゆらす
+      effects.push({ type: 'spark', x: hx == null ? x : hx, y: hy == null ? y : hy, t: 0, life: 0.35, big: combo > 0 });
+      if (combo > 0) popText(x, y - 44, 'コンボ×' + (combo + 1) + '！', '#ffe36e', 22);
+      popText(x, y - 14, '−' + shown, combo > 0 ? '#ffe36e' : '#ffffff', combo > 0 ? 32 : 26);
+      if (!reduceMotion()) hitStop = Math.max(hitStop, combo > 0 ? HITSTOP + 0.04 : HITSTOP);
+      shake(combo > 0 ? Math.min(18, 9 + 3 * combo) : 6);
       if (ika.hp <= 0.001) { ika.hp = 0; win(false); }
       emitStats();
     }
@@ -401,28 +407,6 @@
       if (Hd.onItem) Hd.onItem(it.code, I.type, I.key);
     }
 
-    /** イカの 近くを とおる タコを、すこし イカの ほうへ まげる（あたりやすく、場の タコも イカの そばに あつまる） */
-    function magnet(t, dt) {
-      if (!ika || ika.dead || ika.pocket) return;
-      const dx = ika.x - t.x;
-      const dy = ika.y - t.y;
-      const d = Math.hypot(dx, dy);
-      const reach = MAGNET_R + ika.r;
-      const sp = speedOf(t);
-      if (d > reach || d < 1 || sp < 40) return;
-      const want = Math.atan2(dy, dx);
-      const now = Math.atan2(t.vy, t.vx);
-      let diff = want - now;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-      if (Math.abs(diff) > Math.PI * 0.6) return;          // うしろ向きの ときは まげない
-      const k = MAGNET_TURN * dt * (0.35 + 0.65 * (1 - d / reach));
-      const turn = clamp(diff, -k, k);
-      const a = now + turn;
-      t.vx = Math.cos(a) * sp;
-      t.vy = Math.sin(a) * sp;
-    }
-
     function stepWorld(dt) {
       // タコ
       takos.forEach((t) => {
@@ -433,7 +417,6 @@
           if (t.fuse <= 0) { t.dead = true; explode(t.x, t.y, 110, 2.5, 'bomb'); return; }
         }
         if (!t.moving) return;
-        magnet(t, dt);
         t.x += t.vx * dt;
         t.y += t.vy * dt;
         t.rot += t.spin * dt;
@@ -490,15 +473,24 @@
         circleBlocks(ika, 0.5, null);
         takos.forEach((t) => {
           if (t.dead) return;
-          const rv = collide(t, ika, 0.85);
-          if (rv > 20 && !t.cool.ika) {
-            t.cool.ika = 0.25;
-            t.moving = true;
-            firstHit(t);
-            const P = TAKOS[t.kind];
-            const sp = clamp(rv / 450, 0.5, 1.6);
-            hurtIka(P.dmg * t.power * sp * (1 + 0.5 * t.combo), ika.x, ika.y, t.combo);
+          // かすり判定：見た目より HIT_PAD だけ 広い。ふれて いなくても あたりに なる（道すじは そのまま）
+          const dx = ika.x - t.x;
+          const dy = ika.y - t.y;
+          const dd = Math.hypot(dx, dy) || 1;
+          const touch = ika.r + t.r;
+          if (t.moving && !t.cool.ika && dd < touch + HIT_PAD) {
+            const approach = (t.vx * dx + t.vy * dy) / dd;       // イカへ むかう 速さ
+            if (approach > 15 || dd < touch) {
+              t.cool.ika = 0.35;
+              firstHit(t);
+              const P = TAKOS[t.kind];
+              const sp = clamp(Math.max(approach, speedOf(t) * 0.6) / 450, 0.5, 1.6);
+              const hx = t.x + (dx / dd) * t.r;
+              const hy = t.y + (dy / dd) * t.r;
+              hurtIka(Math.max(1, P.dmg * t.power * sp) * (1 + 0.5 * t.combo), ika.x, ika.y, t.combo, hx, hy);   // 1回 あてれば かならず 1 は へる
+            }
           }
+          if (collide(t, ika, 0.85) > 0) t.moving = true;
         });
         applyFriction(ika, 340, dt);
         if (speedOf(ika) < STOP) { ika.vx = 0; ika.vy = 0; }
@@ -543,6 +535,59 @@
       return { x: LAUNCH.x, y: LAUNCH.y };
     }
 
+    /** はねかえりを ふくむ 道すじ。イカの かすり判定に 入ったら hit */
+    function tracePath(from, dx, dy, max, r, speed) {
+      // ほんものと 同じく、まさつと はねかえりで おそく なり、止まる ところで 線も おわる
+      const T = TAKOS[takoKind];
+      const e = T.bounce ? 0.97 : 0.85;
+      let v = speed || MAX_SPEED;
+      let x = from.x;
+      let y = from.y;
+      let dist = 0;
+      const pts = [];
+      const reach = ika && !ika.dead ? ika.r + r + HIT_PAD : -1;
+      while (dist < max) {
+        const v2 = v * v - 2 * T.fr * 3;
+        if (v2 <= STOP * STOP) break;
+        v = Math.sqrt(v2);
+        x += dx * 3;
+        y += dy * 3;
+        dist += 3;
+        if (x - r < 0 || x + r > W) { dx = -dx; x = clamp(x, r, W - r); v *= e; }
+        if (y - r < 0 || y + r > H) { dy = -dy; y = clamp(y, r, H - r); v *= e; }
+        const hitB = blocks.find((b) => !b.dead && x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h);
+        if (hitB) {
+          const ox = Math.min(x + r - hitB.x, hitB.x + hitB.w - (x - r));
+          const oy = Math.min(y + r - hitB.y, hitB.y + hitB.h - (y - r));
+          if (ox < oy) dx = -dx; else dy = -dy;
+          x += dx * 3;
+          y += dy * 3;
+          v *= e;
+        }
+        pts.push(x, y, dist);
+        if (reach > 0 && Math.hypot(ika.x - x, ika.y - y) < reach) return { pts, hit: true };
+      }
+      return { pts, hit: false };
+    }
+
+    /** ねらいの 向き。ナオは 4° 以内で イカに あたる 向きが あれば そちらへ よせる */
+    function aimDir(a, from, r, max) {
+      const base = Math.atan2(a.dy, a.dx);
+      const P = THROWERS[thrower];
+      const first = tracePath(from, a.dx, a.dy, max, r, a.speed);
+      if (!P.assist || first.hit) return { ang: base, path: first, assisted: false };
+      for (let o = 0.25; o <= 4.001; o += 0.25) {
+        for (const sgn of [1, -1]) {
+          const ang = base + ((sgn * o) / 4) * ASSIST;
+          const p = tracePath(from, Math.cos(ang), Math.sin(ang), max, r, a.speed);
+          if (p.hit) return { ang, path: p, assisted: true };
+        }
+      }
+      return { ang: base, path: first, assisted: false };
+    }
+
+    function guideMax(a) { return THROWERS[thrower].guide * (0.55 + 0.45 * a.k); }
+
     function aimVector() {
       if (!pull) return null;
       const len = Math.hypot(pull.x, pull.y);
@@ -559,9 +604,10 @@
       const P = THROWERS[thrower];
       const n = P.count || 1;
       const from = launchFrom();
+      const dir = aimDir(a, from, TAKOS[takoKind].r * (P.size || 1), guideMax(a));
       for (let i = 0; i < n; i += 1) {
         const off = n > 1 ? (i - (n - 1) / 2) * 0.12 : 0;
-        const ang = Math.atan2(a.dy, a.dx) + off + (rand() * 2 - 1) * P.wobble;
+        const ang = dir.ang + off + (rand() * 2 - 1) * P.wobble;
         const px = from.x + (n > 1 ? (i - (n - 1) / 2) * 14 : 0);
         spawnTako(takoKind, px, from.y, Math.cos(ang) * a.speed, Math.sin(ang) * a.speed, { power: P.power, blast: P.blast || 0, size: P.size || 1 });
       }
@@ -603,7 +649,9 @@
     }
 
     function update(dt) {
-      if (phase === 'move') {
+      if (phase === 'move' && hitStop > 0) {
+        hitStop -= dt;                                   // あたった 瞬間：物理は 止めて、火花や 数字だけ うごかす
+      } else if (phase === 'move') {
         let acc = dt;
         while (acc > 0) {
           const h = Math.min(STEP, acc);
@@ -835,7 +883,8 @@
       const r = ika.r * k;
       ctx.save();
       ctx.translate(ika.x, ika.y);
-      if (ika.hurt > 0) ctx.translate((Math.random() * 2 - 1) * 3, 0);
+      const hk = ika.hurt > 0 ? ika.hurt / 0.3 : 0;
+      if (hk > 0) { ctx.translate((Math.random() * 2 - 1) * 4 * hk, (Math.random() * 2 - 1) * 2 * hk); ctx.scale(1 + 0.14 * hk, 1 - 0.08 * hk); }
       ctx.fillStyle = 'rgba(0,0,0,.18)';
       ctx.beginPath(); ctx.ellipse(2, r * 0.85, r, r * 0.35, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = ika.inked ? '#b9a9d9' : '#fff1ea';
@@ -849,6 +898,13 @@
         ctx.beginPath(); ctx.arc(0, 0, r - 1.5, 0, Math.PI * 2); ctx.clip();
         ctx.drawImage(im, -s / 2, -s * 0.36, s, s);
         ctx.restore();
+        if (hk > 0) {                                     // 白く 光る
+          ctx.save();
+          ctx.globalAlpha = 0.75 * hk;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        }
       } else {
         ctx.fillStyle = '#f3ddd2';
         ctx.beginPath(); ctx.moveTo(0, -r * 0.9); ctx.lineTo(r * 0.6, -r * 0.2); ctx.lineTo(-r * 0.6, -r * 0.2); ctx.closePath(); ctx.fill();
@@ -911,65 +967,34 @@
         ctx.setLineDash([]);
         return;
       }
-      let x = from.x;
-      let y = from.y;
-      let dx = a.dx;
-      let dy = a.dy;
-      let dist = 0;
-      const max = P.guide * (0.55 + 0.45 * a.k);
-      ctx.fillStyle = '#ffffff';
-      const dot = 14;
-      let next = dot;
-      const stepT = 3 / a.speed;                           // 3 すすむ あいだの 時間（まがりかたを ほんものに あわせる）
-      while (dist < max) {
-        if (ika && !ika.dead) {
-          const tx = ika.x - x;
-          const ty = ika.y - y;
-          const d = Math.hypot(tx, ty);
-          const reach = MAGNET_R + ika.r;
-          if (d < reach && d > 1) {
-            let diff = Math.atan2(ty, tx) - Math.atan2(dy, dx);
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            if (Math.abs(diff) <= Math.PI * 0.6) {
-              const k = MAGNET_TURN * stepT * (0.35 + 0.65 * (1 - d / reach));
-              const ang = Math.atan2(dy, dx) + clamp(diff, -k, k);
-              dx = Math.cos(ang);
-              dy = Math.sin(ang);
-            }
-          }
-        }
-        x += dx * 3;
-        y += dy * 3;
-        dist += 3;
-        if (x - r < 0 || x + r > W) { dx = -dx; x = clamp(x, r, W - r); }
-        if (y - r < 0 || y + r > H) { dy = -dy; y = clamp(y, r, H - r); }
-        const hitB = blocks.find((b) => !b.dead && x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h);
-        if (hitB) {
-          const ox = Math.min(x + r - hitB.x, hitB.x + hitB.w - (x - r));
-          const oy = Math.min(y + r - hitB.y, hitB.y + hitB.h - (y - r));
-          if (ox < oy) dx = -dx; else dy = -dy;
-          x += dx * 3;
-          y += dy * 3;
-        }
-        if (ika && !ika.dead && Math.hypot(ika.x - x, ika.y - y) < ika.r + r) {
-          ctx.strokeStyle = '#ffe36e';
-          ctx.lineWidth = 4;
-          ctx.beginPath(); ctx.arc(ika.x, ika.y, ika.r + 5, 0, Math.PI * 2); ctx.stroke();
-          break;
-        }
-        if (dist >= next) {
-          ctx.globalAlpha = Math.max(0.15, 1 - dist / (max + 40));
-          ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fill();
-          next += dot;
-        }
+      const max = guideMax(a);
+      const dir = aimDir(a, from, r, max);
+      const pts = dir.path.pts;
+      ctx.fillStyle = dir.assisted ? '#ffe36e' : '#ffffff';
+      let next = 14;
+      for (let i = 0; i < pts.length; i += 3) {
+        if (pts[i + 2] < next) continue;
+        next += 14;
+        ctx.globalAlpha = Math.max(0.15, 1 - pts[i + 2] / (max + 40));
+        ctx.beginPath(); ctx.arc(pts[i], pts[i + 1], 3.5, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalAlpha = 1;
+      if (dir.path.hit) {                                  // あたる：イカを 光らせる
+        ctx.strokeStyle = '#ffe36e';
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(ika.x, ika.y, ika.r + 6 + Math.sin(Date.now() / 120) * 2, 0, Math.PI * 2); ctx.stroke();
+      }
+      if (dir.assisted) {
+        ctx.fillStyle = '#23506e';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ナオの ねらい補正', from.x, from.y - 28);
+      }
       // 引っぱりの 矢じるし（発射口から うしろへ）
       const back = 20 + 50 * a.k;
       ctx.strokeStyle = 'rgba(35,80,110,.7)';
       ctx.lineWidth = 5;
-      ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(from.x - a.dx * back, from.y - a.dy * back); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(from.x - Math.cos(dir.ang) * back, from.y - Math.sin(dir.ang) * back); ctx.stroke();
       const n = P.count || 1;
       for (let i = 0; i < n; i += 1) drawTakoBody(takoKind, from.x + (n > 1 ? (i - 1) * 14 : 0), from.y, r, 0, false, 1);
       // つよさ
@@ -1002,15 +1027,28 @@
           ctx.strokeStyle = `rgba(${col},${1 - k})`;
           ctx.lineWidth = 5;
           ctx.stroke();
+        } else if (e.type === 'spark') {
+          const n = e.big ? 12 : 8;
+          const R = (e.big ? 34 : 24) * (0.4 + k);
+          ctx.strokeStyle = e.big ? `rgba(255,227,110,${1 - k})` : `rgba(255,255,255,${1 - k})`;
+          ctx.lineWidth = e.big ? 5 : 4;
+          ctx.beginPath();
+          for (let i = 0; i < n; i += 1) {
+            const a = (i / n) * Math.PI * 2;
+            ctx.moveTo(e.x + Math.cos(a) * R * 0.45, e.y + Math.sin(a) * R * 0.45);
+            ctx.lineTo(e.x + Math.cos(a) * R, e.y + Math.sin(a) * R);
+          }
+          ctx.stroke();
         } else if (e.type === 'pop') {
           ctx.strokeStyle = `rgba(255,255,255,${1 - k})`;
           ctx.lineWidth = 4;
           ctx.beginPath(); ctx.arc(e.x, e.y, 16 + k * 26, 0, Math.PI * 2); ctx.stroke();
         } else if (e.type === 'text') {
           ctx.globalAlpha = Math.min(1, 2 * (1 - k));
-          ctx.font = 'bold 18px sans-serif';
+          const pop = e.size > 18 ? 1 + 0.35 * Math.max(0, 1 - k * 5) : 1;   // 出た 瞬間 すこし 大きく
+          ctx.font = `bold ${Math.round(e.size * pop)}px sans-serif`;
           ctx.textAlign = 'center';
-          ctx.lineWidth = 4;
+          ctx.lineWidth = e.size > 18 ? 6 : 4;
           ctx.strokeStyle = '#23506e';
           ctx.strokeText(e.text, clamp(e.x, 70, W - 70), e.y);
           ctx.fillStyle = e.color;
