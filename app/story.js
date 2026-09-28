@@ -162,7 +162,8 @@
     // ロゴの 画像（STORY.logo）が 読めたら、文字の かわりに 出す（読みあげは 文字の まま）
     if (s && s.logo) {
       loadImage(s.logo, (ok) => {
-        if (!ok || !head.isConnected) return;
+        // 2回目からは 画像が 読みこみ済みで すぐに ここへ 来る（まだ 画面に 置く 前）ので、isConnected では 判定しない
+        if (!ok || head.querySelector('.story-title__logo')) return;
         const img = el('img', 'story-title__logo');
         img.src = s.logo;
         img.alt = '';
