@@ -168,8 +168,8 @@
   let left = {};            // のこりの タコ { tako1: 3, … }
   let takoKey = '';
   let throwerKey = 'nao';
-  // なかまの のこり 回数（ナオは いくらでも。フミ・マキ・チカは アイテム 1つで USES 回。0 に なったら 使えない）
-  const USES = 3;
+  // なかまの のこり 回数（ナオは いくらでも。フミ・マキ・チカは アイテムで 1回だけ。使える あいだに また ひろっても ふえない）
+  const USES = 1;
   let uses = {};
   // 手に 入れた アイテム（まえの レベルから もちこした ぶん＋この レベルで ひろった ぶん）。
   // クリアすると 同じ 面の つぎの レベルへ もちこす。面が かわると なし（X-1 は いつも ナオと タコ一郎だけ）
@@ -211,7 +211,7 @@
     const throwers = {};
     if (c && Array.isArray(c.throwers)) c.throwers.forEach((k) => { if (THROWER_KEYS.includes(k) && k !== 'nao') throwers[k] = USES; });
     else if (c && c.throwers && typeof c.throwers === 'object') {
-      Object.keys(c.throwers).forEach((k) => { const v = Math.max(0, Math.floor(Number(c.throwers[k]) || 0)); if (v && THROWER_KEYS.includes(k) && k !== 'nao') throwers[k] = v; });
+      Object.keys(c.throwers).forEach((k) => { const v = Math.min(USES, Math.max(0, Math.floor(Number(c.throwers[k]) || 0))); if (v && THROWER_KEYS.includes(k) && k !== 'nao') throwers[k] = v; });
     }
     const takos = {};
     if (c && c.takos && typeof c.takos === 'object') {
@@ -244,7 +244,7 @@
   // ---------- 得点 ----------
   // レベルごと：イカへの ダメージ・穴に おとした ボーナス・さいだい コンボ・のこった タコ一郎。
   // 面の さいご（X-3）で、あまった アイテム（タコ二郎〜大王・なかま）を 得点に かえて、面の 合計を ハイスコアと くらべる
-  const PT = { dmg: 100, pocket: 1000, pocketHp: 500, combo: 200, tako1: 300, itemTako: 500, mateUse: 300 };
+  const PT = { dmg: 100, pocket: 1000, pocketHp: 500, combo: 200, tako1: 300, itemTako: 500, mateUse: 800 };
   const fmtPt = (v) => Number(v || 0).toLocaleString('ja-JP');
   function levelScore(st) {
     const maxHp = Number(st && st.maxHp) || 1;
@@ -476,11 +476,12 @@
   function onItem(code, type, key) {
     if (ended || !lv) return;
     if (type === 'thrower') {
-      uses[key] = (uses[key] || 0) + USES;
+      const p = THROWERS[key] || THROWER_FALLBACK[key];
+      if (uses[key] > 0) { say(p.name + 'は もう なかまだよ（のこり ' + uses[key] + '回の まま）'); return; }
+      uses[key] = USES;
       if (!gained.throwers.includes(key)) gained.throwers.push(key);
       buildThrowers();
-      const p = THROWERS[key] || THROWER_FALLBACK[key];
-      say(p.name + 'が なかまに なった！ ' + USES + '回 投げて もらえるよ（のこり ' + uses[key] + '回）');
+      say(p.name + 'が なかまに なった！ ' + USES + '回だけ 投げて もらえるよ');
     } else if (type === 'tako') {
       left[key] = (left[key] || 0) + 1;
       gained.takos[key] = (gained.takos[key] || 0) + 1;
